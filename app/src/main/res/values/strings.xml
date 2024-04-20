@@ -2,4 +2,8 @@
     <string name="app_name">ChitChatter</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_notification_channel_id">CHITCHATTER_ID_DEFAULT</string>
+    <string name="message_denied">You are not allow this app showing notification.</string>
+    <string name="message_permission_prompt">You need accept this permission to see notifications.</string>
+    <string name="message_permission_denied">You are not allow this app showing notification.</string>
 </resources>
