@@ -19,4 +19,6 @@
     <color name="blue_400">#2979FF</color>
     <color name="blue_200">#448AFF</color>
     <color name="blue_100">#82B1FF</color>
+    <color name="primary_color">#24786D</color>
+    <color name="stroke">#C1C1C1</color>
 </resources>
