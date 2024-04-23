@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_message"
+    app:startDestination="@id/home_fragment">
+
+    <fragment
+        android:id="@+id/home_fragment"
+        android:name="com.midterm.chitchatter.ui.home.HomeFragment"
+        android:label="@string/title_message"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_fragment_to_message_fragment"
+            app:destination="@id/message_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/message_fragment"
+        android:name="com.midterm.chitchatter.ui.message.MessageFragment"
+        android:label="fragment_message"
+        tools:layout="@layout/fragment_message" />
+    <action
+        android:id="@+id/action_global_home_fragment"
+        app:destination="@id/home_fragment"
+        app:popUpTo="@id/home_fragment" />
+</navigation>
