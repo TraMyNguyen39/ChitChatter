@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ChitChatter</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_notification_channel_id">CHITCHATTER_ID_DEFAULT</string>
     <string name="message_denied">You are not allow this app showing notification.</string>
@@ -22,4 +21,13 @@
     <string name="txt_forget_password">Quên mật khẩu</string>
     <string name="txt_enter_username">Nhập username</string>
     <string name="txt_enter_display_name">Nhập tên hiển thị</string>
+    <string name="title_message">Message</string>
+    <string name="title_calls">Calls</string>
+    <string name="title_contacts">Contacts</string>
+    <string name="sender_avatar">Sender avatar</string>
+    <string name="message">Ê mai đi học mobile không?</string>
+    <string name="receiver_avatar">Receiver avatar</string>
+    <string name="time">7:30 PM</string>
+    <string name="sender_name">Nguyễn Quốc Toàn</string>
+    <string name="avatar">Avatar</string>
 </resources>

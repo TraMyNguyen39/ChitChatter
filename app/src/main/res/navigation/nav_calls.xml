@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_calls"
+    android:label="@string/title_calls"
+    app:startDestination="@id/callsFragment">
+
+    <fragment
+        android:id="@+id/callsFragment"
+        android:name="com.midterm.chitchatter.ui.calls.CallsFragment"
+        android:label="@string/title_calls"
+        tools:layout="@layout/fragment_calls" />
+</navigation>
