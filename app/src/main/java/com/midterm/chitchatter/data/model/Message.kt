@@ -50,7 +50,6 @@ data class Message(
         result = 31 * result + timestamp.hashCode()
         return result
     }
-
-//    val isIncoming: Boolean
-//        get() = HomeViewModel.currentAccount.value?.username?.compareTo(sender) != 0
+    val isIncoming: Boolean
+        get() = HomeViewModel.currentAccount.value?.username?.compareTo(sender) != 0
 }
