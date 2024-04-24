@@ -8,9 +8,9 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="@dimen/img_size_200"
-        android:layout_height="@dimen/img_size_200"
-        android:layout_marginTop="@dimen/margin_48"
+        android:layout_width="@dimen/img_size_150"
+        android:layout_height="@dimen/img_size_150"
+        android:layout_marginTop="@dimen/margin_16"
         android:contentDescription="@string/desc_login_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,17 +18,38 @@
         app:srcCompat="@drawable/chitchatter" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/ti_signup_mobile_username"
+        android:id="@+id/ti_signup_username"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_32"
-        android:layout_marginTop="@dimen/margin_48"
-        android:layout_marginEnd="32dp"
-        android:hint="@string/txt_enter_email"
+        android:layout_marginStart="@dimen/margin_24"
+        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_24"
+        android:hint="@string/txt_enter_username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/label_require_validation"
+        app:startIconDrawable="@drawable/ic_user">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_signup_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textColorHint="@color/stroke"
+            android:textSize="@dimen/text_size_small" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ti_signup_email"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_16"
+        android:hint="@string/txt_enter_email"
+        app:layout_constraintEnd_toEndOf="@+id/ti_signup_username"
+        app:layout_constraintStart_toStartOf="@+id/ti_signup_username"
+        app:layout_constraintTop_toBottomOf="@+id/ti_signup_username"
         app:startIconDrawable="@drawable/ic_email">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -41,15 +62,36 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ti_signup_display_name"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_16"
+        android:hint="@string/txt_enter_display_name"
+        app:layout_constraintEnd_toEndOf="@+id/ti_signup_email"
+        app:layout_constraintStart_toStartOf="@+id/ti_signup_email"
+        app:layout_constraintTop_toBottomOf="@+id/ti_signup_email"
+        app:startIconDrawable="@drawable/ic_user_check">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_signup_display_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textColorHint="@color/stroke"
+            android:textSize="@dimen/text_size_small" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/ti_signup_password"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginTop="@dimen/margin_16"
         android:hint="@string/txt_enter_password"
-        app:layout_constraintEnd_toEndOf="@+id/ti_signup_mobile_username"
-        app:layout_constraintStart_toStartOf="@+id/ti_signup_mobile_username"
-        app:layout_constraintTop_toBottomOf="@+id/ti_signup_mobile_username"
+        app:layout_constraintEnd_toEndOf="@+id/ti_signup_email"
+        app:layout_constraintStart_toStartOf="@+id/ti_signup_email"
+        app:layout_constraintTop_toBottomOf="@+id/ti_signup_display_name"
         app:passwordToggleEnabled="true"
         app:startIconDrawable="@drawable/ic_lock">
 
@@ -67,7 +109,7 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginTop="@dimen/margin_16"
         android:hint="@string/txt_enter_confirm_password"
         app:layout_constraintEnd_toEndOf="@+id/ti_signup_password"
         app:layout_constraintStart_toStartOf="@+id/ti_signup_password"
@@ -88,7 +130,7 @@
         android:id="@+id/btn_signup_fragment_signup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_24"
         android:backgroundTint="@color/primary_color"
         android:text="@string/txt_sign_up"
         android:padding="@dimen/padding_btn_12dp"
@@ -103,7 +145,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_4"
-        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginTop="@dimen/margin_16"
         android:text="@string/txt_have_an_account"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/btn_signup_fragment_login"
@@ -133,7 +175,6 @@
         android:id="@+id/label_require_validation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/app_name"
         android:textColor="@color/primary_color"
         android:textAllCaps="true"

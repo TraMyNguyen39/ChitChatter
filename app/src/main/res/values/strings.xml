@@ -20,4 +20,6 @@
     <string name="txt_confirm_email">Xác nhận email</string>
     <string name="txt_turn_back">Trở lại</string>
     <string name="txt_forget_password">Quên mật khẩu</string>
+    <string name="txt_enter_username">Nhập username</string>
+    <string name="txt_enter_display_name">Nhập tên hiển thị</string>
 </resources>
