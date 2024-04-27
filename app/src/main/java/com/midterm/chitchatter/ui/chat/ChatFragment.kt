@@ -1,4 +1,4 @@
-package com.midterm.chitchatter.ui.message
+package com.midterm.chitchatter.ui.chat
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,12 +11,12 @@ import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.data.model.Notification
-import com.midterm.chitchatter.databinding.FragmentMessageBinding
+import com.midterm.chitchatter.databinding.FragmentChatBinding
 
 
-class MessageFragment : Fragment() {
+class ChatFragment : Fragment() {
 
-    private var _binding: FragmentMessageBinding? = null
+    private var _binding: FragmentChatBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -28,17 +28,17 @@ class MessageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_message, container, false)
+        return inflater.inflate(R.layout.fragment_chat, container, false)
     }
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentMessageBinding.bind(view)
+        _binding = FragmentChatBinding.bind(view)
 
         // Create dummy data
         val messages = listOf(
-            Message(1, "your_username", "receiver", Data("Hello!"), Notification("New message"), status = MessageStatus.SENT),
-            Message(2, "receiver", "your_username", Data("Hi!"), Notification("New message"), status = MessageStatus.RECEIVED),
+            Message(1, "your_username", "receiver", Data("Hello!"), Notification("New chat"), status = MessageStatus.SENT),
+            Message(2, "receiver", "your_username", Data("Hi!"), Notification("New chat"), status = MessageStatus.RECEIVED),
             // Add more messages...
         )
 
@@ -50,7 +50,7 @@ class MessageFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            MessageFragment().apply {
+            ChatFragment().apply {
                 arguments = Bundle().apply {
                 }
             }

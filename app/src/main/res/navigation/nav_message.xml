@@ -16,9 +16,9 @@
     </fragment>
     <fragment
         android:id="@+id/message_fragment"
-        android:name="com.midterm.chitchatter.ui.message.MessageFragment"
+        android:name="com.midterm.chitchatter.ui.chat.ChatFragment"
         android:label="fragment_message"
-        tools:layout="@layout/fragment_message" />
+        tools:layout="@layout/fragment_chat" />
     <action
         android:id="@+id/action_global_home_fragment"
         app:destination="@id/home_fragment"
