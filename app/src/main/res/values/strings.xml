@@ -30,4 +30,7 @@
     <string name="time">7:30 PM</string>
     <string name="sender_name">Nguyễn Quốc Toàn</string>
     <string name="avatar">Avatar</string>
+    <string name="txtMess">Write a message</string>
+    <string name="txtActiveNow">Active now</string>
+
 </resources>

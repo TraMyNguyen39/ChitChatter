@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.chat.ChatFragment"
+    android:background="@color/white"
+    android:orientation="vertical"
+    >
+    <LinearLayout
+        android:id="@+id/layoutTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="15dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="15dp"
+        android:background="@drawable/border_bottom"
+        >
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewBack"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_back"
+            android:layout_gravity="center_vertical"
+            >
+        </androidx.appcompat.widget.AppCompatImageView>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageViewProfile"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:src="@drawable/profile"
+            android:layout_gravity="center_vertical"
+            >
+        </de.hdodenhof.circleimageview.CircleImageView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center_vertical"
+            >
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sender_name"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                >
+            </TextView>
+            <TextView
+                android:id="@+id/textViewStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/txtActiveNow"
+                android:textSize="17sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="1dp"
+                >
+            </TextView>
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_call"
+            >
+        </androidx.appcompat.widget.AppCompatImageView>
+
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/viewBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/background_content_top"
+        tools:layout_editor_absoluteY="675dp">
+    </View>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewMessage"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="1"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/border_top"
+        android:padding="10dp"
+        >
+
+        <FrameLayout
+            android:id="@+id/layoutAttach"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="9dp"
+            android:backgroundTint="@android:color/transparent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="40dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="3dp"
+                android:paddingTop="5dp"
+                android:src="@drawable/ic_attach">
+
+            </androidx.appcompat.widget.AppCompatImageView>
+        </FrameLayout>
+
+        <EditText
+            android:id="@+id/editTextInputMessage"
+            android:inputType="text"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/backgroud_chat_input"
+            android:backgroundTint="#F0F0F0"
+            android:hint="@string/txtMess"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:autofillHints="name"
+            android:gravity="center_vertical"
+            >
+        </EditText>
+
+        <FrameLayout
+            android:id="@+id/layoutSend"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
+            android:background="@drawable/backgroud_chat_input"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="5dp"
+            >
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/send"
+                app:tint="@color/white"
+                android:layout_marginStart="3dp"
+                android:layout_gravity="center"
+                >
+
+            </androidx.appcompat.widget.AppCompatImageView>
+
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>
