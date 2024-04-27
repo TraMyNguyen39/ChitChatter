@@ -1,3 +1,33 @@
 <resources>
     <string name="app_name">ChitChatter</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_notification_channel_id">CHITCHATTER_ID_DEFAULT</string>
+    <string name="message_denied">You are not allow this app showing notification.</string>
+    <string name="message_permission_prompt">You need accept this permission to see notifications.</string>
+    <string name="message_permission_denied">You are not allow this app showing notification.</string>
+    <string name="desc_login_image">Ảnh logo\n</string>
+    <string name="txt_enter_email">Nhập email</string>
+    <string name="txt_enter_password">Nhập mật khẩu</string>
+    <string name="txt_forget_password_ask">Quên mật khẩu?</string>
+    <string name="txt_sign_in">Đăng nhập</string>
+    <string name="txt_dont_have_an_account">Chưa có tài khoản?</string>
+    <string name="txt_sign_up_here">Đăng ký tại đây</string>
+    <string name="txt_enter_confirm_password">Nhập lại mật khẩu</string>
+    <string name="txt_sign_up">Đăng ký</string>
+    <string name="txt_have_an_account">Đã có tài khoản?</string>
+    <string name="txt_sign_in_here">Đăng nhập tại đây</string>
+    <string name="txt_confirm_email">Xác nhận email</string>
+    <string name="txt_turn_back">Trở lại</string>
+    <string name="txt_forget_password">Quên mật khẩu</string>
+    <string name="txt_enter_username">Nhập username</string>
+    <string name="txt_enter_display_name">Nhập tên hiển thị</string>
+    <string name="title_message">Message</string>
+    <string name="title_calls">Calls</string>
+    <string name="title_contacts">Contacts</string>
+    <string name="sender_avatar">Sender avatar</string>
+    <string name="message">Ê mai đi học mobile không?</string>
+    <string name="receiver_avatar">Receiver avatar</string>
+    <string name="time">7:30 PM</string>
+    <string name="sender_name">Nguyễn Quốc Toàn</string>
+    <string name="avatar">Avatar</string>
 </resources>

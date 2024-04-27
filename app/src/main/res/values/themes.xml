@@ -2,7 +2,24 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.ChitChatter" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowActionBar">@color/primary_color</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="colorPrimary">@color/dark_black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/dark_black</item>
+        <item name="colorPrimaryVariant">@color/dark_black</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="android:statusBarColor">@color/dark_black</item>
+        <item name="toolbarStyle">@style/MyToolBarStyle</item>
+        <item name="android:navigationBarColor">@color/dark_black</item>
+    </style>
+
+    <style name="MyActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="background">@color/dark_black</item>
+    </style>
+
+    <style name="MyToolBarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/dark_black</item>
     </style>
 
     <style name="Theme.ChitChatter" parent="Base.Theme.ChitChatter" />
