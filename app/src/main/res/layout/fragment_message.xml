@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.message.MessageFragment"
     android:background="@color/white"
+    android:orientation="vertical"
     >
-
     <LinearLayout
         android:id="@+id/layoutTop"
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
             android:layout_width="30sp"
             android:layout_height="30sp"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:src="@drawable/ic_back"
             >
         </androidx.appcompat.widget.AppCompatImageView>
@@ -39,17 +39,17 @@
         </de.hdodenhof.circleimageview.CircleImageView>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             >
             <TextView
                 android:id="@+id/textViewName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thanh Dang"
+                android:text="@string/sender_name"
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="10dp"
@@ -59,7 +59,7 @@
                 android:id="@+id/textViewStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Active now"
+                android:text="@string/txtActiveNow"
                 android:textSize="15sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="5dp"
@@ -72,7 +72,7 @@
             android:layout_width="40sp"
             android:layout_height="40sp"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
             android:src="@drawable/ic_call"
             >
         </androidx.appcompat.widget.AppCompatImageView>
@@ -81,101 +81,105 @@
             android:layout_width="40sp"
             android:layout_height="40sp"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
             android:src="@drawable/ic_video_call"
             >
         </androidx.appcompat.widget.AppCompatImageView>
-
-
-
-
     </LinearLayout>
+
     <View
         android:id="@+id/viewBackground"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/background_content_top"
-        app:layout_constraintTop_toTopOf="@+id/layoutSend"
-        android:layout_marginBottom="16sp"
-        >
+        tools:layout_editor_absoluteY="675dp">
     </View>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewMessage"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/layoutSend"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutTop"
-        app:layout_constraintVertical_bias="0.0"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         >
-
     </androidx.recyclerview.widget.RecyclerView>
 
-    <FrameLayout
-        android:id="@+id/layoutSend"
-        android:layout_width="40sp"
-        android:layout_height="40sp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/backgroud_chat_input"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="5dp"
-        >
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/send"
-            app:tint="@color/white"
-            android:layout_marginLeft="3dp"
-            android:layout_marginTop="1dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp">
+
+        <FrameLayout
+            android:id="@+id/layoutAttach"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="9dp"
+            android:backgroundTint="@android:color/transparent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_attach"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="3dp"
+                >
+            </androidx.appcompat.widget.AppCompatImageView>
+
+        </FrameLayout>
+
+        <EditText
+            android:id="@+id/editTextInputMessage"
+            android:inputType="text"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/backgroud_chat_input"
+            android:backgroundTint="#F0F0F0"
+            android:hint="@string/txtMess"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="20dp"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:autofillHints="name"
             >
+        </EditText>
 
-        </androidx.appcompat.widget.AppCompatImageView>
-
-    </FrameLayout>
-
-    <EditText
-        android:id="@+id/editTextInputMessage"
-        android:layout_width="290dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/backgroud_chat_input"
-        android:backgroundTint="#F0F0F0"
-        android:hint="Write a message"
-        android:paddingLeft="10dp"
-        android:paddingTop="20dp"
-        android:textSize="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-    </EditText>
-
-    <FrameLayout
-        android:id="@+id/layoutAttach"
-        android:layout_width="40sp"
-        android:layout_height="40sp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="9dp"
-        android:backgroundTint="@android:color/transparent">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/ic_attach"
-            android:layout_marginLeft="3dp"
-            android:layout_marginTop="3dp"
+        <FrameLayout
+            android:id="@+id/layoutSend"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/backgroud_chat_input"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="5dp"
             >
-        </androidx.appcompat.widget.AppCompatImageView>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/send"
+                app:tint="@color/white"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="1dp"
+                >
 
-    </FrameLayout>
+            </androidx.appcompat.widget.AppCompatImageView>
 
+        </FrameLayout>
+    </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
