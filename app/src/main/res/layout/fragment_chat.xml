@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sender_name"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 >
@@ -62,9 +62,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/txtActiveNow"
-                android:textSize="15sp"
+                android:textSize="17sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="1dp"
                 >
             </TextView>
 
@@ -97,7 +97,8 @@
         android:layout_marginBottom="10dp"
         android:layout_weight="1"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:paddingRight="10dp"
+        >
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -105,29 +106,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="10dp"
         android:background="@drawable/border_top"
+        android:padding="10dp"
         >
 
         <FrameLayout
             android:id="@+id/layoutAttach"
             android:layout_width="40sp"
             android:layout_height="40sp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:layout_editor_absoluteX="9dp"
             android:backgroundTint="@android:color/transparent">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="45dp"
+                android:layout_width="40dp"
                 android:layout_height="45dp"
-                android:src="@drawable/ic_attach"
-                android:layout_marginStart="3dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginStart="3dp"
                 android:paddingTop="5dp"
-                >
+                android:src="@drawable/ic_attach">
+
             </androidx.appcompat.widget.AppCompatImageView>
         </FrameLayout>
 
@@ -139,7 +138,6 @@
             android:layout_weight="1"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="16dp"
             android:background="@drawable/backgroud_chat_input"
             android:backgroundTint="#F0F0F0"
             android:hint="@string/txtMess"
@@ -157,7 +155,6 @@
             android:id="@+id/layoutSend"
             android:layout_width="45sp"
             android:layout_height="45sp"
-            android:layout_marginEnd="16dp"
             android:background="@drawable/backgroud_chat_input"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -169,7 +166,6 @@
                 android:src="@drawable/send"
                 app:tint="@color/white"
                 android:layout_marginStart="3dp"
-                android:layout_marginTop="1dp"
                 android:layout_gravity="center"
                 >
 
