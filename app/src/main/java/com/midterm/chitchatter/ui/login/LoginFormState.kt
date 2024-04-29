@@ -1,5 +1,7 @@
 package com.midterm.chitchatter.ui.login
 
-class LoginFormState {
-    val isOk: Boolean = false
-}
+data class LoginFormState (
+    val isCorrect: Boolean = false,
+    val emailError: Int? = null,
+    val passwordError: Int? = null
+)
