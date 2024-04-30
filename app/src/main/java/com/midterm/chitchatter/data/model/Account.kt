@@ -8,7 +8,9 @@ data class Account(
     var gender: String? = null,
     var token: String? = null,
     var imageUrl: String? = null,
-    var contacts: MutableList<String> = mutableListOf()
+    var contacts: MutableList<String> = mutableListOf(),
+    val success: Boolean,
+    val error: String?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -32,5 +32,8 @@
     <string name="avatar">Avatar</string>
     <string name="txtMess">Write a message</string>
     <string name="txtActiveNow">Active now</string>
+    <string name="message_hi_there">hi there</string>
+    <string name="desc_item_message_image">User avatar display in message item</string>
+    <string name="desc_image_to_send">Image to send\n</string>
 
 </resources>

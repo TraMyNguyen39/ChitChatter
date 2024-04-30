@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/text_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_48"
+        android:layout_marginTop="@dimen/small_spacing"
+        android:layout_marginEnd="@dimen/medium_spacing"
+        android:layout_marginBottom="@dimen/small_spacing"
+        android:text="@string/message_hi_there"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_medium" />
+
+    <ImageView
+        android:id="@+id/image_message_item"
+        android:layout_width="@dimen/small_avatar_width"
+        android:layout_height="@dimen/small_avatar_height"
+        android:layout_marginStart="@dimen/medium_spacing"
+        android:layout_marginTop="@dimen/small_spacing"
+        android:layout_marginBottom="@dimen/small_spacing"
+        android:contentDescription="@string/desc_item_message_image" />
+</FrameLayout>
