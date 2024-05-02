@@ -51,5 +51,5 @@ data class Message(
         return result
     }
     val isIncoming: Boolean
-        get() = HomeViewModel.currentAccount.value?.username?.compareTo(sender) != 0
+        get() = HomeViewModel.currentAccount.value?.email?.compareTo(sender) != 0
 }

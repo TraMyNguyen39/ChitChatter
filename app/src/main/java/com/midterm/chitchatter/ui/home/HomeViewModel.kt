@@ -30,8 +30,8 @@ class HomeViewModel : ViewModel() {
 
             return Message(
                 id = System.currentTimeMillis(),
-                sender = sender.username,
-                receiver = receiver.username,
+                sender = sender.email,
+                receiver = receiver.email,
                 data = data,
                 notification = notification,
                 timestamp = Date().time,
@@ -41,9 +41,8 @@ class HomeViewModel : ViewModel() {
 
         init {
             val account = Account(
-                username = "john_doe",
-                password = "123456",
                 email = "john.doe@example.com",
+                password = "123456",
                 name = "John Doe",
                 gender = "Male",
                 imageUrl = "https://images.unsplash.com/photo-1711950901044-fa6215a9c59b?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -53,27 +52,24 @@ class HomeViewModel : ViewModel() {
 
             val contactsList = listOf(
                 Account(
-                    username = "john_doe123",
-                    password = "1234512126",
                     email = "joh12n.doe@example.com",
+                    password = "1234512126",
                     name = "Alice Smith",
                     gender = "Female",
                     imageUrl = "https://images.unsplash.com/photo-1711950901044-fa6215a9c59b?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                     contacts = mutableListOf("john_doe", "bob", "charlie")
                 ),
                 Account(
-                    username = "joh121212n_doe123",
-                    password = "1234512132326",
                     email = "joh12n.do232e@example.com",
+                    password = "1234512132326",
                     name = "Bob",
                     gender = "Male",
                     imageUrl = "https://images.unsplash.com/photo-1713746738119-b6ae17a226bb?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                     contacts = mutableListOf("john_doe", "alice", "charlie")
                 ),
                 Account(
-                    username = "jo12n_doe23",
-                    password = "12132326",
                     email = "o232e@example.com",
+                    password = "12132326",
                     name = "Charlie",
                     gender = "Female",
                     imageUrl = "https://images.unsplash.com/photo-1712315884740-4220c556c68e?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
