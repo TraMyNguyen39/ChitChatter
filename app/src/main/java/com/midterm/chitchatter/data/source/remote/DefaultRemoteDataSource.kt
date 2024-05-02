@@ -20,7 +20,9 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         val auth = Firebase.auth
         try {
             // Tạo tài khoản authentication: không làm được ở admin
-            auth.createUserWithEmailAndPassword(account.email, account.password).await()
+            auth.createUserWithEmailAndPassword(account.email, account.password!!).await()
+            account.password = null
+            account.isVerified = null
             // Tạo account trong firebase
             val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
             val result = retrofit.createAccount(account)
@@ -42,7 +44,6 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
                 auth.signOut()
                 result.body()?.error.toString()
             }
-
         } catch (e: Exception) {
             Log.d("TAG", e.toString())
             auth.signOut()
@@ -75,10 +76,10 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
 
         val auth: FirebaseAuth = Firebase.auth
         try {
-            val accountAuth = auth.signInWithEmailAndPassword(account.email, account.password).await()
+            val accountAuth = auth.signInWithEmailAndPassword(account.email, account.password!!).await()
             if (accountAuth.user != null) {
                 if (accountAuth.user!!.isEmailVerified) {
-                    account.password = "" // Avoid leak password
+                    account.password = null // Avoid leak password
                     val result = retrofit.getLoginAccount(account)
                     if (result.isSuccessful) {
                         return result.body()

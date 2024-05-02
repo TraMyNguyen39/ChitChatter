@@ -7,13 +7,13 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = "accounts")
 data class Account(
     @PrimaryKey @SerializedName("email") var email: String = "",
-    @SerializedName("password") var password: String = "",
+    var password: String? = "",
     @SerializedName("displayName") var name: String = "",
     @SerializedName("gender") var gender: String? = null,
     @SerializedName("imageUrl") var imageUrl: String? = null,
     @SerializedName("token") var token: String? = null,
     @SerializedName("contacts") var contacts: MutableList<String> = mutableListOf(),
-    var isVerified: Boolean = true
+    var isVerified: Boolean? = true
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

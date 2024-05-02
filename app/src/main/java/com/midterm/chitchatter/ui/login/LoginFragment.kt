@@ -105,7 +105,7 @@ class LoginFragment : Fragment() {
 
         viewModel.loggedInAccount.observe(viewLifecycleOwner) { account ->
             if (account != null) {
-                if (account.isVerified) {
+                if (account.isVerified!!) {
                     Snackbar.make(binding.root, "Welcome ${account.name}", Snackbar.LENGTH_LONG)
                         .show()
                     // Lưu account vào preference
