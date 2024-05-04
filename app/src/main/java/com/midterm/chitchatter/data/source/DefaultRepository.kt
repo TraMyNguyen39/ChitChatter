@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.data.source
 
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.local.DefaultLocalDataSource
 import com.midterm.chitchatter.data.source.remote.DefaultRemoteDataSource
 
@@ -27,4 +28,10 @@ class DefaultRepository(
     override suspend fun sendEmailVerification(email: String): Boolean {
         return remoteDataSource.sendEmailVerification(email)
     }
+
+    override suspend fun getAllLastMessages(email: String): ArrayList<Message> {
+        return remoteDataSource.getAllLastMessages(email)
+    }
+
+
 }

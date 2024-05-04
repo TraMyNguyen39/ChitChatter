@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
-import com.midterm.chitchatter.data.model.Message
-import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.databinding.FragmentHomeBinding
+import com.midterm.chitchatter.utils.ChitChatterUtils
 
 class HomeFragment : Fragment() {
 
@@ -19,33 +20,47 @@ class HomeFragment : Fragment() {
     private lateinit var adapter: AccountAdapter
     private lateinit var tvTitle: TextView
 
+    private lateinit var viewModel: HomeViewModel
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvTitle = requireActivity().findViewById(R.id.tv_title)
-        tvTitle.text = getString(R.string.title_message)
-        adapter = AccountAdapter(mutableListOf(), object : AccountAdapter.OnItemClickListener {
+        setUpViewModel()
+
+//        tvTitle = requireActivity().findViewById(R.id.tv_title)
+//        tvTitle.text = getString(R.string.title_message)
+
+        adapter = AccountAdapter(object : AccountAdapter.OnItemClickListener {
             override fun onItemClick(account: Account) {
 
             }
         })
+
         binding.rvHome.adapter = adapter
 
-        HomeViewModel.currentAccount.observe(viewLifecycleOwner, Observer {
+        val currentAccount = ChitChatterUtils.getCurrentAccount(requireContext())
+        if (currentAccount != null) {
+            viewModel.setCurrentAccount(currentAccount)
+        };
 
-        })
+        if (currentAccount != null) {
+            viewModel.fetchAllLastMessages(currentAccount)
+        }
 
-        HomeViewModel.contacts.observe(viewLifecycleOwner, Observer { contacts ->
-            contacts?.let {
-                adapter.updateAccounts(it.filterNotNull())
-            }
-        })
-
-        HomeViewModel.messages.observe(viewLifecycleOwner, Observer { messages ->
+        viewModel.messages.observe(viewLifecycleOwner, Observer { messages ->
             messages?.let {
-                adapter.updateMessage(it.filterNotNull().toSet())
+                adapter.updateMessage(it.filterNotNull())
             }
         })
 
+    }
+
+    private fun setUpViewModel() {
+        val repository = (requireActivity().application as ChitChatterApplication).repository
+
+        viewModel = ViewModelProvider(
+            requireActivity(),
+            HomeViewModelFactory(repository)
+        )[HomeViewModel::class.java]
     }
 
     override fun onCreateView(

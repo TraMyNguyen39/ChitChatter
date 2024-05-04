@@ -2,13 +2,13 @@ package com.midterm.chitchatter.data.source.remote
 
 import android.util.Log
 import com.google.firebase.FirebaseNetworkException
-import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.DataSource
 import kotlinx.coroutines.tasks.await
 import retrofit2.Retrofit
@@ -115,6 +115,27 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
             false
         }
     }
+
+    override suspend fun getAllLastMessages(email: String): ArrayList<Message> {
+        val baseUrl = "https://getalllastmessages-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.getAllLastMessages(email)
+
+            if (response.isSuccessful) {
+                return response.body()?.data ?: ArrayList()
+            } else {
+                Log.e("API Request", "Request failed with code: ${response.code()}, ${response.body()?.error}")
+
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+
+        return ArrayList()
+
+    }
+
 
     private fun createRetrofitService(baseUrl: String) : Retrofit {
         return Retrofit.Builder()

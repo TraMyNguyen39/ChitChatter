@@ -4,7 +4,9 @@ import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Message
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface MessageService {
     @POST("/")
@@ -18,4 +20,7 @@ interface MessageService {
 
     @POST("/")
     suspend fun sendMessage(@Body message: Message) : Response<ResponseResult>
+
+    @GET("/")
+    suspend fun getAllLastMessages(@Query("email") email: String): Response<com.midterm.chitchatter.data.source.remote.Response<ArrayList<Message>>>
 }

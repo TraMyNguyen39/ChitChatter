@@ -1,15 +1,15 @@
 package com.midterm.chitchatter.utils
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputEditText
-import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.R
 
 object ChitChatterUtils {
     var token: String? = null
@@ -41,5 +41,15 @@ object ChitChatterUtils {
             view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         // on below line hiding our keyboard.
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun getCurrentAccount(context: Context): String? {
+        var account_key = context.getString(R.string.preference_account_key);
+        var emailKey = context.getString(R.string.preference_email_key);
+
+        val sharedPref: SharedPreferences = context.getSharedPreferences(account_key, Context.MODE_PRIVATE)
+        val email: String? = sharedPref.getString(emailKey, null)
+
+        return email
     }
 }

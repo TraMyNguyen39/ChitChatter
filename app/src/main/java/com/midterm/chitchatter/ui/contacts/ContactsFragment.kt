@@ -15,8 +15,8 @@ class ContactsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvTitle = requireActivity().findViewById(R.id.tv_title)
-        tvTitle.text = getString(R.string.title_contacts)
+//        tvTitle = requireActivity().findViewById(R.id.tv_title)
+//        tvTitle.text = getString(R.string.title_contacts)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
