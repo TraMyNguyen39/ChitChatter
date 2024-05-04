@@ -67,8 +67,8 @@ class AccountAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val contactAccount: Account = accounts[position]
-        val currentAccount = HomeViewModel.currentAccount.value?.username!!
-        val lastMsg = messageMap[hashCode(currentAccount, contactAccount.username)]
+        val currentAccount = HomeViewModel.currentAccount.value?.email!!
+        val lastMsg = messageMap[hashCode(currentAccount, contactAccount.email)]
         holder.bind(contactAccount, lastMsg)
     }
 
@@ -79,7 +79,7 @@ class AccountAdapter(
     }
 
     fun updateMessage(message: Message) {
-        val currentUsername = HomeViewModel.currentAccount.value?.username!!
+        val currentUsername = HomeViewModel.currentAccount.value?.email!!
         // Người đang nhắn
         val contactUsername = if (currentUsername == message.sender) {
             message.receiver

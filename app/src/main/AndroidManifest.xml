@@ -21,10 +21,10 @@
         android:theme="@style/Theme.ChitChatter"
         tools:targetApi="31">
         <activity
-            android:name=".ui.AuthenticationActivity"
+            android:name=".ui.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.AuthenticationActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
