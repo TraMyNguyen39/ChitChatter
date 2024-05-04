@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.adapter.MessageAdapter
-import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.data.model.Notification
@@ -36,15 +35,15 @@ class ChatFragment : Fragment() {
         _binding = FragmentChatBinding.bind(view)
 
         // Create dummy data
-        val messages = listOf(
-            Message(1, "your_username", "receiver", Data("Hello!"), Notification("New chat"), status = MessageStatus.SENT),
-            Message(2, "receiver", "your_username", Data("Hi!"), Notification("New chat"), status = MessageStatus.RECEIVED),
-            // Add more messages...
-        )
+//        val messages = listOf(
+//            Message(1, "your_username", "receiver", Data("Hello!"), Notification("New chat"), status = MessageStatus.SENT),
+//            Message(2, "receiver", "your_username", Data("Hi!"), Notification("New chat"), status = MessageStatus.RECEIVED),
+//            // Add more messages...
+//        )
 
         // Initialize RecyclerView
-        val adapter = MessageAdapter(messages)
-        _binding?.recyclerViewMessage?.adapter = adapter
+//        val adapter = MessageAdapter(messages)
+//        _binding?.recyclerViewMessage?.adapter = adapter
     }
 
     companion object {

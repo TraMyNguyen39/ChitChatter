@@ -1,92 +1,59 @@
 package com.midterm.chitchatter.ui.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.midterm.chitchatter.data.model.Account
-import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.Message
-import com.midterm.chitchatter.data.model.MessageStatus
-import com.midterm.chitchatter.data.model.Notification
-import java.util.Date
+import com.midterm.chitchatter.data.source.Repository
+import com.midterm.chitchatter.ui.login.LoginViewModel
+import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
-    companion object {
-        private val _currentAccount = MutableLiveData<Account>()
-        val currentAccount: LiveData<Account>
-            get() = _currentAccount
+class HomeViewModel (
+    private val repository: Repository
+) : ViewModel() {
+    private val _currentAccount = MutableLiveData<String>()
+    val currentAccount: LiveData<String>
+        get() = _currentAccount
 
-        private val _contacts = MutableLiveData<List<Account>>()
-        val contacts: LiveData<List<Account>>
-            get() = _contacts
+    fun setCurrentAccount(email: String) {
+        _currentAccount.value = email
+    }
 
-        private val _messages = MutableLiveData<List<Message>>()
-        val messages: LiveData<List<Message>>
-            get() = _messages
+    private val _contacts = MutableLiveData<List<Account>>()
+    val contacts: LiveData<List<Account>>
+        get() = _contacts
 
-        fun createMessage(sender: Account, receiver: Account, text: String): Message {
-            val data = Data(text = text)
-            val notification = Notification(title = "New Message", body = text)
+    private val _messages = MutableLiveData<List<Message>>()
+    val messages: LiveData<List<Message>>
+        get() = _messages
 
-            return Message(
-                id = System.currentTimeMillis(),
-                sender = sender.username,
-                receiver = receiver.username,
-                data = data,
-                notification = notification,
-                timestamp = Date().time,
-                status = MessageStatus.SENT
-            )
+    fun fetchAllLastMessages(email: String) {
+        viewModelScope.launch {
+            try {
+                val messages = (repository as Repository.RemoteRepository).getAllLastMessages(email)
+                Log.d("Size of message", messages.size.toString())
+                _messages.postValue(messages)
+            } catch (e: Exception) {
+                // Xử lý lỗi nếu có
+                Log.e("HomeViewModel", "Error fetching messages: ${e.message}")
+            }
         }
+    }
 
-        init {
-            val account = Account(
-                username = "john_doe",
-                password = "123456",
-                email = "john.doe@example.com",
-                name = "John Doe",
-                gender = "Male",
-                imageUrl = "https://images.unsplash.com/photo-1711950901044-fa6215a9c59b?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                contacts = mutableListOf("alice", "bob", "charlie")
-            )
-            _currentAccount.postValue(account)
+}
 
-            val contactsList = listOf(
-                Account(
-                    username = "john_doe123",
-                    password = "1234512126",
-                    email = "joh12n.doe@example.com",
-                    name = "Alice Smith",
-                    gender = "Female",
-                    imageUrl = "https://images.unsplash.com/photo-1711950901044-fa6215a9c59b?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    contacts = mutableListOf("john_doe", "bob", "charlie")
-                ),
-                Account(
-                    username = "joh121212n_doe123",
-                    password = "1234512132326",
-                    email = "joh12n.do232e@example.com",
-                    name = "Bob",
-                    gender = "Male",
-                    imageUrl = "https://images.unsplash.com/photo-1713746738119-b6ae17a226bb?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    contacts = mutableListOf("john_doe", "alice", "charlie")
-                ),
-                Account(
-                    username = "jo12n_doe23",
-                    password = "12132326",
-                    email = "o232e@example.com",
-                    name = "Charlie",
-                    gender = "Female",
-                    imageUrl = "https://images.unsplash.com/photo-1712315884740-4220c556c68e?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    contacts = mutableListOf("john_doe", "alice", "bob")
-                )
-            )
-            _contacts.postValue(contactsList)
-
-            val message1 = createMessage(account, contactsList[0], "Hello Bob!")
-            val message2 = createMessage(contactsList[1], account, "Hi Alice!")
-            val message3 = createMessage(contactsList[2], account, "Hey John!")
-            val messagesList = listOf(message1, message2, message3)
-            _messages.postValue(messagesList)
+class HomeViewModelFactory(
+    private val repository: Repository
+) : ViewModelProvider.Factory {
+    @Suppress("unchecked_cast")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+            return HomeViewModel(repository) as T
         }
+        throw IllegalArgumentException("Argument is not HomeViewModel")
     }
 }
