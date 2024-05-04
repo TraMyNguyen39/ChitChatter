@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.midterm.chitchatter.R
@@ -16,10 +17,12 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var adapter: AccountAdapter
+    private lateinit var tvTitle: TextView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().title = getString(R.string.title_message)
+        tvTitle = requireActivity().findViewById(R.id.tv_title)
+        tvTitle.text = getString(R.string.title_message)
         adapter = AccountAdapter(mutableListOf(), object : AccountAdapter.OnItemClickListener {
             override fun onItemClick(account: Account) {
 
