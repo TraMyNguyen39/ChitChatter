@@ -99,6 +99,8 @@
         android:layout_weight="1"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        app:stackFromEnd="true"
+        android:scrollbars="vertical"
         >
 
     </androidx.recyclerview.widget.RecyclerView>

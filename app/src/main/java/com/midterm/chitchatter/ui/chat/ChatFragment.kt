@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.midterm.chitchatter.ChitChatterService
 import com.midterm.chitchatter.databinding.FragmentChatBinding
 import com.midterm.chitchatter.service.MessengerApplication
 
@@ -49,7 +50,7 @@ class ChatFragment : Fragment() {
 
         chatViewModel.loadMessage()
         chatViewModel.interactingAccount.observe(viewLifecycleOwner) {
-            requireActivity().title = it?.displayName
+            requireActivity().title = it?.name
             // todo
         }
         chatViewModel.messages.observe(viewLifecycleOwner) {
@@ -66,11 +67,11 @@ class ChatFragment : Fragment() {
             }
         }
 
-//        MessengerService.remoteMessage.observe(requireActivity()) {
-//            if (ChatViewModel.isActive) {
-//                chatViewModel.pushIncomingMessage(it.data)
-//            }
-//        }
+        ChitChatterService.remoteMessage.observe(requireActivity()) {
+            if (ChatViewModel.isActive) {
+                chatViewModel.pushIncomingMessage(it.data)
+            }
+        }
     }
 
     private fun setupViews() {

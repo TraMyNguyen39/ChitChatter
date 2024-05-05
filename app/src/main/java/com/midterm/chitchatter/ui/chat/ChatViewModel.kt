@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Data
@@ -15,19 +14,6 @@ import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.ui.login.LoginViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-private val Any.username: String?
-    get() {
-        TODO("Not yet implemented")
-    }
-val Any.displayName: String?
-    get() {
-        TODO("Not yet implemented")
-    }
-private val Any.value: Any
-    get() {
-        TODO("Not yet implemented")
-    }
 
 class ChatViewModel(
     private val repository: Repository
@@ -54,7 +40,7 @@ class ChatViewModel(
     fun sendMessage(text: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val senderAccount = LoginViewModel.currentAccount
-            val notification = Notification(senderAccount.value?.displayName!!, text)
+            val notification = Notification(senderAccount.value?.name!!, text)
             val photoUrl = if (_photoUri.value == null) null else _photoUri.value.toString()
             val data = Data(text, photoUrl, _photoMimeType)
             interactingAccount.value?.let {
@@ -62,8 +48,8 @@ class ChatViewModel(
                     id = 0,
                     data = data,
                     notification = notification,
-                    sender = senderAccount.value?.username!!,
-                    receiver = interactingAccount.value?.username!!,
+                    sender = senderAccount.value!!.email,
+                    receiver = interactingAccount.value?.email!!,
                     token = interactingAccount.value?.token,
                     status = MessageStatus.SENT
                 )
@@ -78,14 +64,16 @@ class ChatViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val senderAccount = LoginViewModel.currentAccount
             val receiverAccount = interactingAccount.value
-            if (receiverAccount != null) {
-                val messages = (repository as Repository.RemoteRepository).getChat(
-                    senderAccount.value?.username!!,
-                    receiverAccount.username
-                )
-                _listMessage.clear()
-                _listMessage.addAll(messages)
-                _messages.postValue(_listMessage)
+            if (receiverAccount != null && senderAccount.value != null) {
+                viewModelScope.launch(Dispatchers.IO){
+                    val messages = (repository as Repository.RemoteRepository).getChat(
+                        senderAccount.value?.email!!,
+                        receiverAccount.email
+                    )
+                    _listMessage.clear()
+                    _listMessage.addAll(messages.reversed()) //reversed để đaảo ngược thứ tự tin nhắn từ mới nhất đến cũ nhất
+                    _messages.postValue(_listMessage)
+                }
             }
         }
     }
@@ -96,8 +84,28 @@ class ChatViewModel(
         //
     }
 
-    fun pushIncomingMessage(data: Any) {
-
+    fun pushIncomingMessage(data: Map<String, String>) {
+        val text = data[KEY_TEXT] ?: ""
+        val photoUrl = data[KEY_PHOTO_URL]
+        val photoMimeType = data[KEY_PHOTO_MIME_TYPE]
+        val timeStamp = data[KEY_TIMESTAMP]?.toLong() ?: 0
+        val sender = data[KEY_SENDER] ?: ""
+        val receiver = data[KEY_RECEIVER] ?: ""
+        val token = data[KEY_TOKEN] ?: ""
+        val status = MessageStatus.valueOf(data[KEY_STATUS] ?: MessageStatus.SENT.name)
+        val messageData = Data(text, photoUrl, photoMimeType)
+        val notification = Notification()
+        val message = Message(
+            0,
+            data = messageData,
+            receiver = receiver,
+            sender = sender,
+            token = token,
+            status = status,
+            notification = notification,
+            timestamp = timeStamp
+        )
+        addMessage(message)
     }
 
     companion object {
@@ -105,6 +113,14 @@ class ChatViewModel(
             get() {
                 TODO()
             }
+        const val KEY_TEXT = "text"
+        const val KEY_PHOTO_URL = "photoUrl"
+        const val KEY_PHOTO_MIME_TYPE = "photoMimeType"
+        const val KEY_SENDER = "sender"
+        const val KEY_RECEIVER = "receiver"
+        const val KEY_TIMESTAMP = "timestamp"
+        const val KEY_STATUS = "status"
+        const val KEY_TOKEN = "token"
     }
 }
 
