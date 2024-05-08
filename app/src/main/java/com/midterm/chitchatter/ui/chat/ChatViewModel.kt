@@ -45,7 +45,7 @@ class ChatViewModel(
             val data = Data(text, photoUrl, _photoMimeType)
             interactingAccount.value?.let {
                 val message = Message(
-                    id = 0,
+                    id = "",
                     data = data,
                     notification = notification,
                     sender = senderAccount.value!!.email,
@@ -96,7 +96,7 @@ class ChatViewModel(
         val messageData = Data(text, photoUrl, photoMimeType)
         val notification = Notification()
         val message = Message(
-            0,
+            "",
             data = messageData,
             receiver = receiver,
             sender = sender,

@@ -56,9 +56,12 @@ class ChatAdapter(
         val binding: ItemMessageBinding = ItemMessageBinding.bind(itemView)
     }
 
-    override fun getItemId(position: Int): Long {
-        return getItem(position).id
-    }
+//    override fun getItemId(position: Int): Long {
+//        return getItem(position).id.toLong()
+//    }
+//    fun getItemStringId(position: Int): String {
+//        return getItem(position).id
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val holder = MessageViewHolder(parent)

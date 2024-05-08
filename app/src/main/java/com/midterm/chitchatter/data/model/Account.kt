@@ -3,6 +3,7 @@ package com.midterm.chitchatter.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 @Entity(tableName = "accounts")
 data class Account(
@@ -14,7 +15,7 @@ data class Account(
     @SerializedName("token") var token: String? = null,
     @SerializedName("contacts") var contacts: MutableList<String> = mutableListOf(),
     var isVerified: Boolean? = true
-) {
+)   : Serializable{
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

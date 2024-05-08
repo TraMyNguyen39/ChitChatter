@@ -19,7 +19,6 @@
         android:roundIcon="@drawable/chitchatter_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChitChatter"
-        tools:replace="android:resource"
         tools:targetApi="31">
         <activity
             android:name=".ui.MainActivity"

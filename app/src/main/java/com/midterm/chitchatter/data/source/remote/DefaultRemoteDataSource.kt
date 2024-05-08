@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.gson.GsonBuilder
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Message
@@ -14,7 +13,6 @@ import com.midterm.chitchatter.data.source.DataSource
 import kotlinx.coroutines.tasks.await
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.midterm.chitchatter.data.source.remote.ResponseResult
 
 class DefaultRemoteDataSource : DataSource.RemoteDataSource {
     override suspend fun createAccount(account: Account): String {
@@ -73,31 +71,78 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
     }
 
     override suspend fun login(account: Account): Account? {
-        val baseUrl = "https://login-kz4isf6rva-uc.a.run.app"
+        val baseUrl = "https://getcurrentaccount-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
-        val result = retrofit.login(account)
-        if (result.isSuccessful) {
-            return result.body()
+
+        val auth: FirebaseAuth = Firebase.auth
+        try {
+            val accountAuth = auth.signInWithEmailAndPassword(account.email, account.password!!).await()
+            if (accountAuth.user != null) {
+                if (accountAuth.user!!.isEmailVerified) {
+                    account.password = null // Avoid leak password
+                    val result = retrofit.getLoginAccount(account)
+                    if (result.isSuccessful) {
+                        return result.body()
+                    }
+                } else {
+                    return  Account(isVerified = false)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("LOGIN", e.message!!)
         }
+        auth.signOut()
         return null
     }
 
-    override suspend fun loadFriendAccounts(username: String): List<Account> {
-        val baseUrl = "https://getallcontacts-kz4isf6rva-uc.a.run.app"
-        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
-        val result = retrofit.getFriendAccounts(username)
-        if (result.isSuccessful) {
-            return result.body() ?: emptyList()
+    override suspend fun sendResetPassword(email: String) : Int {
+        val auth: FirebaseAuth = Firebase.auth
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            R.string.msg_check_email_reset_password
+        } catch (e: Exception) {
+            R.string.msg_cant_send_email
         }
-        return emptyList()
     }
 
+    override suspend fun sendEmailVerification(email: String): Boolean {
+        val auth: FirebaseAuth = Firebase.auth
+        return try {
+            auth.currentUser?.sendEmailVerification()?.await()
+            auth.signOut()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun getAllLastMessages(email: String): ArrayList<Message> {
+        val baseUrl = "https://getalllastmessages-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.getAllLastMessages(email)
+
+            if (response.isSuccessful) {
+                return response.body()?.data ?: ArrayList()
+            } else {
+                Log.e("API Request", "Request failed with code: ${response.code()}, ${response.body()?.error}")
+
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+
+        return ArrayList()
+
+    }
     override suspend fun sendMessage(message: Message): Boolean {
         val baseUrl = "https://sendmessage-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
         val result = retrofit.sendMessage(message)
-        return result.isSuccessful
-
+        if (result.isSuccessful) {
+            return result.body()?.success ?: false
+        }
+        return false
     }
 
     override suspend fun getChat(sender: String, receiver: String): List<Message> {
@@ -110,11 +155,11 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return emptyList()
     }
 
+
     private fun createRetrofitService(baseUrl: String) : Retrofit {
-        val  gson = GsonBuilder().serializeNulls().create()
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 }

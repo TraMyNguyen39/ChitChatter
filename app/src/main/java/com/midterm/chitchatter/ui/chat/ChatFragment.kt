@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.midterm.chitchatter.ChitChatterService
+import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.databinding.FragmentChatBinding
 import com.midterm.chitchatter.service.MessengerApplication
 
@@ -36,6 +37,7 @@ class ChatFragment : Fragment() {
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val account = arguments?.getSerializable(ARG_ACCOUNT) as Account
         binding = FragmentChatBinding.bind(view)
         setupViewModel()
         setupViews()
@@ -150,5 +152,17 @@ class ChatFragment : Fragment() {
         super.onStop()
         // inactive => ko update tin nhan
         ChatViewModel.isActive = false
+    }
+
+    companion object {
+        private const val ARG_ACCOUNT = "account"
+
+        fun newInstance(account: Account): ChatFragment {
+            val fragment = ChatFragment()
+            val args = Bundle()
+            args.putSerializable(ARG_ACCOUNT, account)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
