@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.ui.chat
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +12,13 @@ import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.databinding.FragmentChatBinding
+import com.midterm.chitchatter.ui.MainActivity
 
 
 class ChatFragment : Fragment() {
 
     private var _binding: FragmentChatBinding? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -33,6 +36,7 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentChatBinding.bind(view)
+        hideNavigationView()
 
         // Create dummy data
 //        val messages = listOf(
@@ -46,11 +50,24 @@ class ChatFragment : Fragment() {
 //        _binding?.recyclerViewMessage?.adapter = adapter
     }
 
+
+    private fun hideNavigationView() {
+        val mainActivity = requireActivity() as MainActivity
+        mainActivity.hideNavigation()
+    }
+
+    private fun showNavigationView() {
+        val mainActivity = requireActivity() as MainActivity
+        mainActivity.showNavigation()
+    }
+
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(email: String) =
             ChatFragment().apply {
                 arguments = Bundle().apply {
+                    putString("email", email)
+                    Log.d("email", email)
                 }
             }
     }

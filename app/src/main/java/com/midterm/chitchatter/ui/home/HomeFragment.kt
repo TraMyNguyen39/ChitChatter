@@ -1,5 +1,6 @@
 package com.midterm.chitchatter.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.midterm.chitchatter.ChitChatterApplication
-import com.midterm.chitchatter.R
-import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.FragmentHomeBinding
+import com.midterm.chitchatter.ui.chat.ChatFragment
 import com.midterm.chitchatter.utils.ChitChatterUtils
 
 class HomeFragment : Fragment() {
@@ -30,8 +31,14 @@ class HomeFragment : Fragment() {
 //        tvTitle.text = getString(R.string.title_message)
 
         adapter = AccountAdapter(object : AccountAdapter.OnItemClickListener {
-            override fun onItemClick(account: Account) {
-
+            override fun onItemClick(message: Message) {
+                val email = if (message.isIncoming) message.sender else message.receiver // Ví dụ: Đây là email của người nhận, có thể cần điều chỉnh
+                val chatFragment = ChatFragment.newInstance(email)
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.beginTransaction()
+                    .replace(this@HomeFragment.id, chatFragment)
+                    .addToBackStack(null) // Thêm fragment hiện tại vào stack để có thể quay lại khi cần
+                    .commit()
             }
         })
 

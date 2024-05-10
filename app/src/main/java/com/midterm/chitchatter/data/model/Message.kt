@@ -23,7 +23,7 @@ data class Message(
     val sender: String = "",
     val receiver: String = "",
     val createdAt: String = Date().time.toString(),
-    val status: MessageStatus = MessageStatus.SENT,
+    val status: Int = MessageStatus.SENT.ordinal,
     val content: String = "",
     val name: String = "",
     val isIncoming: Boolean = false,
