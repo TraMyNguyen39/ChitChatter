@@ -35,4 +35,5 @@ interface MessageService {
 
     @GET("/getChat")
     suspend fun getChat(@Query("sender") sender: String, @Query("receiver") receiver: String): Response<List<Message>>
+
 }

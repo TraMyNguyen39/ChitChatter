@@ -75,6 +75,7 @@ class AccountAdapter(
 
             binding.tvTime.text = lastMsg?.formattedTime
 
+
             binding.root.setOnClickListener {
                 if (lastMsg != null) {
                     listener.onItemClick(lastMsg)

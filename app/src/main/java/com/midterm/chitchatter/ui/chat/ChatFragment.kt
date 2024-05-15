@@ -17,6 +17,9 @@ import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.ChitChatterService
 import com.midterm.chitchatter.adapter.MessageAdapter
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.Message
+import com.midterm.chitchatter.data.model.MessageStatus
+import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.databinding.FragmentChatBinding
 import com.midterm.chitchatter.ui.MainActivity
 
@@ -31,6 +34,7 @@ class ChatFragment : Fragment() {
     private var receiverEmail: String? = null
     private var displayName: String? = null
     private lateinit var viewModelFactory: ChatViewModelFactory
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -208,14 +212,14 @@ class ChatFragment : Fragment() {
         private const val ARG_RECEIVER_EMAIL = "receiver_email"
         private const val ARG_DISPLAY_NAME = "display_name"
 
-        //        @JvmStatic
-//        fun newInstance(email: String) =
-//            ChatFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString("email", email)
-//                    Log.d("email", email)
-//                }
-//            }
+        @JvmStatic
+        fun newInstance(email: String) =
+            ChatFragment().apply {
+                arguments = Bundle().apply {
+                    putString("email", email)
+                    Log.d("email", email)
+                }
+            }
         fun newInstance(senderEmail: String, receiverEmail: String, displayName: String) =
             ChatFragment().apply {
                 arguments = Bundle().apply {
