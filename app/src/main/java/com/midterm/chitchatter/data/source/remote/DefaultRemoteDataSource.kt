@@ -148,10 +148,19 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
     override suspend fun getChat(sender: String, receiver: String): List<Message> {
         val baseUrl = "https://getchat-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
-        val result = retrofit.getChat(sender, receiver)
-        if (result.isSuccessful) {
-            return result.body() ?: emptyList()
+        Log.d("API", "Calling getChat API with sender: $sender, receiver: $receiver")
+        try {
+            val result = retrofit.getChat(sender, receiver)
+            if (result.isSuccessful) {
+                Log.d("API", "getChat API call successful, received ${result.body()?.size ?: 0} messages")
+                return result.body() ?: emptyList()
+            } else {
+                Log.d("API", "getChat API call failed with response code: ${result.code()}, response body: ${result.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Log.d("API", "getChat API call failed with exception: ${e.message}")
         }
+        Log.d("API", "Ending getChat API call with sender: $sender, receiver: $receiver")
         return emptyList()
     }
 

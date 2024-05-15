@@ -12,7 +12,6 @@ interface DataSource {
         suspend fun sendEmailVerification(email: String) : Boolean
         suspend fun getAllLastMessages(email: String) : ArrayList<Message>
         suspend fun sendMessage(message: Message): Boolean
-
         suspend fun getChat(sender: String, receiver: String): List<Message>
 
     }

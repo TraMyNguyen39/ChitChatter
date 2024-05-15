@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.ui.chat
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,7 +14,10 @@ import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.ui.login.LoginViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ChatViewModel(
     private val repository: Repository
@@ -37,43 +41,50 @@ class ChatViewModel(
         _photoMimeType = mimeType
     }
 
-    fun sendMessage(text: String) {
+    fun sendMessage(text: String): Boolean {
+        var isMessageSent = false
         viewModelScope.launch(Dispatchers.IO) {
-            val senderAccount = LoginViewModel.currentAccount
-            val notification = Notification(senderAccount.value?.name!!, text)
-            val photoUrl = if (_photoUri.value == null) null else _photoUri.value.toString()
-            val data = Data(text, photoUrl, _photoMimeType)
-            interactingAccount.value?.let {
+            val senderAccount = LoginViewModel.currentAccount.value
+            val interactingAccountValue = interactingAccount.value
+            Log.d("ChatViewModel", "senderAccount: $senderAccount")
+            Log.d("ChatViewModel", "interactingAccountValue: ${interactingAccountValue?.email.toString()}")
+            if (senderAccount != null && interactingAccountValue != null) {
+                val notification = Notification(senderAccount.name, text)
+                val photoUrl = if (_photoUri.value == null) null else _photoUri.value.toString()
+                val data = Data(text, photoUrl, _photoMimeType)
+                val timestamp = System.currentTimeMillis()
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                val status = MessageStatus.SENT.toInt()
                 val message = Message(
                     id = "",
                     data = data,
                     notification = notification,
-                    sender = senderAccount.value!!.email,
-                    receiver = interactingAccount.value?.email!!,
-                    token = interactingAccount.value?.token,
-                    status = MessageStatus.SENT
+                    sender = senderAccount.email,
+                    receiver = interactingAccountValue.email,
+                    token = interactingAccountValue.token,
+                    status = status,
+                    formattedTime = dateFormat.format(timestamp),
+                    currentUserEmail = senderAccount.email
                 )
-                (repository as Repository.RemoteRepository).sendMessage(message)
-                addMessage(message)
-                _photoMimeType = null
-                _photoUri.postValue(null)
+                isMessageSent = async { (repository as Repository.RemoteRepository).sendMessage(message) }.await()
+                if (isMessageSent) {
+                    addMessage(message)
+                    _photoMimeType = null
+                    _photoUri.postValue(null)
+                }
             }
         }
+        Log.d("ChatViewModel", "sendMessage: $text")
+        Log.d("ChatViewModel", "isMessageSent: $isMessageSent")
+        return isMessageSent
     }
-    fun loadMessage() {
+    fun loadMessage(senderEmail: String?, receiverEmail: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            val senderAccount = LoginViewModel.currentAccount
-            val receiverAccount = interactingAccount.value
-            if (receiverAccount != null && senderAccount.value != null) {
-                viewModelScope.launch(Dispatchers.IO){
-                    val messages = (repository as Repository.RemoteRepository).getChat(
-                        senderAccount.value?.email!!,
-                        receiverAccount.email
-                    )
-                    _listMessage.clear()
-                    _listMessage.addAll(messages.reversed()) //reversed để đaảo ngược thứ tự tin nhắn từ mới nhất đến cũ nhất
-                    _messages.postValue(_listMessage)
-                }
+            if (!senderEmail.isNullOrBlank() && !receiverEmail.isNullOrBlank()) {
+                val messages = (repository as Repository.RemoteRepository).getChat(senderEmail, receiverEmail)
+                _listMessage.clear()
+                _listMessage.addAll(messages.reversed())
+                _messages.postValue(_listMessage)
             }
         }
     }
@@ -92,9 +103,11 @@ class ChatViewModel(
         val sender = data[KEY_SENDER] ?: ""
         val receiver = data[KEY_RECEIVER] ?: ""
         val token = data[KEY_TOKEN] ?: ""
-        val status = MessageStatus.valueOf(data[KEY_STATUS] ?: MessageStatus.SENT.name)
+        val status = MessageStatus.valueOf(data[KEY_STATUS] ?: MessageStatus.SENT.name).toInt()
         val messageData = Data(text, photoUrl, photoMimeType)
         val notification = Notification()
+        val timestamp = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
         val message = Message(
             "",
             data = messageData,
@@ -103,7 +116,9 @@ class ChatViewModel(
             token = token,
             status = status,
             notification = notification,
-            timestamp = timeStamp
+            timestamp = timeStamp,
+            formattedTime = dateFormat.format(timestamp),
+            currentUserEmail = LoginViewModel.currentAccount.value?.email!!
         )
         addMessage(message)
     }

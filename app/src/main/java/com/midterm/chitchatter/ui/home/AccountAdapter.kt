@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.ui.home
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Message
+import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.databinding.ItemChatboxBinding
 
 class AccountAdapter(
@@ -40,15 +42,44 @@ class AccountAdapter(
             if (lastMsg != null) {
                 if (lastMsg.isIncoming) {
                     binding.tvMessage.text = lastMsg.content
+                    if (lastMsg.status == MessageStatus.SENT.ordinal) {
+                        binding.ivReceiver.setImageResource(R.drawable.received_msg)
+                        binding.tvMessage.setTypeface(null, Typeface.BOLD)
+                    }
                 }
                 else {
                     binding.tvMessage.text = "You: ${lastMsg.content}"
+                    when (lastMsg.status) {
+                        MessageStatus.SEEN.ordinal -> {
+                            Glide.with(binding.ivReceiver)
+                                .load(url)
+                                .error(R.drawable.android)
+                                .into(binding.ivReceiver)
+                        }
+                        MessageStatus.SENDING.ordinal -> {
+                            binding.ivReceiver.setImageResource(R.drawable.sending_msg)
+                        }
+                        MessageStatus.SENT.ordinal -> {
+                            binding.ivReceiver.setImageResource(R.drawable.sent_msg)
+                        }
+
+                        else -> {
+                            // Xem như đang gửi
+                            binding.ivReceiver.setImageResource(R.drawable.sending_msg)
+                        }
+                    }
                 }
             } else {
                 binding.tvMessage.text = ""
             }
 
-            binding.tvTime.text = lastMsg?.createdAt
+            binding.tvTime.text = lastMsg?.formattedTime
+
+            binding.root.setOnClickListener {
+                if (lastMsg != null) {
+                    listener.onItemClick(lastMsg)
+                }
+            }
 
 //            binding.root.setOnClickListener {
 //                listener.onItemClick(lastMsg.sender)
@@ -111,7 +142,7 @@ class AccountAdapter(
 //    }
 
     interface OnItemClickListener {
-        fun onItemClick(account: Account)
+        fun onItemClick(message: Message)
     }
 
 }

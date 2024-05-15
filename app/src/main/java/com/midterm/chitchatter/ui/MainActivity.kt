@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
@@ -140,5 +142,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
         snackBar.show()
+    }
+    fun hideNavigation() {
+        val toolbar: Toolbar = findViewById(R.id.toolbar_main)
+        toolbar.visibility = View.GONE
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNav.visibility = View.GONE
+    }
+
+    fun showNavigation() {
+        val toolbar: Toolbar = findViewById(R.id.toolbar_main)
+        toolbar.visibility = View.VISIBLE
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNav.visibility = View.VISIBLE
     }
 }

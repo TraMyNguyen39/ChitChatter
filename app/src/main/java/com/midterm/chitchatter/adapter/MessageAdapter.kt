@@ -2,18 +2,27 @@ package com.midterm.chitchatter.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.midterm.chitchatter.data.model.Message
-import com.midterm.chitchatter.databinding.ItemContainerRecieveMessageBinding
+import com.midterm.chitchatter.databinding.ItemRecieveMessageBinding
 import com.midterm.chitchatter.databinding.ItemContainerSentMessageBinding
-class MessageAdapter(private val messages: List<Message>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+
+    private var currentAccountEmail: String? = null
+
 
     private val VIEW_TYPE_SENT = 1
     private val VIEW_TYPE_RECEIVED = 2
 
+    fun setCurrentAccountEmail(email: String) {
+        currentAccountEmail = email
+    }
+
     override fun getItemViewType(position: Int): Int {
-        // Replace "your_username" with the actual username of the sender
-        return if (messages[position].sender == "your_username") VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
+        return if (getItem(position).sender == currentAccountEmail) VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -21,13 +30,13 @@ class MessageAdapter(private val messages: List<Message>) : RecyclerView.Adapter
             val binding = ItemContainerSentMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             SentMessageViewHolder(binding)
         } else {
-            val binding = ItemContainerRecieveMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding = ItemRecieveMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             ReceivedMessageViewHolder(binding)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val message = messages[position]
+        val message = getItem(position)
         if (getItemViewType(position) == VIEW_TYPE_SENT) {
             (holder as SentMessageViewHolder).bind(message)
         } else {
@@ -35,19 +44,29 @@ class MessageAdapter(private val messages: List<Message>) : RecyclerView.Adapter
         }
     }
 
-    override fun getItemCount() = messages.size
-
     class SentMessageViewHolder(private val binding: ItemContainerSentMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-//            binding.tvMessage.text = message.data.text
-//            binding.tvTime.text = message.timestamp.toString() // Convert timestamp to desired format
+            binding.tvMessage.text = message.content
+            binding.tvTime.text = message.formattedTime
         }
     }
 
-    class ReceivedMessageViewHolder(private val binding: ItemContainerRecieveMessageBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ReceivedMessageViewHolder(private val binding: ItemRecieveMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-//            binding.tvMessage.text = message.data.text
-//            binding.tvTime.text = message.timestamp.toString() // Convert timestamp to desired format
+            binding.tvMessage.text = message.content
+            binding.tvTime.text = message.formattedTime
         }
+    }
+}
+
+class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
+    override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
+        // Replace this with your own logic
+        return oldItem == newItem
+    }
+
+    override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+        // Replace this with your own logic
+        return oldItem == newItem
     }
 }

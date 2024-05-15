@@ -10,8 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.midterm.chitchatter.ChitChatterApplication
-import com.midterm.chitchatter.R
-import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.FragmentHomeBinding
 import com.midterm.chitchatter.ui.chat.ChatFragment
 import com.midterm.chitchatter.utils.ChitChatterUtils
@@ -28,13 +27,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUpViewModel()
 
-//        tvTitle = requireActivity().findViewById(R.id.tv_title)
-//        tvTitle.text = getString(R.string.title_message)
-
         adapter = AccountAdapter(object : AccountAdapter.OnItemClickListener {
-            override fun onItemClick(account: Account) {
-                Log.e("HomeFragment", "Item clicked: ${account.email}")
-                navigateToChatFragment(account)
+            override fun onItemClick(message: Message) {
+                val senderEmail = ChitChatterUtils.getCurrentAccount(requireContext()) ?: ""
+                val receiverEmail =  if (message.isIncoming) message.sender else message.receiver
+                val displayName = if (message.isIncoming) message.name else message.name
+                Log.d("HomeFragment", "senderEmail: $senderEmail, receiverEmail: $receiverEmail")
+                navigateToChatFragment(senderEmail , receiverEmail,displayName)
             }
         })
 
@@ -73,12 +72,11 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
-    private fun navigateToChatFragment(account: Account) {
-        val chatFragment = ChatFragment.newInstance(account)
+    private fun navigateToChatFragment(senderEmail: String, receiverEmail: String, displayName: String) {
+        val chatFragment = ChatFragment.newInstance(senderEmail, receiverEmail,displayName)
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.include_main, chatFragment)
+            .replace(this@HomeFragment.id, chatFragment)
             .addToBackStack(null)
             .commit()
     }
-
 }

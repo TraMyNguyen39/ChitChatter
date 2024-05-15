@@ -1,7 +1,9 @@
 package com.midterm.chitchatter.ui.chat
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +11,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.ChitChatterService
+import com.midterm.chitchatter.adapter.MessageAdapter
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.databinding.FragmentChatBinding
-import com.midterm.chitchatter.service.MessengerApplication
+import com.midterm.chitchatter.ui.MainActivity
 
 
 class ChatFragment : Fragment() {
@@ -21,10 +26,22 @@ class ChatFragment : Fragment() {
     private var binding: FragmentChatBinding? = null
     private lateinit var chatViewModel: ChatViewModel
     private lateinit var chatAdapter: ChatAdapter
+    private var email: String? = null
+    private var senderEmail: String? = null
+    private var receiverEmail: String? = null
+    private var displayName: String? = null
+    private lateinit var viewModelFactory: ChatViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
+        email = arguments?.getString(ARG_EMAIL)
+        senderEmail = arguments?.getString(ARG_SENDER_EMAIL)
+        receiverEmail = arguments?.getString(ARG_RECEIVER_EMAIL)
+        displayName = arguments?.getString(ARG_DISPLAY_NAME)
+        val repository = (requireActivity().application as ChitChatterApplication).repository
+        viewModelFactory = ChatViewModelFactory(repository)
+        chatViewModel = ViewModelProvider(this, viewModelFactory)[ChatViewModel::class.java]
+        chatViewModel.updateInteractingAccount(Account(email = receiverEmail?: ""))
     }
 
     override fun onCreateView(
@@ -34,28 +51,42 @@ class ChatFragment : Fragment() {
         binding = FragmentChatBinding.inflate(inflater, container, false)
         return binding?.root
     }
-    
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val account = arguments?.getSerializable(ARG_ACCOUNT) as Account
         binding = FragmentChatBinding.bind(view)
+        hideNavigationView()
         setupViewModel()
         setupViews()
         setupActions()
+        val adapter = MessageAdapter()
+        adapter.setCurrentAccountEmail(senderEmail ?: "") // Set currentAccountEmail here
+        binding?.recyclerMessage?.layoutManager = LinearLayoutManager(context)
+        binding?.recyclerMessage?.adapter = adapter
+        binding?.textViewName?.text = displayName
+
+        chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
+            adapter.submitList(messages)
+            adapter.notifyDataSetChanged()
+            binding?.recyclerMessage?.scrollToPosition(messages.size - 1)
+        }
     }
 
     private fun setupViewModel() {
-        val repository = (requireActivity().application as MessengerApplication).repository
+        val repository = (requireActivity().application as ChitChatterApplication).repository
         chatViewModel = ViewModelProvider(
             requireActivity(), ChatViewModelFactory(repository)
         )[ChatViewModel::class.java]
 
-        chatViewModel.loadMessage()
-        chatViewModel.interactingAccount.observe(viewLifecycleOwner) {
-            requireActivity().title = it?.name
-            // todo
+        chatViewModel.loadMessage(senderEmail ?: "", receiverEmail ?: "")
+        chatViewModel.interactingAccount.observe(viewLifecycleOwner) { account ->
+            requireActivity().title = account?.name
+            binding?.textViewName?.text = account?.name // Set the display name here
+            Log.d("ChatFragment", "Displayname: ${account?.name}")
         }
         chatViewModel.messages.observe(viewLifecycleOwner) {
+            Log.d("ChatFragment", "Received ${it.size} messages from API")
             chatAdapter.submitList(it)
             binding?.recyclerMessage?.scrollToPosition(it.size - 1)
         }
@@ -77,7 +108,7 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupViews() {
-//        navBar = requireActivity().findViewById(R.id.bottom_nav)
+
         val imageUrl = chatViewModel.interactingAccount.value?.imageUrl
         chatAdapter = ChatAdapter(requireContext(), imageUrl) {}
         binding?.recyclerMessage?.adapter = chatAdapter
@@ -92,6 +123,10 @@ class ChatFragment : Fragment() {
             if (binding?.chatEditInput?.text.isNullOrBlank()) {
                 binding?.chatEditInput?.setText(label)
             }
+        }
+        binding?.imageViewBack?.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+            showNavigationView()
         }
         binding?.imageSend?.setOnClickListener {
             send()
@@ -123,7 +158,6 @@ class ChatFragment : Fragment() {
     }
 
     private fun closeKeyboard() {
-//        navBar.visibility = View.VISIBLE
         val imm =
             requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding?.root?.windowToken, 0)
@@ -134,6 +168,10 @@ class ChatFragment : Fragment() {
             if (text.isNotEmpty()) {
                 chatViewModel.sendMessage(text.toString())
                 text.clear()
+            }
+            else{
+                Log.d("ChatFragment", "Empty message")
+
             }
         }
     }
@@ -153,16 +191,40 @@ class ChatFragment : Fragment() {
         // inactive => ko update tin nhan
         ChatViewModel.isActive = false
     }
+    private fun hideNavigationView() {
+        val mainActivity = requireActivity() as MainActivity
+        mainActivity.hideNavigation()
+    }
+
+    private fun showNavigationView() {
+        val mainActivity = requireActivity() as MainActivity
+        mainActivity.showNavigation()
+    }
 
     companion object {
-        private const val ARG_ACCOUNT = "account"
+//        private const val ARG_ACCOUNT = "account"
+        private const val ARG_EMAIL = "email"
+        private const val ARG_SENDER_EMAIL = "sender_email"
+        private const val ARG_RECEIVER_EMAIL = "receiver_email"
+        private const val ARG_DISPLAY_NAME = "display_name"
 
-        fun newInstance(account: Account): ChatFragment {
-            val fragment = ChatFragment()
-            val args = Bundle()
-            args.putSerializable(ARG_ACCOUNT, account)
-            fragment.arguments = args
-            return fragment
-        }
+        //        @JvmStatic
+//        fun newInstance(email: String) =
+//            ChatFragment().apply {
+//                arguments = Bundle().apply {
+//                    putString("email", email)
+//                    Log.d("email", email)
+//                }
+//            }
+        fun newInstance(senderEmail: String, receiverEmail: String, displayName: String) =
+            ChatFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_SENDER_EMAIL, senderEmail)
+                    putString(ARG_RECEIVER_EMAIL, receiverEmail)
+                    putString(ARG_DISPLAY_NAME, displayName)
+
+                }
+            }
+
     }
 }

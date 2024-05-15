@@ -33,6 +33,6 @@ interface MessageService {
     @GET("/")
     suspend fun getAllLastMessages(@Query("email") email: String): Response<com.midterm.chitchatter.data.source.remote.Response<ArrayList<Message>>>
 
-    @GET("/getChat/{sender}/{receiver}")
-    suspend fun getChat(@Path("sender") sender: String, @Path("receiver") receiver: String): Response<List<Message>>
+    @GET("/getChat")
+    suspend fun getChat(@Query("sender") sender: String, @Query("receiver") receiver: String): Response<List<Message>>
 }

@@ -3,12 +3,16 @@ package com.midterm.chitchatter.data.model
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import java.util.Date
 
-enum class MessageStatus {
-    SENT,
-    SEEN,
-    SENDING,
-    FAILED,
-    RECEIVED
+enum class MessageStatus(val value: Int) {
+    SENT(1),
+    SEEN(2),
+    SENDING(0),
+    FAILED(-1),
+    RECEIVED(3);
+
+    fun toInt(): Int {
+        return value
+    }
 }
 
 data class Data(
@@ -29,15 +33,17 @@ data class Message(
     val data: Data,
     val notification: Notification,
     val timestamp: Long = Date().time,
-    val status: MessageStatus = MessageStatus.SENT,
+    val status: Int,
     val token: String? = null,
     val name: String = "",
-    val createdAt: String = Date().time.toString(),
+//    val createdAt: String = Date().time.toString(),
     val content: String = "",
-    val isIncoming: Boolean = false,
-    val url: String = ""
+//    val isIncoming: Boolean = true,
+    val url: String = "",
+    val formattedTime: String,
+    val currentUserEmail: String
 
-    ) {
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -46,7 +52,7 @@ data class Message(
 
         if (sender != other.sender) return false
         if (receiver != other.receiver) return false
-        return createdAt == other.createdAt
+        return formattedTime == other.formattedTime
     }
 
     override fun hashCode(): Int {
@@ -55,6 +61,6 @@ data class Message(
         result = 31 * result + timestamp.hashCode()
         return result
     }
-//    val isIncoming: Boolean
-//        get() = HomeViewModel.getCurrentAccount()?.compareTo(sender) != 0
+    val isIncoming: Boolean
+        get() = (currentUserEmail ?: "").compareTo(sender) != 0
 }

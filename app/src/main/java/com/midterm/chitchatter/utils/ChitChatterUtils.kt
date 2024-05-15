@@ -12,7 +12,9 @@ import com.google.android.material.textfield.TextInputEditText
 import com.midterm.chitchatter.R
 
 object ChitChatterUtils {
+    val email: String? = null
     var token: String? = null
+
 
     fun TextInputEditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         this.addTextChangedListener(object : TextWatcher {
