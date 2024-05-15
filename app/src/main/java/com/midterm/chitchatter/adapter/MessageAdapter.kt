@@ -13,7 +13,6 @@ class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiff
 
     private var currentAccountEmail: String? = null
 
-
     private val VIEW_TYPE_SENT = 1
     private val VIEW_TYPE_RECEIVED = 2
 
@@ -43,7 +42,10 @@ class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiff
             (holder as ReceivedMessageViewHolder).bind(message)
         }
     }
-
+    fun clear() {
+        this.currentList.clear()
+        notifyDataSetChanged()
+    }
     class SentMessageViewHolder(private val binding: ItemContainerSentMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.tvMessage.text = message.content

@@ -65,8 +65,11 @@ class ChatFragment : Fragment() {
         setupViews()
         setupActions()
         val adapter = MessageAdapter()
-        adapter.setCurrentAccountEmail(senderEmail ?: "") // Set currentAccountEmail here
-        binding?.recyclerMessage?.layoutManager = LinearLayoutManager(context)
+        adapter.clear()
+        adapter.setCurrentAccountEmail(senderEmail ?: "")
+        val layoutManager = LinearLayoutManager(context)
+        layoutManager.reverseLayout = true
+        binding?.recyclerMessage?.layoutManager = layoutManager
         binding?.recyclerMessage?.adapter = adapter
         binding?.textViewName?.text = displayName
 
@@ -131,6 +134,7 @@ class ChatFragment : Fragment() {
         binding?.imageViewBack?.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
             showNavigationView()
+
         }
         binding?.imageSend?.setOnClickListener {
             send()
