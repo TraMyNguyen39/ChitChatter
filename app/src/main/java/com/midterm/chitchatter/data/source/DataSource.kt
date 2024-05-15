@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.data.source
 
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.Message
 
 interface DataSource {
     interface RemoteDataSource {
@@ -9,6 +10,7 @@ interface DataSource {
         suspend fun login(account: Account) : Account?
         suspend fun sendResetPassword(email: String) : Int
         suspend fun sendEmailVerification(email: String) : Boolean
+        suspend fun getAllLastMessages(email: String) : ArrayList<Message>
     }
 
     interface LocalDataSource {
