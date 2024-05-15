@@ -15,6 +15,11 @@ enum class MessageStatus(val value: Int) {
     }
 }
 
+data class Data(
+    val text: String = "",
+    val photoUrl: String? = null,
+    val photoMimeType: String? = null
+)
 
 data class Notification(
     val title: String = "",
@@ -33,6 +38,7 @@ data class Message(
     val name: String = "",
 //    val createdAt: String = Date().time.toString(),
     val content: String = "",
+//    val isIncoming: Boolean = true,
     val url: String = "",
     val formattedTime: String,
     val currentUserEmail: String
@@ -52,7 +58,7 @@ data class Message(
     override fun hashCode(): Int {
         var result = sender.hashCode()
         result = 31 * result + receiver.hashCode()
-        result = 31 * result + createdAt.hashCode()
+        result = 31 * result + timestamp.hashCode()
         return result
     }
     val isIncoming: Boolean
