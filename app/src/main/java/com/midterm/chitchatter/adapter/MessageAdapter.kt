@@ -39,15 +39,15 @@ class MessageAdapter(private val messages: List<Message>) : RecyclerView.Adapter
 
     class SentMessageViewHolder(private val binding: ItemContainerSentMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-            binding.tvMessage.text = message.data.text
-            binding.tvTime.text = message.timestamp.toString() // Convert timestamp to desired format
+//            binding.tvMessage.text = message.data.text
+//            binding.tvTime.text = message.timestamp.toString() // Convert timestamp to desired format
         }
     }
 
     class ReceivedMessageViewHolder(private val binding: ItemContainerRecieveMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
-            binding.tvMessage.text = message.data.text
-            binding.tvTime.text = message.timestamp.toString() // Convert timestamp to desired format
+//            binding.tvMessage.text = message.data.text
+//            binding.tvTime.text = message.timestamp.toString() // Convert timestamp to desired format
         }
     }
 }

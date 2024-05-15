@@ -12,11 +12,6 @@ enum class MessageStatus {
 }
 
 
-data class Data(
-    val text: String = "",
-    val photoUrl: String? = null,
-    val photoMimeType: String? = null
-)
 
 data class Notification(
     val title: String = "",
@@ -24,14 +19,15 @@ data class Notification(
 )
 
 data class Message(
-    val id: Long,
+    val id: String,
     val sender: String = "",
     val receiver: String = "",
-    val data: Data,
-    val notification: Notification,
-    val timestamp: Long = Date().time,
-    val status: MessageStatus = MessageStatus.SENT,
-    val token: String? = null
+    val createdAt: String = Date().time.toString(),
+    val status: Int = MessageStatus.SENT.ordinal,
+    val content: String = "",
+    val name: String = "",
+    val isIncoming: Boolean = false,
+    val url: String = ""
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -41,15 +37,13 @@ data class Message(
 
         if (sender != other.sender) return false
         if (receiver != other.receiver) return false
-        return timestamp == other.timestamp
+        return createdAt == other.createdAt
     }
 
     override fun hashCode(): Int {
         var result = sender.hashCode()
         result = 31 * result + receiver.hashCode()
-        result = 31 * result + timestamp.hashCode()
+        result = 31 * result + createdAt.hashCode()
         return result
     }
-    val isIncoming: Boolean
-        get() = HomeViewModel.currentAccount.value?.email?.compareTo(sender) != 0
 }
