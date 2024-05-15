@@ -1,5 +1,6 @@
 package com.midterm.chitchatter.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -34,6 +35,7 @@ class HomeFragment : Fragment() {
                 val displayName = if (message.isIncoming) message.name else message.name
                 Log.d("HomeFragment", "senderEmail: $senderEmail, receiverEmail: $receiverEmail")
                 navigateToChatFragment(senderEmail , receiverEmail,displayName)
+
             }
         })
 

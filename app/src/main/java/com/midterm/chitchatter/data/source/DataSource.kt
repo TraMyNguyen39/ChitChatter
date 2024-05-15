@@ -17,9 +17,6 @@ interface DataSource {
     }
 
     interface LocalDataSource {
-        suspend fun insertAccount(account: Account)
-        suspend fun updateAccount(account: Account)
-        suspend fun deleteAccount(account: Account)
-        suspend fun getSingleAccount(username: String): Account?
+        // Todo
     }
 }

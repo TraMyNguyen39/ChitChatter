@@ -14,8 +14,7 @@ import com.midterm.chitchatter.R
 object ChitChatterUtils {
     val email: String? = null
     var token: String? = null
-
-
+  
     fun TextInputEditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         this.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -44,6 +43,7 @@ object ChitChatterUtils {
         // on below line hiding our keyboard.
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
     fun getCurrentAccount(context: Context): String? {
         var account_key = context.getString(R.string.preference_account_key);
         var emailKey = context.getString(R.string.preference_email_key);

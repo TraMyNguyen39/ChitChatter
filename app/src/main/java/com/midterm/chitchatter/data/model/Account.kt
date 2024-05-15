@@ -52,7 +52,4 @@ data class Account(
             null
         }
     }
-
-
-
 }

@@ -17,9 +17,6 @@ interface Repository {
     }
 
     interface LocalRepository : Repository {
-        suspend fun insertAccount(account: Account)
-        suspend fun deleteAccount(account: Account)
-        suspend fun updateLocalAccount(account: Account)
-        suspend fun getAccount(username: String): Account?
+        // ToDo
     }
 }

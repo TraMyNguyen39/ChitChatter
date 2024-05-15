@@ -1,8 +1,10 @@
 package com.midterm.chitchatter.ui
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
@@ -17,6 +19,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.midterm.chitchatter.R
@@ -42,6 +45,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+//        val sharedPref = getSharedPreferences(
+//            getString(R.string.preference_account_key), Context.MODE_PRIVATE)
+//
+//        val email = sharedPref.getString(getString(R.string.preference_email_key), null)
+//        val name = sharedPref.getString(getString(R.string.preference_dislay_name_key), null)
+
         setupNavigation()
         askNotificationPermission()
     }
@@ -102,8 +112,23 @@ class MainActivity : AppCompatActivity() {
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
 
         cardView.addView(imageView)
+        cardView.setOnClickListener {
+            logout()
+        }
 
         binding.includeMain.toolbarMain.addView(cardView)
+    }
+
+    private fun logout() {
+        val sharedPref = getSharedPreferences(
+            getString(R.string.preference_account_key), Context.MODE_PRIVATE)
+
+        sharedPref.edit().apply {
+            clear()
+            apply()
+        }
+
+        onBackPressedDispatcher.onBackPressed()
     }
 
     private fun askNotificationPermission() {
