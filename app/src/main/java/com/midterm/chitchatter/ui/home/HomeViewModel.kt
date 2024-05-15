@@ -22,6 +22,9 @@ class HomeViewModel (
     fun setCurrentAccount(email: String) {
         _currentAccount.value = email
     }
+    fun getCurrentAccount(): String? {
+        return _currentAccount.value
+    }
 
     private val _contacts = MutableLiveData<List<Account>>()
     val contacts: LiveData<List<Account>>

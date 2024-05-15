@@ -59,6 +59,20 @@ class LoginViewModel (
         val regex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")
         return regex.matches(password)
     }
+
+    companion object {
+        private val _currentAccount = MutableLiveData<Account?>()
+
+        val currentAccount: LiveData<Account?> = _currentAccount
+
+        fun updateCurrentAccount(account: Account?) {
+            _currentAccount.postValue(account)
+        }
+
+        fun getCurrentAccount(): String? {
+            return _currentAccount.value?.email
+        }
+    }
 }
 
 class LoginViewModelFactory(

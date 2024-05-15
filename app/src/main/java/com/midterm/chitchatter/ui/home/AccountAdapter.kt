@@ -33,15 +33,20 @@ class AccountAdapter(
                 .error(R.drawable.android)
                 .into(binding.ivSender)
 
+            Glide.with(binding.ivReceiver)
+                .load(url)
+                .error(R.drawable.android)
+                .into(binding.ivReceiver)
+
             binding.tvName.text = lastMsg?.name
             if (lastMsg != null) {
-               if (lastMsg.isIncoming) {
-                   binding.tvMessage.text = lastMsg.content
-                   if (lastMsg.status == MessageStatus.SENT.ordinal) {
-                       binding.ivReceiver.setImageResource(R.drawable.received_msg)
-                       binding.tvMessage.setTypeface(null, Typeface.BOLD)
-                   }
-               }
+                if (lastMsg.isIncoming) {
+                    binding.tvMessage.text = lastMsg.content
+                    if (lastMsg.status == MessageStatus.SENT.ordinal) {
+                        binding.ivReceiver.setImageResource(R.drawable.received_msg)
+                        binding.tvMessage.setTypeface(null, Typeface.BOLD)
+                    }
+                }
                 else {
                     binding.tvMessage.text = "You: ${lastMsg.content}"
                     when (lastMsg.status) {
@@ -63,18 +68,23 @@ class AccountAdapter(
                             binding.ivReceiver.setImageResource(R.drawable.sending_msg)
                         }
                     }
-               }
+                }
             } else {
                 binding.tvMessage.text = ""
             }
 
-            binding.tvTime.text = lastMsg?.createdAt
+            binding.tvTime.text = lastMsg?.formattedTime
+
 
             binding.root.setOnClickListener {
                 if (lastMsg != null) {
                     listener.onItemClick(lastMsg)
                 }
             }
+
+//            binding.root.setOnClickListener {
+//                listener.onItemClick(lastMsg.sender)
+//            }
         }
     }
 
