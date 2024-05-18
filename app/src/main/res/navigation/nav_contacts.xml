@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/contactsFragment"
-        android:name="com.midterm.chitchatter.ui.contacts.ContactsFragment"
+        android:name="com.midterm.chitchatter.ui.contacts.ContactFragment"
         android:label="@string/title_contacts"
         tools:layout="@layout/fragment_contacts" />
 </navigation>
