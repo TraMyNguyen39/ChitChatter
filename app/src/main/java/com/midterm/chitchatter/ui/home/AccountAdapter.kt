@@ -35,14 +35,13 @@ class AccountAdapter(
 
             binding.tvName.text = lastMsg?.name
             if (lastMsg != null) {
-               if (lastMsg.isIncoming) {
-                   binding.tvMessage.text = lastMsg.content
-                   if (lastMsg.status == MessageStatus.SENT.ordinal) {
-                       binding.ivReceiver.setImageResource(R.drawable.received_msg)
-                       binding.tvMessage.setTypeface(null, Typeface.BOLD)
-                   }
-               }
-                else {
+                if (lastMsg.isIncoming) {
+                    binding.tvMessage.text = lastMsg.content
+                    if (lastMsg.status == MessageStatus.SENT.ordinal) {
+                        binding.ivReceiver.setImageResource(R.drawable.received_msg)
+                        binding.tvMessage.setTypeface(null, Typeface.BOLD)
+                    }
+                } else {
                     binding.tvMessage.text = "You: ${lastMsg.content}"
                     when (lastMsg.status) {
                         MessageStatus.SEEN.ordinal -> {
@@ -51,9 +50,11 @@ class AccountAdapter(
                                 .error(R.drawable.android)
                                 .into(binding.ivReceiver)
                         }
+
                         MessageStatus.SENDING.ordinal -> {
                             binding.ivReceiver.setImageResource(R.drawable.sending_msg)
                         }
+
                         MessageStatus.SENT.ordinal -> {
                             binding.ivReceiver.setImageResource(R.drawable.sent_msg)
                         }
@@ -63,7 +64,7 @@ class AccountAdapter(
                             binding.ivReceiver.setImageResource(R.drawable.sending_msg)
                         }
                     }
-               }
+                }
             } else {
                 binding.tvMessage.text = ""
             }
@@ -114,7 +115,7 @@ class AccountAdapter(
         notifyItemChanged(position)
     }
 
-    private fun hashCode(sender: String, receiver: String) : Int {
+    private fun hashCode(sender: String, receiver: String): Int {
         var result = sender.hashCode()
         result = result * 31 + receiver.hashCode()
         return result
