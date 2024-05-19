@@ -32,6 +32,10 @@ class DefaultRepository(
     override suspend fun getAllLastMessages(email: String): ArrayList<Message> {
         return remoteDataSource.getAllLastMessages(email)
     }
-
-
+    override suspend fun getChat(sender: String, receiver: String): List<Message> {
+        return remoteDataSource.getChat(sender, receiver)
+    }
+    override suspend fun sendMessage(message: Message): Boolean {
+        return remoteDataSource.sendMessage(message)
+    }
 }

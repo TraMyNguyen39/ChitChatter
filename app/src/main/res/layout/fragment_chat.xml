@@ -71,6 +71,7 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewCall"
             android:layout_width="40sp"
             android:layout_height="40sp"
             android:layout_gravity="center_vertical"
@@ -90,7 +91,7 @@
     </View>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewMessage"
+        android:id="@+id/recycler_message"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
@@ -98,6 +99,8 @@
         android:layout_weight="1"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        app:stackFromEnd="true"
+        android:scrollbars="vertical"
         >
 
     </androidx.recyclerview.widget.RecyclerView>
@@ -120,6 +123,7 @@
             android:backgroundTint="@android:color/transparent">
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_attach"
                 android:layout_width="40dp"
                 android:layout_height="45dp"
                 android:layout_gravity="center_vertical"
@@ -129,16 +133,16 @@
 
             </androidx.appcompat.widget.AppCompatImageView>
         </FrameLayout>
-
-        <EditText
-            android:id="@+id/editTextInputMessage"
+        
+        <com.midterm.chitchatter.ui.chat.ChatEditText
+            android:id="@+id/chat_edit_input"
             android:inputType="text"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="20dp"
-            android:background="@drawable/backgroud_chat_input"
+            android:background="@drawable/background_chat_input"
             android:backgroundTint="#F0F0F0"
             android:hint="@string/txtMess"
             android:paddingLeft="10dp"
@@ -149,13 +153,14 @@
             android:autofillHints="name"
             android:gravity="center_vertical"
             >
-        </EditText>
+
+        </com.midterm.chitchatter.ui.chat.ChatEditText>
 
         <FrameLayout
-            android:id="@+id/layoutSend"
+            android:id="@+id/image_send"
             android:layout_width="45sp"
             android:layout_height="45sp"
-            android:background="@drawable/backgroud_chat_input"
+            android:background="@drawable/background_chat_input"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:padding="5dp"
@@ -173,5 +178,17 @@
 
         </FrameLayout>
     </LinearLayout>
+    <ImageView
+        android:id="@+id/image_photo"
+        android:layout_width="@dimen/chat_image_width"
+        android:layout_height="@dimen/chat_image_height"
+        android:layout_gravity="center"
+        android:contentDescription="@string/desc_image_to_send"
+        android:visibility="gone"
+        tools:ignore="ImageContrastCheck"
+        tools:visibility="visible"
+        android:layout_marginBottom="10dp"
+        >
+    </ImageView>
 
 </LinearLayout>
