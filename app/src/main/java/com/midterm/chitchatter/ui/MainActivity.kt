@@ -35,6 +35,8 @@ import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModelFactory
+import com.midterm.chitchatter.ui.login.LoginViewModel
+import com.midterm.chitchatter.ui.login.LoginViewModelFactory
 
 
 class MainActivity : AppCompatActivity() {
