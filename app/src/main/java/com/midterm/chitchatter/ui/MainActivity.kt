@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
     private var firestore: FirebaseFirestore? = null
     private var auth: FirebaseAuth? = null
 
-
     private lateinit var viewModel: HomeViewModel
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()

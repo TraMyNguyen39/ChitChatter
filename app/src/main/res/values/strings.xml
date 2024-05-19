@@ -43,7 +43,7 @@
     <string name="preference_account_key">com.midterm.chitchatter.current_account</string>
     <string name="preference_email_key">com.midterm.chitchatter.preference_email_key</string>
     <string name="preference_token_key">com.midterm.chitchatter.preference_token_key</string>
-    <string name="preference_dislay_name_key">com.midterm.chitchatter.preference_display_name</string>
+    <string name="preference_display_name_key">com.midterm.chitchatter.preference_display_name</string>
     <string name="msg_check_email_reset_password">Đã gửi link xác nhận đổi mật khẩu. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_signup">Đã gửi link xác nhận tài khoản. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_to_verify">Vui lòng kiểm tra email chúng tôi đã gửi để xác thực tài khoản!</string>
