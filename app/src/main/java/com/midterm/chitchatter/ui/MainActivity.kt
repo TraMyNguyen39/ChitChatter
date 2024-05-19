@@ -15,7 +15,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -36,8 +35,6 @@ import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModelFactory
-import com.midterm.chitchatter.ui.login.LoginViewModel
-import com.midterm.chitchatter.ui.login.LoginViewModelFactory
 
 
 class MainActivity : AppCompatActivity() {
@@ -119,8 +116,7 @@ class MainActivity : AppCompatActivity() {
                     tokens?.let { tokenList ->
                         val updatedTokens = tokenList.map { tokenMap ->
                             if (tokenMap["token"] == token) {
-                                val updatedStatus = if (isOnline) 1 else 0
-                                tokenMap.toMutableMap().apply { put("status", updatedStatus) }
+                                tokenMap.toMutableMap().apply { put("isOnline", isOnline) }
                             } else {
                                 tokenMap
                             }
