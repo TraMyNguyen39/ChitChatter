@@ -135,6 +135,35 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return ArrayList()
 
     }
+    override suspend fun sendMessage(message: Message): Boolean {
+        val baseUrl = "https://sendmessage-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        val result = retrofit.sendMessage(message)
+        if (result.isSuccessful) {
+            return result.body()?.success ?: false
+        }
+        return false
+    }
+
+    override suspend fun getChat(sender: String, receiver: String): List<Message> {
+        val baseUrl = "https://getchat-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        Log.d("API", "Calling getChat API with sender: $sender, receiver: $receiver")
+        try {
+            val result = retrofit.getChat(sender, receiver)
+            if (result.isSuccessful) {
+                Log.d("API", "getChat API call successful, received ${result.body()?.size ?: 0} messages")
+                return result.body() ?: emptyList()
+            } else {
+                Log.d("API", "getChat API call failed with response code: ${result.code()}, response body: ${result.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Log.d("API", "getChat API call failed with exception: ${e.message}")
+        }
+        Log.d("API", "Ending getChat API call with sender: $sender, receiver: $receiver")
+        return emptyList()
+    }
+
 
 
     private fun createRetrofitService(baseUrl: String) : Retrofit {

@@ -54,6 +54,11 @@ class AccountAdapter(
             }
 
 
+            Glide.with(binding.ivReceiver)
+                .load(url)
+                .error(R.drawable.android)
+                .into(binding.ivReceiver)
+
             binding.tvName.text = lastMsg?.name
             if (lastMsg != null) {
                 if (lastMsg.isIncoming) {
@@ -99,13 +104,18 @@ class AccountAdapter(
                 binding.tvMessage.text = ""
             }
 
-            binding.tvTime.text = lastMsg?.createdAt
+            binding.tvTime.text = lastMsg?.formattedTime
+
 
             binding.root.setOnClickListener {
                 if (lastMsg != null) {
                     listener.onItemClick(lastMsg)
                 }
             }
+
+//            binding.root.setOnClickListener {
+//                listener.onItemClick(lastMsg.sender)
+//            }
         }
     }
 

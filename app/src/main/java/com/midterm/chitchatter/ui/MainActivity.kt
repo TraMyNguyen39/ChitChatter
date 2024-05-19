@@ -168,7 +168,6 @@ class MainActivity : AppCompatActivity() {
         }
         snackBar.show()
     }
-
     fun hideNavigation() {
         val toolbar: Toolbar = findViewById(R.id.toolbar_main)
         toolbar.visibility = View.GONE
