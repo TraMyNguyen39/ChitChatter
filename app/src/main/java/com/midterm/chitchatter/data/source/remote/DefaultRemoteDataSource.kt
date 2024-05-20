@@ -95,6 +95,13 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return null
     }
 
+    override suspend fun logout(account: Account): Boolean {
+        val baseUrl = "https://logout-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        val result = retrofit.logout(account)
+        return result.isSuccessful
+    }
+
     override suspend fun sendResetPassword(email: String) : Int {
         val auth: FirebaseAuth = Firebase.auth
         return try {
@@ -198,8 +205,6 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         Log.d("API", "Ending getChat API call with sender: $sender, receiver: $receiver")
         return emptyList()
     }
-
-
 
     private fun createRetrofitService(baseUrl: String) : Retrofit {
         return Retrofit.Builder()

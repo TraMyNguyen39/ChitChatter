@@ -17,23 +17,26 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
-import kotlin.system.exitProcess
-
+import com.midterm.chitchatter.ui.home.HomeViewModel
+import com.midterm.chitchatter.ui.home.HomeViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private var backPressedTime: Long = 0
-
+    private lateinit var viewModel: HomeViewModel
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -49,35 +52,24 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        val sharedPref = getSharedPreferences(
-//            getString(R.string.preference_account_key), Context.MODE_PRIVATE)
-//
-//        val email = sharedPref.getString(getString(R.string.preference_email_key), null)
-//        val name = sharedPref.getString(getString(R.string.preference_dislay_name_key), null)
-
         onBackPressedDispatcher.addCallback {
             if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                exitProcess(0)
+                finish()
             } else {
                 Toast.makeText(baseContext, "Nhấn BACK một lần nữa để thoát", Toast.LENGTH_SHORT).show()
             }
             backPressedTime = System.currentTimeMillis()
         }
 
+        val repository = (application as ChitChatterApplication).repository
+        viewModel = ViewModelProvider(
+            this,
+            HomeViewModelFactory(repository)
+        )[HomeViewModel::class.java]
+
         setupNavigation()
         askNotificationPermission()
     }
-
-//    @Deprecated("Deprecated in Java")
-//    override fun onBackPressed() {
-//        if (backPressedTime + 2000 > System.currentTimeMillis()) {
-//                exitProcess(0)
-//        } else {
-//            Toast.makeText(baseContext, "Nhấn BACK một lần nữa để thoát", Toast.LENGTH_SHORT).show()
-//        }
-//        backPressedTime = System.currentTimeMillis()
-//        super.onBackPressed()
-//    }
 
     private fun setupNavigation() {
         val navHostFragment: NavHostFragment =
@@ -145,6 +137,12 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         val sharedPref = getSharedPreferences(
             getString(R.string.preference_account_key), Context.MODE_PRIVATE)
+        val emailKey = getString(R.string.preference_email_key)
+        val currentEmail = sharedPref.getString(emailKey, null)
+        if (currentEmail != null) {
+            viewModel.removeToken(currentEmail)
+        }
+
         sharedPref.edit().apply {
             clear()
             apply()

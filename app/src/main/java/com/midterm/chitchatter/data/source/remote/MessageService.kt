@@ -22,7 +22,9 @@ interface MessageService {
     suspend fun updateAccount(@Body account: Account): Response<ResponseResult>
 
     @POST("/")
-    suspend fun getLoginAccount(@Body account: Account): Response<Account?>
+    suspend fun getLoginAccount(@Body account: Account) : Response<Account?>
+    @POST("/")
+    suspend fun logout(@Body account: Account) : Response<ResponseResult>
 
     @GET("/")
     suspend fun getContacts(

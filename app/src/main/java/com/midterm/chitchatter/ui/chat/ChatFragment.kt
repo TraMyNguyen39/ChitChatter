@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -128,6 +130,11 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupActions() {
+        requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().supportFragmentManager.popBackStack()
+            showNavigationView()
+        }
+
         binding?.imageViewCall?.setOnClickListener {
             voiceCall()
         }
@@ -140,7 +147,6 @@ class ChatFragment : Fragment() {
         binding?.imageViewBack?.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
             showNavigationView()
-
         }
         binding?.imageSend?.setOnClickListener {
             send()
