@@ -1,14 +1,16 @@
 package com.midterm.chitchatter.ui
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -19,17 +21,18 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
+import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private var backPressedTime: Long = 0
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -52,9 +55,29 @@ class MainActivity : AppCompatActivity() {
 //        val email = sharedPref.getString(getString(R.string.preference_email_key), null)
 //        val name = sharedPref.getString(getString(R.string.preference_dislay_name_key), null)
 
+        onBackPressedDispatcher.addCallback {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                exitProcess(0)
+            } else {
+                Toast.makeText(baseContext, "Nhấn BACK một lần nữa để thoát", Toast.LENGTH_SHORT).show()
+            }
+            backPressedTime = System.currentTimeMillis()
+        }
+
         setupNavigation()
         askNotificationPermission()
     }
+
+//    @Deprecated("Deprecated in Java")
+//    override fun onBackPressed() {
+//        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+//                exitProcess(0)
+//        } else {
+//            Toast.makeText(baseContext, "Nhấn BACK một lần nữa để thoát", Toast.LENGTH_SHORT).show()
+//        }
+//        backPressedTime = System.currentTimeMillis()
+//        super.onBackPressed()
+//    }
 
     private fun setupNavigation() {
         val navHostFragment: NavHostFragment =
@@ -122,13 +145,14 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         val sharedPref = getSharedPreferences(
             getString(R.string.preference_account_key), Context.MODE_PRIVATE)
-
         sharedPref.edit().apply {
             clear()
             apply()
         }
 
-        onBackPressedDispatcher.onBackPressed()
+        val intent = Intent(this, AuthenticationActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun askNotificationPermission() {

@@ -1,20 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/black"
-    android:paddingTop="@dimen/spacing_xs"
-    tools:context=".ui.home.HomeFragment">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_contacts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+        <LinearLayout
             android:background="@drawable/rounded_top_background"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="@dimen/spacing_3xl"
-            android:paddingHorizontal="@dimen/spacing_md"
-            tools:srcCompat="@tools:sample/avatars"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_contact" />
-</FrameLayout>
+            tools:context=".ui.home.HomeFragment">
+                <SearchView
+                    android:id="@+id/search_contacts"
+                    android:paddingStart="@dimen/spacing_md"
+                    android:paddingEnd="@dimen/spacing_md"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    tools:ignore="RtlSymmetry" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_contacts"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="@dimen/spacing_md"
+                    tools:srcCompat="@tools:sample/avatars"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_contact" />
+        </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

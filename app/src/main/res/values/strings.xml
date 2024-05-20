@@ -53,4 +53,18 @@
     <string name="desc_item_message_image">User avatar display in message item</string>
     <string name="desc_image_to_send">Image to send\n</string>
     <string name="example_header">A</string>
+    <string name="txt_full_name_example">Trà My</string>
+    <string name="txt_unknown">Không rõ</string>
+    <string name="txt_full_email">Email:</string>
+    <string name="txt_email_example">tram8319@gmail.com</string>
+    <string name="text_display_name">Tên:</string>
+    <string name="text_display_name_example">Trà My</string>
+    <string name="txt_birthday">Ngày sinh:</string>
+    <string name="text_birthdate_example">19/11/2003</string>
+    <string name="text_gender">Giới tính:</string>
+    <string name="txt_gender_example">Nữ</string>
+    <string name="txt_unfriend">Hủy kết bạn</string>
+    <string name="title_account">Thông tin</string>
+    <string name="unknown_error">Có lỗi xảy ra!</string>
+    <string name="txt_detail">Chi tiết</string>
 </resources>

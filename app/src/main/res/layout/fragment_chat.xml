@@ -13,27 +13,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="10dp"
-        android:paddingTop="15dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="15dp"
-        android:background="@drawable/border_bottom"
-        >
+        android:padding="10dp"
+        android:background="@drawable/border_bottom">
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageViewBack"
-            android:layout_width="30sp"
-            android:layout_height="30sp"
+            android:layout_width="@dimen/icon_size_lg"
+            android:layout_height="@dimen/icon_size_lg"
+            android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_back"
-            android:layout_gravity="center_vertical"
-            >
-        </androidx.appcompat.widget.AppCompatImageView>
+            android:src="@drawable/ic_back" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageViewProfile"
-            android:layout_width="50sp"
-            android:layout_height="50sp"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
             android:src="@drawable/profile"
             android:layout_gravity="center_vertical"
             >
@@ -52,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sender_name"
-                android:textSize="22sp"
+                android:textSize="@dimen/text_xl"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 >
@@ -62,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/txtActiveNow"
-                android:textSize="17sp"
+                android:textSize="@dimen/text_lg"
                 android:textColor="@color/black"
                 android:layout_marginTop="1dp"
                 >
@@ -72,8 +67,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageViewCall"
-            android:layout_width="40sp"
-            android:layout_height="40sp"
+            android:layout_width="@dimen/icon_size_lg"
+            android:layout_height="@dimen/icon_size_lg"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_call"
             >
@@ -106,26 +101,29 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@drawable/border_top"
-        android:padding="10dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
         >
 
         <FrameLayout
             android:id="@+id/layoutAttach"
             android:layout_width="40sp"
             android:layout_height="40sp"
-            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:layout_editor_absoluteX="9dp"
             android:backgroundTint="@android:color/transparent">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_attach"
-                android:layout_width="40dp"
-                android:layout_height="45dp"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="3dp"
                 android:paddingTop="5dp"
@@ -158,21 +156,21 @@
 
         <FrameLayout
             android:id="@+id/image_send"
-            android:layout_width="45sp"
-            android:layout_height="45sp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/background_chat_input"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:padding="5dp"
             >
+
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/send"
-                app:tint="@color/white"
-                android:layout_marginStart="3dp"
+                android:layout_width="21dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                >
+                android:layout_marginStart="3dp"
+                android:src="@drawable/send"
+                app:tint="@color/white">
 
             </androidx.appcompat.widget.AppCompatImageView>
 

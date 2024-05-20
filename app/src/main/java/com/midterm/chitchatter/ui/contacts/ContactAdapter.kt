@@ -1,20 +1,22 @@
 package com.midterm.chitchatter.ui.contacts
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.databinding.ItemContactBinding
 
 class ContactAdapter(
     private val contactList: MutableList<Account> = ArrayList(),
-    private val listener: OnItemClickListener
-) : RecyclerView.Adapter<ContactAdapter.ViewHolder>(){
+    private val listenerDetail: OnItemClickListener,
+    private val listenerChat: OnItemClickListener
+) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: ItemContactBinding = ItemContactBinding.inflate(
@@ -22,7 +24,7 @@ class ContactAdapter(
             parent,
             false
         )
-        return ViewHolder(binding, listener)
+        return ViewHolder(binding, listenerDetail, listenerChat)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -61,22 +63,47 @@ class ContactAdapter(
 
     class ViewHolder(
         private val binding: ItemContactBinding,
-        private val listener: OnItemClickListener
+        private val listenerDetail: OnItemClickListener,
+        private val listenerChat: OnItemClickListener
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(contact: Account) {
             binding.tvContactName.text = contact.name
-            binding.tvContactEmail.text = contact.name
-            Glide.with(binding.ivContactAvt)
-                .load(contact.imageUrl)
-                .error(R.drawable.android)
-                .into(binding.ivContactAvt)
-            itemView.setOnClickListener {
-                listener.onItemClick(contact)
+            binding.tvContactEmail.text = contact.email
+
+            if (contact.imageUrl != null) {
+                val fileName = contact.imageUrl as String
+                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/"
+
+                val storage: FirebaseStorage = FirebaseStorage.getInstance()
+                val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
+                val imageRef: StorageReference = storageRef.child(fileName)
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    Glide.with(binding.ivContactAvt)
+                        .load(uri)
+                        .error(R.drawable.chitchatter)
+                        .into(binding.ivContactAvt)
+                }.addOnFailureListener { exception ->
+                    // Xử lý lỗi nếu có
+                    Log.e("FirebaseStorage", "Failed to get download URL", exception)
+                }
+
+                binding.btnDetail.setOnClickListener {
+                    listenerDetail.onItemClick(contact)
+                }
+
+                binding.btnChat.setOnClickListener {
+                    listenerChat.onItemClick(contact)
+                }
+            } else {
+                Glide.with(binding.ivContactAvt)
+                    .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
+                    .error(R.drawable.android)
+                    .into(binding.ivContactAvt)
             }
         }
     }
 
-//    class HeaderViewHolder(
+    //    class HeaderViewHolder(
 //        private val binding: HeaderContactLayoutBinding
 //    ) : RecyclerView.ViewHolder(binding.root) {
 //        fun bind(contact: Account) {

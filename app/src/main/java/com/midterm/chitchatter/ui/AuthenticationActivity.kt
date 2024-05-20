@@ -1,9 +1,9 @@
 package com.midterm.chitchatter.ui
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.utils.ChitChatterUtils
@@ -13,8 +13,9 @@ class AuthenticationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
         retrieveToken()
-        var currentAccount = ChitChatterUtils.getCurrentAccount(this)
-        if (currentAccount != null) {
+
+        val currentEmail = ChitChatterUtils.getCurrentAccount(this)
+        if (currentEmail != null) {
             directToHome()
         }
     }
@@ -23,6 +24,7 @@ class AuthenticationActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 ChitChatterUtils.token = task.result
+                Log.e("TOKEN", ChitChatterUtils.token!!)
             }
         }
     }
@@ -30,5 +32,6 @@ class AuthenticationActivity : AppCompatActivity() {
     private fun directToHome() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 }

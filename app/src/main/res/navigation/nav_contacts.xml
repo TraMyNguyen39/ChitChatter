@@ -9,5 +9,15 @@
         android:id="@+id/contactsFragment"
         android:name="com.midterm.chitchatter.ui.contacts.ContactFragment"
         android:label="@string/title_contacts"
-        tools:layout="@layout/fragment_contacts" />
+        tools:layout="@layout/fragment_contacts" >
+        <action
+            android:id="@+id/action_contactsFragment_to_accountFragment"
+            app:destination="@id/accountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.midterm.chitchatter.ui.account.AccountFragment"
+        android:label="@string/title_account" >
+        <argument android:name="email" />
+    </fragment>
 </navigation>

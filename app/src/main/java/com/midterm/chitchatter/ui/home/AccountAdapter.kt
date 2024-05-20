@@ -54,10 +54,10 @@ class AccountAdapter(
             }
 
 
-            Glide.with(binding.ivReceiver)
-                .load(url)
-                .error(R.drawable.android)
-                .into(binding.ivReceiver)
+//            Glide.with(binding.ivReceiver)
+//                .load(url)
+//                .error(R.drawable.android)
+//                .into(binding.ivReceiver)
 
             binding.tvName.text = lastMsg?.name
             if (lastMsg != null) {
