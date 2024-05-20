@@ -141,8 +141,8 @@ class LoginFragment : Fragment() {
 
         with (sharedPref.edit()) {
             putString(getString(R.string.preference_email_key), email)
-            putString(getString(R.string.preference_dislay_name_key), displayName)
-            putString(getString(R.string.preference_dislay_name_key), imageUrl)
+            putString(getString(R.string.preference_display_name_key), displayName)
+//            putString(getString(R.string.preference_dislay_name_key), imageUrl)
             apply()
         }
     }

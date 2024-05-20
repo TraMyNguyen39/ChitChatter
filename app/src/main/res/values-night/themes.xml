@@ -12,6 +12,7 @@
         <item name="android:statusBarColor">@color/dark_black</item>
         <item name="toolbarStyle">@style/MyToolBarStyle</item>
         <item name="android:navigationBarColor">@color/dark_black</item>
+        <item name="iconPadding">@dimen/padding_btn_12dp</item>
     </style>
 
     <style name="MyActionBar" parent="Widget.AppCompat.ActionBar">

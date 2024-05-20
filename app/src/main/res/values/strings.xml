@@ -29,6 +29,7 @@
     <string name="receiver_avatar">Receiver avatar</string>
     <string name="time">7:30 PM</string>
     <string name="sender_name">Nguyễn Quốc Toàn</string>
+    <string name="example_email">nguyenquoctoan@gmail.com</string>
     <string name="avatar">Avatar</string>
     <string name="txtMess">Write a message</string>
     <string name="txtActiveNow">Active now</string>
@@ -42,8 +43,7 @@
     <string name="message_no_internet">Không có kết nối internet.</string>
     <string name="preference_account_key">com.midterm.chitchatter.current_account</string>
     <string name="preference_email_key">com.midterm.chitchatter.preference_email_key</string>
-    <string name="preference_token_key">com.midterm.chitchatter.preference_token_key</string>
-    <string name="preference_dislay_name_key">com.midterm.chitchatter.preference_display_name</string>
+    <string name="preference_display_name_key">com.midterm.chitchatter.preference_display_name</string>
     <string name="msg_check_email_reset_password">Đã gửi link xác nhận đổi mật khẩu. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_signup">Đã gửi link xác nhận tài khoản. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_to_verify">Vui lòng kiểm tra email chúng tôi đã gửi để xác thực tài khoản!</string>
@@ -51,5 +51,5 @@
     <string name="message_hi_there">hi there</string>
     <string name="desc_item_message_image">User avatar display in message item</string>
     <string name="desc_image_to_send">Image to send\n</string>
-
+    <string name="example_header">A</string>
 </resources>

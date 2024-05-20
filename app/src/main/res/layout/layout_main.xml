@@ -54,6 +54,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bottom_nav_background"
         android:fitsSystemWindows="true"
+        android:focusable="true"
         app:itemIconSize="30dp"
         app:itemIconTint="@drawable/bottom_nav_item_state_selector"
         app:itemPaddingBottom="20dp"
