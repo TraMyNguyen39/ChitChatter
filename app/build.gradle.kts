@@ -53,7 +53,7 @@ android {
 dependencies {
     implementation("com.google.firebase:firebase-database:21.0.0")
 
-    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
+
     val nav_version = "2.7.7"
     val room_version = "2.6.1"
 
@@ -64,6 +64,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx:22.0.0")
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
     implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
+    implementation("com.google.firebase:firebase-firestore:25.0.0")
     
     // https
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
