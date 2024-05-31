@@ -33,6 +33,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_xl"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="@dimen/spacing_xl"
         android:layout_marginBottom="@dimen/spacing_sm"
         android:text="@string/message"
@@ -40,7 +41,8 @@
         android:textSize="@dimen/text_md"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cv_receiver"
-        app:layout_constraintStart_toEndOf="@+id/cv_sender" />
+        app:layout_constraintStart_toEndOf="@+id/cv_sender"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
     <androidx.cardview.widget.CardView
@@ -66,6 +68,7 @@
 
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_xl"
@@ -84,7 +87,7 @@
             android:layout_weight="1"
             android:text="@string/sender_name"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textSize="@dimen/text_lg"
+            android:textSize="@dimen/text_xl"
             app:layout_constraintEnd_toStartOf="@+id/cv_receiver"
             app:layout_constraintStart_toEndOf="@+id/cv_sender"
             app:layout_constraintTop_toTopOf="parent" />

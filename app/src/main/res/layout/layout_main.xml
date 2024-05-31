@@ -54,6 +54,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bottom_nav_background"
         android:fitsSystemWindows="true"
+        android:focusable="true"
         app:itemIconSize="30dp"
         app:itemIconTint="@drawable/bottom_nav_item_state_selector"
         app:itemPaddingBottom="20dp"
@@ -79,7 +80,16 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_main"
         app:navGraph="@navigation/nav_graph" />
 
-
+    <ProgressBar
+        android:id="@+id/progress_bar_main"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

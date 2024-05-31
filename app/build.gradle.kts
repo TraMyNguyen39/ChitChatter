@@ -99,6 +99,8 @@ dependencies {
     // Circle Image View
     implementation("de.hdodenhof:circleimageview:3.1.0")
 
+    // RecyclerView
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")

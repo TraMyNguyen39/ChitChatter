@@ -12,6 +12,8 @@ interface Repository {
         suspend fun logout(account: Account) : Boolean
         suspend fun sendResetPassword(email: String) : Int
         suspend fun sendEmailVerification(email: String) : Boolean
+        suspend fun getContactDetail(email: String) : Account?
+        suspend fun getContactsOfAccount(email: String, token: String) : ArrayList<Account>
         suspend fun getAllLastMessages(email: String) : ArrayList<Message>
         suspend fun getChat(sender: String, receiver: String): List<Message>
         suspend fun sendMessage(message: Message): Boolean

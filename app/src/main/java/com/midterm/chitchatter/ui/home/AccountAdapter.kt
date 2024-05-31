@@ -53,6 +53,7 @@ class AccountAdapter(
                     .into(binding.ivSender)
             }
 
+
             binding.tvName.text = lastMsg?.name
             if (lastMsg != null) {
                 if (lastMsg.isIncoming) {

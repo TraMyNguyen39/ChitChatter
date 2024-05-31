@@ -115,6 +115,7 @@ class LoginFragment : Fragment() {
 
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     startActivity(intent)
+                    activity?.finish()
                 } else {
                     viewModel.sendEmailVerification(account.email)
                     Snackbar.make(binding.root, R.string.msg_check_email_to_verify, Snackbar.LENGTH_LONG)

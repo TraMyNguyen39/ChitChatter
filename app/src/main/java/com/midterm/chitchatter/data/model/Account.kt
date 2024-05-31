@@ -14,6 +14,7 @@ data class Account(
     var password: String? = "",
     @SerializedName("displayName") var name: String = "",
     @SerializedName("gender") var gender: String? = null,
+    @SerializedName("birthday") var birthday: String? = null,
     @SerializedName("imageUrl") var imageUrl: String? = null,
     @SerializedName("token") var token: String? = null,
     @SerializedName("contacts") var contacts: MutableList<String> = mutableListOf(),

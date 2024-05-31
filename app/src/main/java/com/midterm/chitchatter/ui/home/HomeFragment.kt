@@ -6,12 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.midterm.chitchatter.ChitChatterApplication
+import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.FragmentHomeBinding
 import com.midterm.chitchatter.ui.chat.ChatFragment
@@ -21,12 +23,14 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var adapter: AccountAdapter
-    private lateinit var tvTitle: TextView
+    private lateinit var progressBar: ProgressBar
 
     private lateinit var viewModel: HomeViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        progressBar = requireActivity().findViewById(R.id.progress_bar_main)
+
         setUpViewModel()
 
         adapter = AccountAdapter(object : AccountAdapter.OnItemClickListener {
@@ -56,6 +60,7 @@ class HomeFragment : Fragment() {
         };
 
         if (currentAccount != null) {
+            progressBar.visibility = View.VISIBLE
             viewModel.fetchAllLastMessages(currentAccount)
         }
 
@@ -63,6 +68,7 @@ class HomeFragment : Fragment() {
             messages?.let {
                 adapter.updateMessage(it.filterNotNull())
             }
+            progressBar.visibility = View.GONE
         })
 
     }
@@ -74,6 +80,11 @@ class HomeFragment : Fragment() {
             requireActivity(),
             HomeViewModelFactory(repository)
         )[HomeViewModel::class.java]
+    }
+
+    override fun onStop() {
+        super.onStop()
+        progressBar.visibility = View.GONE
     }
 
     override fun onCreateView(

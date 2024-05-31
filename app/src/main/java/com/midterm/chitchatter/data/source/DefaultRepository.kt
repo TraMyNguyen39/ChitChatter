@@ -31,6 +31,15 @@ class DefaultRepository(
     override suspend fun sendEmailVerification(email: String): Boolean {
         return remoteDataSource.sendEmailVerification(email)
     }
+
+    override suspend fun getContactDetail(email: String): Account? {
+        return remoteDataSource.getContactDetail(email)
+    }
+
+    override suspend fun getContactsOfAccount(email: String, token: String): ArrayList<Account> {
+        return remoteDataSource.getContactsOfAccount(email, token)
+    }
+
     override suspend fun getAllLastMessages(email: String): ArrayList<Message> {
         return remoteDataSource.getAllLastMessages(email)
     }

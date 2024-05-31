@@ -1,14 +1,16 @@
 package com.midterm.chitchatter.ui
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -35,14 +37,13 @@ import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModelFactory
-import com.midterm.chitchatter.ui.login.LoginViewModel
-import com.midterm.chitchatter.ui.login.LoginViewModelFactory
-
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+    private var backPressedTime: Long = 0
     private var connectedRef: DatabaseReference? = null
     private var firestore: FirebaseFirestore? = null
     private var auth: FirebaseAuth? = null
@@ -63,6 +64,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        onBackPressedDispatcher.addCallback {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                finish()
+            } else {
+                Toast.makeText(baseContext, "Nhấn BACK một lần nữa để thoát", Toast.LENGTH_SHORT).show()
+            }
+            backPressedTime = System.currentTimeMillis()
+        }
 //        val sharedPref = getSharedPreferences(
 //            getString(R.string.preference_account_key), Context.MODE_PRIVATE)
 //
@@ -217,7 +226,9 @@ class MainActivity : AppCompatActivity() {
             apply()
         }
 
-        onBackPressedDispatcher.onBackPressed()
+        val intent = Intent(this, AuthenticationActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun askNotificationPermission() {

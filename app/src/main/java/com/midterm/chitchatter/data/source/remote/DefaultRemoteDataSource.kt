@@ -124,6 +124,42 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         }
     }
 
+    override suspend fun getContactDetail(email: String): Account? {
+        val baseUrl = "https://getaccountbyemail-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+
+        try {
+            val response = retrofit.getContactDetail(email)
+
+            if (response.isSuccessful) {
+                return response.body()?.data
+            } else {
+                Log.e("API Request", "Request failed with code: ${response.code()}, ${response.body()?.error}")
+            }
+        }  catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return null
+    }
+
+    override suspend fun getContactsOfAccount(email: String, token: String): ArrayList<Account> {
+        val baseUrl = "https://getcontactsofaccount-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.getContacts(email, token)
+
+            if (response.isSuccessful) {
+                return response.body()?.data ?: ArrayList()
+            } else {
+                Log.e("API Request", "Request failed with code: ${response.code()}, ${response.body()?.error}")
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+
+        return ArrayList()
+    }
+
     override suspend fun getAllLastMessages(email: String): ArrayList<Message> {
         val baseUrl = "https://getalllastmessages-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
@@ -141,7 +177,6 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         }
 
         return ArrayList()
-
     }
     override suspend fun sendMessage(message: Message): Boolean {
         val baseUrl = "https://sendmessage-kz4isf6rva-uc.a.run.app"
