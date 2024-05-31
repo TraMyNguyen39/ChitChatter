@@ -1,5 +1,6 @@
 package com.midterm.chitchatter.data.source.remote
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.Message
 import retrofit2.Response
 import retrofit2.http.Body
@@ -28,11 +29,13 @@ interface MessageService {
 
     @POST("/")
     suspend fun sendMessage(@Body message: Message) : Response<ResponseResult>
+    @POST("/")
+    suspend fun sendMessage(@Body message: DataSendMessage) : Response<ResponseResult>
 
     @GET("/")
     suspend fun getAllLastMessages(@Query("email") email: String): Response<com.midterm.chitchatter.data.source.remote.Response<ArrayList<Message>>>
 
-    @GET("/getChat")
+    @GET("/")
     suspend fun getChat(@Query("sender") sender: String, @Query("receiver") receiver: String): Response<List<Message>>
 
 }
