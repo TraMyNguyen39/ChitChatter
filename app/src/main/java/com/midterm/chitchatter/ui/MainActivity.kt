@@ -15,15 +15,21 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
+import com.midterm.chitchatter.utils.ChitChatterUtils
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
@@ -37,6 +43,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private var connectedRef: DatabaseReference? = null
+    private var firestore: FirebaseFirestore? = null
+    private var auth: FirebaseAuth? = null
+
     private lateinit var viewModel: HomeViewModel
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -58,6 +68,7 @@ class MainActivity : AppCompatActivity() {
 //
 //        val email = sharedPref.getString(getString(R.string.preference_email_key), null)
 //        val name = sharedPref.getString(getString(R.string.preference_dislay_name_key), null)
+        Log.d("TOKENTOKEN",  ChitChatterUtils.token ?: "")
 
         val repository = (application as ChitChatterApplication).repository
         viewModel = ViewModelProvider(
@@ -67,6 +78,66 @@ class MainActivity : AppCompatActivity() {
 
         setupNavigation()
         askNotificationPermission()
+
+        firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+
+        // Theo dõi trạng thái kết nối mạng
+
+        // Theo dõi trạng thái kết nối mạng
+        connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
+        connectedRef!!.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java)!!
+                updateOnlineStatus(connected, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("OnlineStatus", "Listener was cancelled")
+            }
+        })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        updateOnlineStatus(true, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        updateOnlineStatus(false, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
+    }
+
+    private fun updateOnlineStatus(isOnline: Boolean, email: String, token: String) {
+        val accountsRef = firestore!!.collection("accounts").document(email)
+
+        accountsRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val tokens = documentSnapshot.get("tokens") as? List<Map<String, Any>>
+                    tokens?.let { tokenList ->
+                        val updatedTokens = tokenList.map { tokenMap ->
+                            if (tokenMap["token"] == token) {
+                                tokenMap.toMutableMap().apply { put("isOnline", isOnline) }
+                            } else {
+                                tokenMap
+                            }
+                        }
+                        accountsRef.update("tokens", updatedTokens)
+                            .addOnSuccessListener {
+                                Log.d("OnlineStatus", "Token status updated for email: $email")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("OnlineStatus", "Error updating token status for email: $email", e)
+                            }
+                    }
+                } else {
+                    Log.d("OnlineStatus", "Email not found: $email")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("OnlineStatus", "Error finding email: $email", e)
+            }
     }
 
     private fun setupNavigation() {
