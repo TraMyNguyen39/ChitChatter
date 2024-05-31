@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.data.model
 
 import com.midterm.chitchatter.ui.home.HomeViewModel
+import com.midterm.chitchatter.utils.ChitChatterUtils
 import java.util.Date
 
 enum class MessageStatus(val value: Int) {
@@ -14,6 +15,14 @@ enum class MessageStatus(val value: Int) {
         return value
     }
 }
+data class DataSendMessage(
+    val token: String? = null,
+    val sender: String = "",
+    val receiver: String = "",
+    val content: String = "",
+    val photoUrl: String? = null,
+    val photoMimeType: String? = null
+)
 
 data class Data(
     val text: String = "",
@@ -41,7 +50,7 @@ data class Message(
 //    val isIncoming: Boolean = true,
     val url: String = "",
     val formattedTime: String,
-    val currentUserEmail: String
+//    val currentUserEmail: String
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -61,6 +70,8 @@ data class Message(
         result = 31 * result + timestamp.hashCode()
         return result
     }
+    val currentUserEmail: String
+        get() = ChitChatterUtils.currentAccountEmail ?: ""
     val isIncoming: Boolean
         get() = (currentUserEmail ?: "").compareTo(sender) != 0
 }

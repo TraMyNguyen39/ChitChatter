@@ -63,6 +63,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx:21.6.2")
     implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
     implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
+
 
     // Retrofit
     implementation("androidx.work:work-runtime:2.9.0")

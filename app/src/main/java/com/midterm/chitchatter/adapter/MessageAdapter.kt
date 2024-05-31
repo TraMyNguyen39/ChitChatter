@@ -43,7 +43,10 @@ class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiff
             (holder as ReceivedMessageViewHolder).bind(message)
         }
     }
-
+    fun clear() {
+        this.currentList.clear()
+        notifyDataSetChanged()
+    }
     class SentMessageViewHolder(private val binding: ItemContainerSentMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.tvMessage.text = message.content
