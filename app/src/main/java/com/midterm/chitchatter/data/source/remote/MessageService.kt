@@ -1,8 +1,4 @@
 package com.midterm.chitchatter.data.source.remote
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.Message
@@ -11,7 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -28,6 +23,9 @@ interface MessageService {
 
     @POST("/")
     suspend fun getLoginAccount(@Body account: Account) : Response<Account?>
+    @POST("/")
+    suspend fun logout(@Body account: Account) : Response<ResponseResult>
+
 
     @POST("/")
     suspend fun sendMessage(@Body message: Message) : Response<ResponseResult>

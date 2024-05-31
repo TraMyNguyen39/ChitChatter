@@ -15,6 +15,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -22,15 +24,20 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.ActivityMainBinding
+import com.midterm.chitchatter.ui.home.HomeViewModel
+import com.midterm.chitchatter.ui.home.HomeViewModelFactory
+import com.midterm.chitchatter.ui.login.LoginViewModel
+import com.midterm.chitchatter.ui.login.LoginViewModelFactory
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
-
+    private lateinit var viewModel: HomeViewModel
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -51,6 +58,12 @@ class MainActivity : AppCompatActivity() {
 //
 //        val email = sharedPref.getString(getString(R.string.preference_email_key), null)
 //        val name = sharedPref.getString(getString(R.string.preference_dislay_name_key), null)
+
+        val repository = (application as ChitChatterApplication).repository
+        viewModel = ViewModelProvider(
+            this,
+            HomeViewModelFactory(repository)
+        )[HomeViewModel::class.java]
 
         setupNavigation()
         askNotificationPermission()
@@ -122,6 +135,11 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         val sharedPref = getSharedPreferences(
             getString(R.string.preference_account_key), Context.MODE_PRIVATE)
+        val emailKey = getString(R.string.preference_email_key)
+        val currentEmail = sharedPref.getString(emailKey, null)
+        if (currentEmail != null) {
+            viewModel.removeToken(currentEmail)
+        }
 
         sharedPref.edit().apply {
             clear()

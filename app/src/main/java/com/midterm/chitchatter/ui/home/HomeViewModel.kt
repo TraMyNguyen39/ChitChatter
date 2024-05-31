@@ -10,6 +10,7 @@ import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.ui.login.LoginViewModel
+import com.midterm.chitchatter.utils.ChitChatterUtils
 import kotlinx.coroutines.launch
 
 class HomeViewModel (
@@ -47,6 +48,20 @@ class HomeViewModel (
         }
     }
 
+    fun removeToken(email: String) {
+        viewModelScope.launch {
+            try {
+                val account = Account()
+                account.email = email
+                account.token = ChitChatterUtils.token
+                val result = (repository as Repository.RemoteRepository).logout(account)
+                Log.e("LOGOUT", "$result")
+            } catch (e: Exception) {
+                // Xử lý lỗi nếu có
+                Log.e("LOGOUT", "Error removeToken: ${e.message}")
+            }
+        }
+    }
 }
 
 class HomeViewModelFactory(

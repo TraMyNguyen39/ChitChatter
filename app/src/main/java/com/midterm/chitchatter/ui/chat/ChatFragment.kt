@@ -90,6 +90,7 @@ class ChatFragment : Fragment() {
         val layoutManager = LinearLayoutManager(context)
         layoutManager.stackFromEnd = true
 //        layoutManager.reverseLayout = true
+
         binding?.recyclerMessage?.layoutManager = layoutManager
         binding?.recyclerMessage?.adapter = adapter
         binding?.textViewName?.text = displayName
@@ -156,6 +157,7 @@ class ChatFragment : Fragment() {
         binding?.imageViewBack?.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
             showNavigationView()
+
         }
         binding?.imageSend?.setOnClickListener {
             send(senderEmail ?: "", receiverEmail ?: "", token ?: "")

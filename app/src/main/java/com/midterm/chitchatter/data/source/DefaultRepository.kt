@@ -21,7 +21,9 @@ class DefaultRepository(
     override suspend fun login(account: Account): Account? {
         return remoteDataSource.login(account)
     }
-
+    override suspend fun logout(account: Account): Boolean {
+        return remoteDataSource.logout(account)
+    }
     override suspend fun sendResetPassword(email: String): Int {
         return remoteDataSource.sendResetPassword(email)
     }
@@ -29,7 +31,6 @@ class DefaultRepository(
     override suspend fun sendEmailVerification(email: String): Boolean {
         return remoteDataSource.sendEmailVerification(email)
     }
-
     override suspend fun getAllLastMessages(email: String): ArrayList<Message> {
         return remoteDataSource.getAllLastMessages(email)
     }
