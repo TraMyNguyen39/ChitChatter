@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.data.source
 
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.local.DefaultLocalDataSource
 import com.midterm.chitchatter.data.source.remote.DefaultRemoteDataSource
@@ -46,6 +47,9 @@ class DefaultRepository(
         return remoteDataSource.getChat(sender, receiver)
     }
     override suspend fun sendMessage(message: Message): Boolean {
+        return remoteDataSource.sendMessage(message)
+    }
+    override suspend fun sendMessage(message: DataSendMessage): Boolean {
         return remoteDataSource.sendMessage(message)
     }
 }

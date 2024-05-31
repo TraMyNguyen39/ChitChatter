@@ -8,6 +8,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.DataSource
 import kotlinx.coroutines.tasks.await
@@ -184,6 +185,29 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         if (result.isSuccessful) {
             return result.body()?.success ?: false
         }
+        return false
+    }
+    override suspend fun sendMessage(message: DataSendMessage): Boolean {
+        val baseUrl = "https://sendmessage-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val result = retrofit.sendMessage(message)
+
+            if (result.isSuccessful) {
+
+                Log.d("API Request", "Request successful wwith susccess: ${result.body()?.success}")
+                return result.body()?.success ?: false
+            }
+            else{
+                Log.e("API Request", "Request failed with code: ${result.code()}, ${result.body()?.error}")
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+//        val result = retrofit.sendMessage(message)
+//        if (result.isSuccessful) {
+//            return result.body()?.success ?: false
+//        }
         return false
     }
 
