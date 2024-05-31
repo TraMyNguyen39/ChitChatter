@@ -36,21 +36,21 @@
             app:srcCompat="@drawable/chitchatter" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_input_mobile_username"
+            android:id="@+id/ti_email"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_24"
             android:layout_marginTop="@dimen/margin_32"
             android:layout_marginEnd="@dimen/margin_24"
-            android:hint="@string/txt_enter_username"
+            android:hint="@string/txt_enter_email"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/label_require_validation"
-            app:startIconDrawable="@drawable/ic_user">
+            app:startIconDrawable="@drawable/ic_email">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_email_username"
+                android:id="@+id/edit_login_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
@@ -59,15 +59,15 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_input_password"
+            android:id="@+id/ti_password"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_24"
             android:hint="@string/txt_enter_password"
-            app:layout_constraintEnd_toEndOf="@+id/text_input_mobile_username"
-            app:layout_constraintStart_toStartOf="@+id/text_input_mobile_username"
-            app:layout_constraintTop_toBottomOf="@+id/text_input_mobile_username"
+            app:layout_constraintEnd_toEndOf="@+id/ti_email"
+            app:layout_constraintStart_toStartOf="@+id/ti_email"
+            app:layout_constraintTop_toBottomOf="@+id/ti_email"
             app:passwordToggleEnabled="true"
             app:startIconDrawable="@drawable/ic_lock">
 
@@ -81,8 +81,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:paddingLeft="@dimen/padding_btn_30dp"
-            android:paddingRight="@dimen/padding_btn_30dp"
+            android:paddingEnd="0dp"
             android:id="@+id/btn_forget_password"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
@@ -91,10 +90,12 @@
             android:clickable="true"
             android:focusable="true"
             android:minHeight="48dp"
+            android:textColor="@color/primary_color"
             android:textSize="@dimen/text_size_small"
             android:text="@string/txt_forget_password_ask"
-            app:layout_constraintEnd_toEndOf="@+id/text_input_password"
-            app:layout_constraintTop_toBottomOf="@+id/text_input_password" />
+            app:layout_constraintEnd_toEndOf="@+id/ti_password"
+            app:layout_constraintTop_toBottomOf="@+id/ti_password"
+            tools:ignore="RtlSymmetry" />
 
         <Button
             android:id="@+id/btn_sign_in"
@@ -105,8 +106,8 @@
             android:text="@string/txt_sign_in"
             android:textSize="@dimen/text_size_small"
             android:padding="@dimen/padding_btn_12dp"
-            app:layout_constraintEnd_toEndOf="@+id/text_input_password"
-            app:layout_constraintStart_toStartOf="@+id/text_input_password"
+            app:layout_constraintEnd_toEndOf="@+id/ti_password"
+            app:layout_constraintStart_toStartOf="@+id/ti_password"
             app:layout_constraintTop_toBottomOf="@+id/btn_forget_password"
             tools:ignore="TextContrastCheck" />
 
@@ -147,7 +148,7 @@
             android:id="@+id/label_require_validation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/margin_8"
             android:text="@string/app_name"
             android:textAllCaps="true"
             android:textColor="@color/primary_color"
@@ -158,4 +159,16 @@
             tools:ignore="TextContrastCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar_login"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

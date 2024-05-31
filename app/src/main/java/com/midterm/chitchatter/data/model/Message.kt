@@ -1,15 +1,28 @@
 package com.midterm.chitchatter.data.model
 
 import com.midterm.chitchatter.ui.home.HomeViewModel
+import com.midterm.chitchatter.utils.ChitChatterUtils
 import java.util.Date
 
-enum class MessageStatus {
-    SENT,
-    SEEN,
-    SENDING,
-    FAILED
-}
+enum class MessageStatus(val value: Int) {
+    SENT(1),
+    SEEN(2),
+    SENDING(0),
+    FAILED(-1),
+    RECEIVED(3);
 
+    fun toInt(): Int {
+        return value
+    }
+}
+data class DataSendMessage(
+    val token: String? = null,
+    val sender: String = "",
+    val receiver: String = "",
+    val content: String = "",
+    val photoUrl: String? = null,
+    val photoMimeType: String? = null
+)
 
 data class Data(
     val text: String = "",
@@ -23,14 +36,22 @@ data class Notification(
 )
 
 data class Message(
-    val id: Long,
+    val id: String,
     val sender: String = "",
     val receiver: String = "",
     val data: Data,
     val notification: Notification,
     val timestamp: Long = Date().time,
-    val status: MessageStatus = MessageStatus.SENT,
-    val token: String? = null
+    val status: Int,
+    val token: String? = null,
+    val name: String = "",
+//    val createdAt: String = Date().time.toString(),
+    val content: String = "",
+//    val isIncoming: Boolean = true,
+    val url: String = "",
+    val formattedTime: String,
+//    val currentUserEmail: String
+
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -40,7 +61,7 @@ data class Message(
 
         if (sender != other.sender) return false
         if (receiver != other.receiver) return false
-        return timestamp == other.timestamp
+        return formattedTime == other.formattedTime
     }
 
     override fun hashCode(): Int {
@@ -49,9 +70,8 @@ data class Message(
         result = 31 * result + timestamp.hashCode()
         return result
     }
-
+    val currentUserEmail: String
+        get() = ChitChatterUtils.currentAccountEmail ?: ""
     val isIncoming: Boolean
-        get() = HomeViewModel.currentAccount.value?.username?.compareTo(sender) != 0
+        get() = (currentUserEmail ?: "").compareTo(sender) != 0
 }
-
-
