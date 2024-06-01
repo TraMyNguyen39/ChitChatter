@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.source.Repository
+import com.midterm.chitchatter.utils.ChitChatterUtils
 import kotlinx.coroutines.launch
 
 class AccountViewModel(
@@ -21,6 +22,30 @@ class AccountViewModel(
                 val account = (repository as Repository.RemoteRepository).getContactDetail(email)
                 _contact.postValue(account)
             }
+        }
+    }
+
+    fun addContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val token = ChitChatterUtils.token!!
+            val isSuccessful = (repository as Repository.RemoteRepository).addContact(
+                userEmail,
+                contactEmail,
+                token
+            )
+            callback(isSuccessful)
+        }
+    }
+
+    fun removeContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val token = ChitChatterUtils.token!!
+            val isSuccessful = (repository as Repository.RemoteRepository).removeContact(
+                userEmail,
+                contactEmail,
+                token
+            )
+            callback(isSuccessful)
         }
     }
 }

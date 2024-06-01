@@ -20,12 +20,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:queryHint="Nhập từ khóa tìm kiếm"
                     tools:ignore="RtlSymmetry" />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_contacts"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingHorizontal="@dimen/spacing_md"
+                    android:layout_marginTop="@dimen/margin_8"
                     tools:srcCompat="@tools:sample/avatars"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_contact" />

@@ -17,6 +17,8 @@ import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.databinding.FragmentAccountBinding
+import com.midterm.chitchatter.utils.ChitChatterUtils
+import com.midterm.chitchatter.utils.ContactStatus
 
 class AccountFragment : Fragment() {
     private lateinit var binding: FragmentAccountBinding
@@ -26,11 +28,10 @@ class AccountFragment : Fragment() {
         val repository = (requireActivity().application as ChitChatterApplication).repository
         AccountViewModelFactory(repository)
     }
+    private var contactStatus = ContactStatus.CONNECTED.ordinal
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         progressBar = requireActivity().findViewById(R.id.progress_bar_main)
         binding = FragmentAccountBinding.inflate(inflater, container, false)
@@ -39,11 +40,32 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupViews()
         setupViewModel()
         setupActions()
 
         progressBar.visibility = View.VISIBLE
         viewModel.loadAccountInfo(args.email)
+    }
+
+    private fun setupViews() {
+        contactStatus = args.contactStatus
+        when (contactStatus) {
+            ContactStatus.CONNECTED.ordinal -> {
+                setUpButton(R.string.txt_unfriend, R.color.black)
+            }
+            ContactStatus.UNCONNECTED.ordinal -> {
+                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+            }
+            else -> {
+                setUpButton(R.string.txt_cancel_connect, androidx.appcompat.R.color.material_grey_600)
+            }
+        }
+    }
+
+    private fun setUpButton(textResId: Int, color: Int) {
+        binding.btnProfileUnfriend.text = getString(textResId)
+        binding.btnProfileUnfriend.setBackgroundColor(requireActivity().getColor(color))
     }
 
     private fun setupViewModel() {
@@ -64,9 +86,7 @@ class AccountFragment : Fragment() {
                     val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
                     val imageRef: StorageReference = storageRef.child(fileName)
                     imageRef.downloadUrl.addOnSuccessListener { uri ->
-                        Glide.with(binding.ivProfileAvt)
-                            .load(uri)
-                            .error(R.drawable.chitchatter)
+                        Glide.with(binding.ivProfileAvt).load(uri).error(R.drawable.chitchatter)
                             .into(binding.ivProfileAvt)
                     }.addOnFailureListener { exception ->
                         // Xử lý lỗi nếu có
@@ -75,8 +95,7 @@ class AccountFragment : Fragment() {
                 } else {
                     Glide.with(binding.ivProfileAvt)
                         .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
-                        .error(R.drawable.android)
-                        .into(binding.ivProfileAvt)
+                        .error(R.drawable.android).into(binding.ivProfileAvt)
                 }
             } else {
                 Snackbar.make(requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG).show()
@@ -86,16 +105,54 @@ class AccountFragment : Fragment() {
 
     private fun setupActions() {
         binding.btnProfileUnfriend.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("Hủy kết bạn")
-            builder.setMessage("Bạn có chắc chắn hủy kết bạn với người này?")
-            builder.setPositiveButton("Chắc chắn") { dialog, _ ->
-                dialog.cancel()
+            val userEmail = ChitChatterUtils.getCurrentAccount(requireContext())
+            val contactEmail = args.email
+            if (contactStatus == ContactStatus.CONNECTED.ordinal) {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("Hủy kết bạn")
+                builder.setMessage("Bạn có chắc chắn hủy kết bạn với người này?")
+                builder.setPositiveButton("Chắc chắn") { dialog, _ ->
+                    dialog.cancel()
+                    cancelConnect(userEmail, contactEmail)
+                }
+                builder.setNegativeButton("Hủy") { dialog, _ ->
+                    dialog.cancel()
+                }
+                builder.show()
+            } else if (contactStatus == ContactStatus.UNCONNECTED.ordinal) {
+                addConnect(userEmail, contactEmail)
+            } else {
+                cancelConnect(userEmail, contactEmail)
             }
-            builder.setNegativeButton("Hủy") { dialog, _ ->
-                dialog.cancel()
+        }
+    }
+
+    private fun addConnect(userEmail: String?, contactEmail: String) {
+        viewModel.addContact(userEmail!!, contactEmail) { isSuccessful ->
+            if (isSuccessful) {
+                contactStatus = ContactStatus.REQUESTED.ordinal
+                Snackbar.make(
+                    requireView(), "Đã gửi lời mời kết bạn!", Snackbar.LENGTH_LONG
+                ).show()
+                setUpButton(R.string.txt_cancel_connect, androidx.appcompat.R.color.material_grey_600)
+            } else {
+                Snackbar.make(
+                    requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
+                ).show()
             }
-            builder.show()
+        }
+    }
+
+    private fun cancelConnect(userEmail: String?, contactEmail: String) {
+        viewModel.removeContact(userEmail!!, contactEmail) { isSuccessful ->
+            if (isSuccessful) {
+                contactStatus = ContactStatus.CONNECTED.ordinal
+                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+            } else {
+                Snackbar.make(
+                    requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
     }
 }

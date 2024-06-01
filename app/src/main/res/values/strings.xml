@@ -67,4 +67,9 @@
     <string name="title_account">Thông tin</string>
     <string name="unknown_error">Có lỗi xảy ra!</string>
     <string name="txt_detail">Chi tiết</string>
+    <string name="txt_action_connect">Kết nối</string>
+    <string name="txt_cancel_connect">Hủy kết nối</string>
+    <string name="txt_contact_request">Yêu cầu kết bạn</string>
+    <string name="txt_accept">Chấp nhận</string>
+    <string name="txt_deny">Từ chối</string>
 </resources>

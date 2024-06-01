@@ -35,8 +35,28 @@ class DefaultRepository(
         return remoteDataSource.getContactDetail(email)
     }
 
+    override suspend fun addContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        return remoteDataSource.addContact(userEmail, contactEmail, token)
+    }
+
+    override suspend fun removeContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        return remoteDataSource.removeContact(userEmail, contactEmail, token)
+    }
+
     override suspend fun getContactsOfAccount(email: String, token: String): ArrayList<Account> {
         return remoteDataSource.getContactsOfAccount(email, token)
+    }
+
+    override suspend fun getContactsSearch(textSearch: String, email: String,token: String): ArrayList<Account> {
+        return remoteDataSource.getContactsSearch(textSearch, email, token)
     }
 
     override suspend fun getAllLastMessages(email: String): ArrayList<Message> {

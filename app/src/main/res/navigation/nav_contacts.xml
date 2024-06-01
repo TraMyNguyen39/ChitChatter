@@ -19,5 +19,8 @@
         android:name="com.midterm.chitchatter.ui.account.AccountFragment"
         android:label="@string/title_account" >
         <argument android:name="email" />
+        <argument
+            android:name="contactStatus"
+            app:argType="integer" />
     </fragment>
 </navigation>

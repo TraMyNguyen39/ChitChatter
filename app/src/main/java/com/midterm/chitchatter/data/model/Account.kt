@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.utils.ContactStatus
 import java.io.Serializable
 
 @Entity(tableName = "accounts")
@@ -18,8 +19,10 @@ data class Account(
     @SerializedName("imageUrl") var imageUrl: String? = null,
     @SerializedName("token") var token: String? = null,
     @SerializedName("contacts") var contacts: MutableList<String> = mutableListOf(),
-    var isVerified: Boolean? = true
+    var isVerified: Boolean? = true,
+    @SerializedName("contactStatus") var contactStatus: Int = ContactStatus.UNCONNECTED.ordinal
 )   : Serializable{
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

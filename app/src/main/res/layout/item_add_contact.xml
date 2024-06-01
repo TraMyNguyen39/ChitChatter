@@ -1,35 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="@dimen/spacing_sm">
 
-    <ImageView
-        android:id="@+id/btn_chat"
-        android:layout_width="@dimen/icon_size_sm"
-        android:layout_height="@dimen/icon_size_sm"
-        android:layout_marginEnd="@dimen/margin_16"
-        android:contentDescription="@string/txt_detail"
-        android:src="@drawable/ic_chat"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_contact_email"
-        app:layout_constraintEnd_toStartOf="@id/btn_detail"
-        app:layout_constraintTop_toTopOf="@+id/tv_contact_name" />
-
-    <ImageView
-        android:id="@+id/btn_detail"
-        android:layout_width="@dimen/icon_size_sm"
-        android:layout_height="@dimen/icon_size_sm"
-        android:layout_marginEnd="@dimen/margin_4"
-        android:clickable="true"
-        android:contentDescription="@string/txt_detail"
-        android:focusable="true"
-        android:src="@drawable/ic_user"
-        app:layout_constraintBottom_toBottomOf="@+id/btn_chat"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btn_chat" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_contact_avt"
@@ -46,14 +22,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginEnd="@dimen/margin_4"
         android:layout_marginTop="@dimen/margin_4"
+        android:layout_marginEnd="@dimen/margin_4"
         android:layout_weight="1"
         android:maxLines="1"
         android:text="@string/sender_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textSize="@dimen/text_lg"
-        app:layout_constraintEnd_toStartOf="@+id/btn_chat"
+        app:layout_constraintEnd_toStartOf="@+id/btn_add_contact"
         app:layout_constraintStart_toEndOf="@+id/iv_contact_avt"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,6 +49,25 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/tv_contact_name"
         app:layout_constraintTop_toBottomOf="@+id/tv_contact_name" />
+
+    <Button
+        android:id="@+id/btn_add_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_4"
+        android:backgroundTint="@color/black"
+        android:drawableLeft="@drawable/ic_add"
+        android:gravity="center"
+        android:paddingStart="@dimen/spacing_sm"
+        android:paddingEnd="@dimen/spacing_md"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:text="@string/txt_action_connect"
+        android:textSize="@dimen/text_md"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_contact_email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_contact_name"
+        tools:ignore="RtlHardcoded" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

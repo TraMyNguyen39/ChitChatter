@@ -7,29 +7,40 @@
     android:layout_height="wrap_content"
     android:paddingVertical="@dimen/spacing_sm">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_4"
+        android:text="@string/txt_contact_request"
+        android:textSize="@dimen/text_md"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
-        android:id="@+id/btn_chat"
-        android:layout_width="@dimen/icon_size_sm"
-        android:layout_height="@dimen/icon_size_sm"
+        android:id="@+id/btn_contact_accept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_16"
-        android:contentDescription="@string/txt_detail"
-        android:src="@drawable/ic_chat"
+        android:contentDescription="@string/txt_accept"
+        android:src="@drawable/ic_user_accept"
         app:layout_constraintBottom_toBottomOf="@+id/tv_contact_email"
-        app:layout_constraintEnd_toStartOf="@id/btn_detail"
+        app:layout_constraintEnd_toStartOf="@id/btn_contact_deny"
         app:layout_constraintTop_toTopOf="@+id/tv_contact_name" />
 
     <ImageView
-        android:id="@+id/btn_detail"
-        android:layout_width="@dimen/icon_size_sm"
-        android:layout_height="@dimen/icon_size_sm"
+        android:id="@+id/btn_contact_deny"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_4"
         android:clickable="true"
-        android:contentDescription="@string/txt_detail"
+        android:contentDescription="@string/txt_deny"
         android:focusable="true"
-        android:src="@drawable/ic_user"
-        app:layout_constraintBottom_toBottomOf="@+id/btn_chat"
+        android:src="@drawable/ic_user_deny"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_contact_accept"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btn_chat" />
+        app:layout_constraintTop_toTopOf="@+id/btn_contact_accept" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_contact_avt"
@@ -46,16 +57,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginEnd="@dimen/margin_4"
         android:layout_marginTop="@dimen/margin_4"
+        android:layout_marginEnd="@dimen/margin_4"
         android:layout_weight="1"
         android:maxLines="1"
         android:text="@string/sender_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textSize="@dimen/text_lg"
-        app:layout_constraintEnd_toStartOf="@+id/btn_chat"
+        app:layout_constraintEnd_toStartOf="@+id/btn_contact_accept"
         app:layout_constraintStart_toEndOf="@+id/iv_contact_avt"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
         android:id="@+id/tv_contact_email"

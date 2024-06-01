@@ -76,7 +76,8 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
 
         val auth: FirebaseAuth = Firebase.auth
         try {
-            val accountAuth = auth.signInWithEmailAndPassword(account.email, account.password!!).await()
+            val accountAuth =
+                auth.signInWithEmailAndPassword(account.email, account.password!!).await()
             if (accountAuth.user != null) {
                 if (accountAuth.user!!.isEmailVerified) {
                     account.password = null // Avoid leak password
@@ -85,7 +86,7 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
                         return result.body()
                     }
                 } else {
-                    return  Account(isVerified = false)
+                    return Account(isVerified = false)
                 }
             }
         } catch (e: Exception) {
@@ -102,7 +103,7 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return result.isSuccessful
     }
 
-    override suspend fun sendResetPassword(email: String) : Int {
+    override suspend fun sendResetPassword(email: String): Int {
         val auth: FirebaseAuth = Firebase.auth
         return try {
             auth.sendPasswordResetEmail(email).await()
@@ -133,24 +134,103 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
             if (response.isSuccessful) {
                 return response.body()?.data
             } else {
-                Log.e("API Request", "Request failed with code: ${response.code()}, ${response.body()?.error}")
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
             }
-        }  catch (e: Exception) {
+        } catch (e: Exception) {
             Log.e("API Request", "Error occurred: ${e.message}")
         }
         return null
+    }
+
+    override suspend fun addContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        val baseUrl = "https://sendaddcontact-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+
+        try {
+            val response = retrofit.addContact(userEmail, contactEmail, token)
+            if (response.isSuccessful) {
+                return true
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return false
+    }
+
+    override suspend fun removeContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        val baseUrl = "https://removecontact-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+
+        try {
+            val response = retrofit.removeContact(userEmail, contactEmail, token)
+            if (response.isSuccessful) {
+                return true
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return false
     }
 
     override suspend fun getContactsOfAccount(email: String, token: String): ArrayList<Account> {
         val baseUrl = "https://getcontactsofaccount-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
         try {
-            val response = retrofit.getContacts(email, token)
+            val response = retrofit.getContactsOfAccount(email, token)
 
             if (response.isSuccessful) {
                 return response.body()?.data ?: ArrayList()
             } else {
-                Log.e("API Request", "Request failed with code: ${response.code()}, ${response.body()?.error}")
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+
+        return ArrayList()
+    }
+
+    override suspend fun getContactsSearch(
+        textSearch: String,
+        email: String,
+        token: String
+    ): ArrayList<Account> {
+        val baseUrl = "https://searchcontacts-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.getContactsSearch(textSearch, email, token)
+
+            if (response.isSuccessful) {
+                return response.body()?.data ?: ArrayList()
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
             }
         } catch (e: Exception) {
             Log.e("API Request", "Error occurred: ${e.message}")
@@ -168,7 +248,10 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
             if (response.isSuccessful) {
                 return response.body()?.data ?: ArrayList()
             } else {
-                Log.e("API Request", "Request failed with code: ${response.code()}, ${response.body()?.error}")
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
 
             }
         } catch (e: Exception) {
@@ -177,6 +260,7 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
 
         return ArrayList()
     }
+
     override suspend fun sendMessage(message: Message): Boolean {
         val baseUrl = "https://sendmessage-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
@@ -194,10 +278,18 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         try {
             val result = retrofit.getChat(sender, receiver)
             if (result.isSuccessful) {
-                Log.d("API", "getChat API call successful, received ${result.body()?.size ?: 0} messages")
+                Log.d(
+                    "API",
+                    "getChat API call successful, received ${result.body()?.size ?: 0} messages"
+                )
                 return result.body() ?: emptyList()
             } else {
-                Log.d("API", "getChat API call failed with response code: ${result.code()}, response body: ${result.errorBody()?.string()}")
+                Log.d(
+                    "API",
+                    "getChat API call failed with response code: ${result.code()}, response body: ${
+                        result.errorBody()?.string()
+                    }"
+                )
             }
         } catch (e: Exception) {
             Log.d("API", "getChat API call failed with exception: ${e.message}")
@@ -206,7 +298,7 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return emptyList()
     }
 
-    private fun createRetrofitService(baseUrl: String) : Retrofit {
+    private fun createRetrofitService(baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
