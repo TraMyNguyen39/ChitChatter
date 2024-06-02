@@ -45,6 +45,7 @@ class AccountFragment : Fragment() {
         setupActions()
 
         progressBar.visibility = View.VISIBLE
+        binding.containerAccountFragment.visibility = View.INVISIBLE
         viewModel.loadAccountInfo(args.email)
     }
 
@@ -71,6 +72,7 @@ class AccountFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.contact.observe(viewLifecycleOwner) { account ->
             progressBar.visibility = View.GONE
+            binding.containerAccountFragment.visibility = View.VISIBLE
             if (account != null) {
                 binding.textProfileDisplayName.text = account.name
                 binding.tvProfileEmail.text = account.email
