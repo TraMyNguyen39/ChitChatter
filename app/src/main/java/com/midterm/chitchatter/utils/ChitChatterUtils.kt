@@ -9,12 +9,20 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.database.DataSnapshot
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.data.model.Data
+import com.midterm.chitchatter.data.model.Message
+import com.midterm.chitchatter.data.model.MessageStatus
+import com.midterm.chitchatter.data.model.Notification
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object ChitChatterUtils {
     val email: String? = null
     var token: String? = null
-  
+
     fun TextInputEditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         this.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -52,5 +60,51 @@ object ChitChatterUtils {
         val email: String? = sharedPref.getString(emailKey, null)
 
         return email
+    }
+
+    fun convertSnapshotToMessage(snapshot: DataSnapshot, currentUserEmail: String): Message {
+        // Extract values from snapshot
+        val key = snapshot.key ?: ""
+        val value = snapshot.value as? Map<*, *> ?: emptyMap<Any, Any>()
+        val id = value["id"] as? String ?: ""
+        val createdAtStr = value["createdAt"] as? String ?: ""
+        val sender = value["sender"] as? String ?: ""
+        val receiver = value["receiver"] as? String ?: ""
+        val content = value["content"] as? String ?: ""
+        val statusInt = (value["status"] as? Long)?.toInt() ?: MessageStatus.SENDING.toInt()
+
+        // Parse createdAt to timestamp (milliseconds)
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        val createdAt: Long = try {
+            val date: Date = dateFormat.parse(createdAtStr) ?: Date()
+            date.time
+        } catch (e: Exception) {
+            Date().time
+        }
+
+        val formattedTime = value["formattedTime"] as? String ?: ""
+
+        // Create Data and Notification objects with default values (or based on snapshot data if needed)
+        val data = Data(text = content)
+        val notification = Notification(title = "", body = content)
+
+        // Construct the Message object
+        val message = Message(
+            id = id,
+            sender = sender,
+            receiver = receiver,
+            data = data,
+            notification = notification,
+            timestamp = createdAt,
+            status = statusInt,
+            token = null,
+            name = "",
+            content = content,
+            url = "",
+            formattedTime = formattedTime,
+            currentUserEmail = currentUserEmail
+        )
+
+        return message
     }
 }

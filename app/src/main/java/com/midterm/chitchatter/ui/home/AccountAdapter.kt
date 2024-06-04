@@ -57,14 +57,14 @@ class AccountAdapter(
             if (lastMsg != null) {
                 if (lastMsg.isIncoming) {
                     binding.tvMessage.text = lastMsg.content
-                    if (lastMsg.status == MessageStatus.SENT.ordinal) {
+                    if (lastMsg.status == MessageStatus.SENT.toInt()) {
                         binding.ivReceiver.setImageResource(R.drawable.received_msg)
                         binding.tvMessage.setTypeface(null, Typeface.BOLD)
                     }
                 } else {
                     binding.tvMessage.text = "You: ${lastMsg.content}"
                     when (lastMsg.status) {
-                        MessageStatus.SEEN.ordinal -> {
+                        MessageStatus.SEEN.toInt() -> {
                             val fileName = lastMsg.url
                             val bucketUrl = "gs://chitchatter-b97bf.appspot.com/"
 
@@ -80,11 +80,11 @@ class AccountAdapter(
                             }
                         }
 
-                        MessageStatus.SENDING.ordinal -> {
+                        MessageStatus.SENDING.toInt() -> {
                             binding.ivReceiver.setImageResource(R.drawable.sending_msg)
                         }
 
-                        MessageStatus.SENT.ordinal -> {
+                        MessageStatus.SENT.toInt() -> {
                             binding.ivReceiver.setImageResource(R.drawable.sent_msg)
                         }
 
@@ -132,19 +132,14 @@ class AccountAdapter(
         holder.bind(lastMsg)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateMessage(messages: List<Message>) {
-        var cnt = 0;
-        if (messagesList.isEmpty()) {
-            messagesList = (messages as ArrayList)
-        }
-        for (message in messages) {
-            updateMessage(message, cnt)
-            cnt++
-        }
+        messagesList.clear()
+        messagesList.addAll(messages)
+        notifyDataSetChanged()
     }
 
     fun updateMessage(message: Message, position: Int) {
-        val contactUsername = message.name
         messagesList[position] = message
         notifyItemChanged(position)
     }

@@ -23,6 +23,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -32,9 +33,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.ActivityMainBinding
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModelFactory
+import com.midterm.chitchatter.ui.login.LoginViewModel
+import com.midterm.chitchatter.ui.login.LoginViewModelFactory
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +48,9 @@ class MainActivity : AppCompatActivity() {
     private var connectedRef: DatabaseReference? = null
     private var firestore: FirebaseFirestore? = null
     private var auth: FirebaseAuth? = null
+    private val database = FirebaseDatabase.getInstance()
+    private lateinit var messagePath: String
+    private lateinit var receiver: String
 
     private lateinit var viewModel: HomeViewModel
     private val requestPermissionLauncher = registerForActivityResult(
@@ -94,6 +101,14 @@ class MainActivity : AppCompatActivity() {
                 Log.w("OnlineStatus", "Listener was cancelled")
             }
         })
+
+
+        receiver = (ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "").substringBefore('@')
+        // Đường dẫn để lắng nghe tất cả các tin nhắn đến cho người nhận
+        messagePath = "messages/$receiver"
+
+        // Lắng nghe thay đổi tại đường dẫn messagePath
+//        listenForMessages()
     }
 
     override fun onStart() {
@@ -267,5 +282,53 @@ class MainActivity : AppCompatActivity() {
         toolbar.visibility = View.VISIBLE
         val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav)
         bottomNav.visibility = View.VISIBLE
+    }
+
+    private fun listenForMessages() {
+        Log.d("MessagePath", messagePath);
+        val dbRef = database.getReference(messagePath)
+
+        dbRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                // Xử lý dữ liệu khi có tin nhắn mới
+                Log.d("onChildAdded", snapshot.toString());
+                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "")
+                Log.d("newMessage", newMessage.toString())
+//                val message = snapshot.getValue(Message::class.java)
+//                message?.let {
+//                    // Hiển thị tin nhắn lên giao diện người dùng (UI)
+//                    displayMessage(it)
+//                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("onChildChanged", snapshot.toString());
+                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "")
+                Log.d("newMessage", newMessage.toString())
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                Log.d("onChildRemoved", snapshot.toString());
+
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("onChildMoved", snapshot.toString());
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("onCancelled", "Failed to read value.", error.toException())
+            }
+
+            // Các phương thức khác của ChildEventListener có thể được bỏ qua
+        })
+    }
+
+    private fun displayMessage(message: Message) {
+        // Hiển thị tin nhắn lên giao diện người dùng (UI)
+        // Bạn có thể cập nhật TextView, RecyclerView, v.v.
+        Log.d("MainActivity", "Message: ${message.content} from ${message.sender}")
+        // Ví dụ: textViewMessage.text = "${message.sender}: ${message.content}"
     }
 }
