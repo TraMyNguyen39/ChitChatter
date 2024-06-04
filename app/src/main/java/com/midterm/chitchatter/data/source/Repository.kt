@@ -2,6 +2,7 @@ package com.midterm.chitchatter.data.source
 
 import android.content.Context
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.utils.ChitChatterUtils
 
@@ -16,6 +17,7 @@ interface Repository {
         suspend fun getAllLastMessages(email: String) : ArrayList<Message>
         suspend fun getChat(sender: String, receiver: String): List<Message>
         suspend fun sendMessage(message: Message): Boolean
+        suspend fun sendMessage(message: DataSendMessage): Boolean
     }
 
     interface LocalRepository : Repository {

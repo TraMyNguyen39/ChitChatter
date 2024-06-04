@@ -22,6 +22,8 @@ import java.util.Locale
 object ChitChatterUtils {
     val email: String? = null
     var token: String? = null
+    var currentAccountEmail: String? = null
+
 
     fun TextInputEditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         this.addTextChangedListener(object : TextWatcher {
@@ -101,10 +103,43 @@ object ChitChatterUtils {
             name = "",
             content = content,
             url = "",
-            formattedTime = formattedTime,
-            currentUserEmail = currentUserEmail
+            formattedTime = formattedTime
         )
 
         return message
+    }
+
+    fun saveTokenToSharedPreferences(context: Context, token: String) {
+        val accountKey = context.getString(R.string.preference_account_key)
+        val tokenKey = context.getString(R.string.preference_token_key)
+
+        val sharedPref: SharedPreferences = context.getSharedPreferences(accountKey, Context.MODE_PRIVATE)
+        with (sharedPref.edit()) {
+            putString(tokenKey, token)
+            apply()
+        }
+    }
+    fun getCurrentAccountToken(context: Context): String? {
+        var account_key = context.getString(R.string.preference_account_key);
+        var tokenKey = context.getString(R.string.preference_token_key);
+
+        val sharedPref: SharedPreferences = context.getSharedPreferences(account_key, Context.MODE_PRIVATE)
+        val token: String? = sharedPref.getString(tokenKey, null)
+
+        return token
+    }
+    fun setCurrentAccountToken(context: Context) {
+        var account_key = context.getString(R.string.preference_account_key);
+        var tokenKey = context.getString(R.string.preference_token_key);
+
+        val sharedPref: SharedPreferences = context.getSharedPreferences(account_key, Context.MODE_PRIVATE)
+        token = sharedPref.getString(tokenKey, null)
+    }
+    fun setCurrentAccountEmail(context: Context) {
+        var account_key = context.getString(R.string.preference_account_key);
+        var emailKey = context.getString(R.string.preference_email_key);
+
+        val sharedPref: SharedPreferences = context.getSharedPreferences(account_key, Context.MODE_PRIVATE)
+        currentAccountEmail = sharedPref.getString(emailKey, null)
     }
 }

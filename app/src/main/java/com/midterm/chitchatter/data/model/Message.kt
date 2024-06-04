@@ -1,6 +1,8 @@
 package com.midterm.chitchatter.data.model
 
 import com.google.firebase.database.IgnoreExtraProperties
+import com.midterm.chitchatter.ui.home.HomeViewModel
+import com.midterm.chitchatter.utils.ChitChatterUtils
 import java.util.Date
 
 
@@ -15,6 +17,14 @@ enum class MessageStatus(val value: Int) {
         return value
     }
 }
+data class DataSendMessage(
+    val token: String? = null,
+    val sender: String = "",
+    val receiver: String = "",
+    val content: String = "",
+    val photoUrl: String? = null,
+    val photoMimeType: String? = null
+)
 
 @IgnoreExtraProperties
 data class Data(
@@ -42,8 +52,7 @@ data class Message @JvmOverloads constructor(
     val content: String = "",
 //    val isIncoming: Boolean = true,
     val url: String = "",
-    val formattedTime: String,
-    var currentUserEmail: String
+    val formattedTime: String
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -63,6 +72,8 @@ data class Message @JvmOverloads constructor(
         result = 31 * result + timestamp.hashCode()
         return result
     }
+    val currentUserEmail: String
+        get() = ChitChatterUtils.currentAccountEmail ?: ""
     val isIncoming: Boolean
         get() = (currentUserEmail ?: "").compareTo(sender) != 0
 }
