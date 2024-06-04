@@ -196,14 +196,9 @@ class ContactAdapter(
                 binding.btnAddContact.text = "Hủy"
                 binding.btnAddContact.isActivated = false
                 binding.btnAddContact.setBackgroundColor(itemView.context.getColor(R.color.black))
-                binding.btnAddContact.setCompoundDrawables(itemView.context.resources.getDrawable(R.drawable.ic_remove), null, null, null)
-//                binding.btnAddContact.setBackgroundResource(androidx.appcompat.R.color.material_grey_600)
             } else {
                 binding.btnAddContact.text = "Kết nối"
                 binding.btnAddContact.setBackgroundColor(itemView.context.getColor(R.color.primary_color))
-                binding.btnAddContact.setCompoundDrawables(itemView.context.resources.getDrawable(R.drawable.ic_add), null, null, null)
-//                binding.btnAddContact.setCompoundDrawables(itemView.context.getResources().getDrawable(R.drawable.ic_contacts), null, null, null)
-//                binding.btnAddContact.setBackgroundResource(R.color.primary_color)
             }
 
             if (contact.imageUrl != null) {

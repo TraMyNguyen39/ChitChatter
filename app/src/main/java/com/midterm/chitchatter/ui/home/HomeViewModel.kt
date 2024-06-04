@@ -126,8 +126,7 @@ class HomeViewModel(
                                 name = message.name,
                                 content = updatedMessage.content,
                                 url = message.url,
-                                formattedTime = updatedMessage.formattedTime,
-                                currentUserEmail = message.currentUserEmail
+                                formattedTime = updatedMessage.formattedTime
                             )
                         )
                     } else {

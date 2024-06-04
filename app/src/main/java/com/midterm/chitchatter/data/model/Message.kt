@@ -72,7 +72,7 @@ data class Message @JvmOverloads constructor(
         result = 31 * result + timestamp.hashCode()
         return result
     }
-    val currentUserEmail: String
+    var currentUserEmail: String = ""
         get() = ChitChatterUtils.currentAccountEmail ?: ""
     val isIncoming: Boolean
         get() = (currentUserEmail ?: "").compareTo(sender) != 0

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -165,6 +166,10 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 progressBar.visibility = View.VISIBLE
                 rejectConnect(userEmail!!, contactEmail)
             }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
