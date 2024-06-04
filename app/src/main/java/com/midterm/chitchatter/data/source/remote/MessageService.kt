@@ -44,6 +44,13 @@ interface MessageService {
         @Query("email") email: String,
     ): Response<ResponseResult<Account?>>
 
+    @GET("/")
+    suspend fun getContactDetailConnection(
+        @Query("email") email: String,
+        @Query("contactEmail") contactEmail: String,
+        @Query("token") token: String
+    ): Response<ResponseResult<Account?>>
+
 //    @Headers(
 //        "Content-Type: application/json",
 //        "Authorization: key=AAAAB4y-Wag:APA91bFkXiF05lJrtHNbZhy_iOxGi2TM-JgyYA3bitXDeajc7KyU70unReN0QGYEXPUPpMhJKTpVL-iaquJV3O7_ckJ1JSh79vOcZAQxaRkDkl90HwwtK11IMUcDJITdoLbq1bLCA-KJ"

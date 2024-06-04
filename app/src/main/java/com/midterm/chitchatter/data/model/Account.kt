@@ -20,7 +20,7 @@ data class Account(
     @SerializedName("token") var token: String? = null,
     @SerializedName("contacts") var contacts: MutableList<String> = mutableListOf(),
     var isVerified: Boolean? = true,
-    @SerializedName("contactStatus") var contactStatus: Int = ContactStatus.UNCONNECTED.ordinal
+    @SerializedName("contactStatus") var contactStatus: Int? = null
 )   : Serializable{
 
     override fun equals(other: Any?): Boolean {

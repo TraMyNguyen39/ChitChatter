@@ -35,6 +35,10 @@ class DefaultRepository(
         return remoteDataSource.getContactDetail(email)
     }
 
+    override suspend fun getContactDetailConnection(userEmail: String, contactEmail: String, token: String): Account? {
+        return remoteDataSource.getContactDetailConnection(userEmail, contactEmail, token)
+    }
+
     override suspend fun addContact(
         userEmail: String,
         contactEmail: String,

@@ -12,6 +12,11 @@ interface Repository {
         suspend fun sendResetPassword(email: String) : Int
         suspend fun sendEmailVerification(email: String) : Boolean
         suspend fun getContactDetail(email: String) : Account?
+        suspend fun getContactDetailConnection(
+            userEmail: String,
+            contactEmail: String,
+            token: String
+        ): Account?
         suspend fun addContact(userEmail: String, contactEmail: String, token: String) : Boolean
         suspend fun deleteContact(userEmail: String, contactEmail: String, token: String) : Boolean
         suspend fun acceptContact(userEmail: String, contactEmail: String, token: String) : Boolean

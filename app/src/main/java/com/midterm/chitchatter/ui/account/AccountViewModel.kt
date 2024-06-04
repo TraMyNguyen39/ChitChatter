@@ -9,7 +9,6 @@ import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AccountViewModel(
@@ -18,11 +17,22 @@ class AccountViewModel(
     private val _contact = MutableLiveData<Account?>()
     val contact: LiveData<Account?> = _contact
 
-    fun loadAccountInfo(email: String?) {
+    fun loadAccountInfo(email: String?, contactEmail: String? = null) {
         if (email != null) {
             viewModelScope.launch {
-                val account = (repository as Repository.RemoteRepository).getContactDetail(email)
-                _contact.postValue(account)
+                if (contactEmail != null) {
+                    val account =
+                        (repository as Repository.RemoteRepository).getContactDetailConnection(
+                            email,
+                            contactEmail,
+                            ChitChatterUtils.token!!
+                        )
+                    _contact.postValue(account)
+                } else {
+                    val account =
+                        (repository as Repository.RemoteRepository).getContactDetail(email)
+                    _contact.postValue(account)
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
@@ -20,7 +21,7 @@ import com.midterm.chitchatter.databinding.FragmentAccountBinding
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import com.midterm.chitchatter.utils.ContactStatus
 
-class AccountFragment : Fragment() {
+class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var binding: FragmentAccountBinding
     private lateinit var progressBar: ProgressBar
     private val args: AccountFragmentArgs by navArgs()
@@ -28,7 +29,7 @@ class AccountFragment : Fragment() {
         val repository = (requireActivity().application as ChitChatterApplication).repository
         AccountViewModelFactory(repository)
     }
-    private var contactStatus = ContactStatus.CONNECTED.ordinal
+    private var contactStatus : Int? = null // contactStatus = null khi họ tự xem profile của mình
     private var userEmail : String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -45,6 +46,7 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        contactStatus = args.contactStatus
         setupViews()
         setupViewModel()
         setupActions()
@@ -58,19 +60,21 @@ class AccountFragment : Fragment() {
     }
 
     private fun setupViews() {
-        contactStatus = args.contactStatus
         when (contactStatus) {
             ContactStatus.CONNECTED.ordinal -> {
+                binding.btnProfileDeny.visibility = View.GONE
                 setUpButton(R.string.txt_unfriend, R.color.black)
             }
             ContactStatus.UNCONNECTED.ordinal -> {
+                binding.btnProfileDeny.visibility = View.GONE
                 setUpButton(R.string.txt_action_connect, R.color.primary_color)
             }
             ContactStatus.REQUESTED.ordinal -> {
+                binding.btnProfileDeny.visibility = View.GONE
                 setUpButton(R.string.txt_cancel_connect, androidx.appcompat.R.color.material_grey_600)
             }
             else -> {
-                binding.btnProfileUnfriend.visibility = View.VISIBLE
+                binding.btnProfileDeny.visibility = View.VISIBLE
                 setUpButton(R.string.txt_accept, R.color.primary_color)
             }
         }
@@ -91,6 +95,10 @@ class AccountFragment : Fragment() {
                 binding.tvProfileDisplayName.text = account.name
                 binding.tvProfileBirthdate.text = account.birthday
                 binding.tvProfileGender.text = account.gender
+                if (account.contactStatus != null) {
+                    contactStatus = account.contactStatus
+                    setupViews()
+                }
 
                 if (account.imageUrl != null) {
                     val fileName = account.imageUrl as String
@@ -119,6 +127,8 @@ class AccountFragment : Fragment() {
 
     private fun setupActions() {
         val contactEmail = args.email
+
+        binding.refreshAccount.setOnRefreshListener(this)
         binding.btnProfileAction.setOnClickListener {
             when (contactStatus) {
                 ContactStatus.CONNECTED.ordinal -> {
@@ -127,6 +137,7 @@ class AccountFragment : Fragment() {
                     builder.setMessage("Bạn có chắc chắn hủy kết bạn với người này?")
                     builder.setPositiveButton("Chắc chắn") { dialog, _ ->
                         dialog.cancel()
+                        progressBar.visibility = View.VISIBLE
                         deleteConnect(userEmail!!, contactEmail)
                     }
                     builder.setNegativeButton("Hủy") { dialog, _ ->
@@ -135,19 +146,23 @@ class AccountFragment : Fragment() {
                     builder.show()
                 }
                 ContactStatus.UNCONNECTED.ordinal -> {
+                    progressBar.visibility = View.VISIBLE
                     addConnect(userEmail!!, contactEmail)
                 }
                 ContactStatus.REQUESTED.ordinal -> {
+                    progressBar.visibility = View.VISIBLE
                     rejectConnect(userEmail!!, contactEmail)
                 }
-                else -> {
+                ContactStatus.RECEIVED.ordinal -> {
+                    progressBar.visibility = View.VISIBLE
                     acceptConnect(userEmail!!, contactEmail)
                 }
             }
         }
 
-        binding.btnProfileUnfriend.setOnClickListener {
+        binding.btnProfileDeny.setOnClickListener {
             if (contactStatus == ContactStatus.RECEIVED.ordinal) {
+                progressBar.visibility = View.VISIBLE
                 rejectConnect(userEmail!!, contactEmail)
             }
         }
@@ -160,12 +175,13 @@ class AccountFragment : Fragment() {
                 Snackbar.make(
                     requireView(), "Đã gửi lời mời kết bạn!", Snackbar.LENGTH_LONG
                 ).show()
-                setUpButton(R.string.txt_cancel_connect, androidx.appcompat.R.color.material_grey_600)
+                setupViews()
             } else {
                 Snackbar.make(
                     requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
                 ).show()
             }
+            progressBar.visibility = View.GONE
         }
     }
 
@@ -173,37 +189,53 @@ class AccountFragment : Fragment() {
         viewModel.deleteContact(userEmail, contactEmail) { isSuccessful ->
             if (isSuccessful) {
                 contactStatus = ContactStatus.UNCONNECTED.ordinal
-                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+                Snackbar.make(
+                    requireView(), "Đã hủy kết bạn!", Snackbar.LENGTH_LONG
+                ).show()
+                setupViews()
             } else {
                 Snackbar.make(
                     requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
                 ).show()
             }
+            progressBar.visibility = View.GONE
         }
     }
 
     private fun acceptConnect(userEmail: String, contactEmail: String) {
-        viewModel.deleteContact(userEmail, contactEmail) { isSuccessful ->
+        viewModel.acceptContact(userEmail, contactEmail) { isSuccessful ->
             if (isSuccessful) {
-                contactStatus = ContactStatus.UNCONNECTED.ordinal
-                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+                contactStatus = ContactStatus.CONNECTED.ordinal
+                Snackbar.make(
+                    requireView(), "Bạn đã kết nối với $contactEmail", Snackbar.LENGTH_LONG
+                ).show()
+                setupViews()
             } else {
                 Snackbar.make(
                     requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
                 ).show()
             }
+            progressBar.visibility = View.GONE
         }
     }
     private fun rejectConnect(userEmail: String, contactEmail: String) {
-        viewModel.deleteContact(userEmail, contactEmail) { isSuccessful ->
+        viewModel.rejectContact(userEmail, contactEmail) { isSuccessful ->
             if (isSuccessful) {
                 contactStatus = ContactStatus.UNCONNECTED.ordinal
-                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+                setupViews()
             } else {
                 Snackbar.make(
                     requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
                 ).show()
             }
+            progressBar.visibility = View.GONE
         }
+    }
+
+    override fun onRefresh() {
+        progressBar.visibility = View.VISIBLE
+        binding.containerAccountFragment.visibility = View.INVISIBLE
+        viewModel.loadAccountInfo(userEmail, args.email)
+        binding.refreshAccount.isRefreshing = false
     }
 }

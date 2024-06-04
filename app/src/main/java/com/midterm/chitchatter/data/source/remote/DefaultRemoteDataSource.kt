@@ -146,6 +146,27 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return null
     }
 
+    override suspend fun getContactDetailConnection(userEmail: String, contactEmail: String, token: String): Account? {
+        val baseUrl = "https://getcontactaccount-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+
+        try {
+            val response = retrofit.getContactDetailConnection(userEmail, contactEmail, token)
+
+            if (response.isSuccessful) {
+                return response.body()?.data
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return null
+    }
+
     override suspend fun addContact(
         userEmail: String,
         contactEmail: String,

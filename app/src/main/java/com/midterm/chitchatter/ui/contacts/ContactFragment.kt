@@ -55,6 +55,7 @@ class ContactFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         progressBar.visibility = View.VISIBLE
+        binding.rvContacts.visibility = View.INVISIBLE
         searchView.setQuery("", true)
     }
 
@@ -69,12 +70,14 @@ class ContactFragment : Fragment() {
         viewModel.contacts.observe(viewLifecycleOwner) {
             adapter.updateData(it)
             progressBar.visibility = View.GONE
+            binding.rvContacts.visibility = View.VISIBLE
         }
 
 
         viewModel.searchResults.observe(viewLifecycleOwner) {
             adapter.updateData(it)
             progressBar.visibility = View.GONE
+            binding.rvContacts.visibility = View.VISIBLE
         }
     }
 
@@ -82,7 +85,7 @@ class ContactFragment : Fragment() {
 
         val listener = object : ContactAdapter.OnItemClickListener {
             override fun onDetailItemClick(account: Account) {
-                moveToContactDetail(account.email, account.contactStatus)
+                moveToContactDetail(account.email, account.contactStatus!!)
             }
 
             override fun onChatItemClick(account: Account) {
@@ -161,12 +164,14 @@ class ContactFragment : Fragment() {
         binding.searchContacts.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 progressBar.visibility = View.VISIBLE
+                binding.rvContacts.visibility = View.INVISIBLE
                 viewModel.searchDebounced(query, userEmail!!)
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
                 progressBar.visibility = View.VISIBLE
+                binding.rvContacts.visibility = View.INVISIBLE
                 viewModel.searchDebounced(newText, userEmail!!)
                 return false
             }
