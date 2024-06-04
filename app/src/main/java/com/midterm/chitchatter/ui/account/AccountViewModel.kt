@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.utils.ChitChatterUtils
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AccountViewModel(
@@ -37,10 +39,10 @@ class AccountViewModel(
         }
     }
 
-    fun removeContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
+    fun deleteContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val token = ChitChatterUtils.token!!
-            val isSuccessful = (repository as Repository.RemoteRepository).removeContact(
+            val isSuccessful = (repository as Repository.RemoteRepository).deleteContact(
                 userEmail,
                 contactEmail,
                 token
@@ -48,6 +50,32 @@ class AccountViewModel(
             callback(isSuccessful)
         }
     }
+
+    fun acceptContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val token = ChitChatterUtils.token!!
+            val isSuccessful = (repository as Repository.RemoteRepository).acceptContact(
+                userEmail,
+                contactEmail,
+                token
+            )
+            callback(isSuccessful)
+        }
+    }
+
+    fun rejectContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val token = ChitChatterUtils.token!!
+            val isSuccessful = (repository as Repository.RemoteRepository).rejectContact(
+                userEmail,
+                contactEmail,
+                token
+            )
+            callback(isSuccessful)
+        }
+    }
+
+    private var searchJob: Job? = null
 }
 
 class AccountViewModelFactory(

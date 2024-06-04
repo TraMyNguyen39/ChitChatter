@@ -29,10 +29,15 @@ class AccountFragment : Fragment() {
         AccountViewModelFactory(repository)
     }
     private var contactStatus = ContactStatus.CONNECTED.ordinal
-
+    private var userEmail : String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+        userEmail = ChitChatterUtils.getCurrentAccount(requireContext())!!
+        if (userEmail == null) {
+            requireActivity().finish()
+        }
+
         progressBar = requireActivity().findViewById(R.id.progress_bar_main)
         binding = FragmentAccountBinding.inflate(inflater, container, false)
         return binding.root
@@ -43,7 +48,10 @@ class AccountFragment : Fragment() {
         setupViews()
         setupViewModel()
         setupActions()
+    }
 
+    override fun onResume() {
+        super.onResume()
         progressBar.visibility = View.VISIBLE
         binding.containerAccountFragment.visibility = View.INVISIBLE
         viewModel.loadAccountInfo(args.email)
@@ -58,15 +66,19 @@ class AccountFragment : Fragment() {
             ContactStatus.UNCONNECTED.ordinal -> {
                 setUpButton(R.string.txt_action_connect, R.color.primary_color)
             }
-            else -> {
+            ContactStatus.REQUESTED.ordinal -> {
                 setUpButton(R.string.txt_cancel_connect, androidx.appcompat.R.color.material_grey_600)
+            }
+            else -> {
+                binding.btnProfileUnfriend.visibility = View.VISIBLE
+                setUpButton(R.string.txt_accept, R.color.primary_color)
             }
         }
     }
 
     private fun setUpButton(textResId: Int, color: Int) {
-        binding.btnProfileUnfriend.text = getString(textResId)
-        binding.btnProfileUnfriend.setBackgroundColor(requireActivity().getColor(color))
+        binding.btnProfileAction.text = getString(textResId)
+        binding.btnProfileAction.setBackgroundColor(requireActivity().getColor(color))
     }
 
     private fun setupViewModel() {
@@ -106,31 +118,43 @@ class AccountFragment : Fragment() {
     }
 
     private fun setupActions() {
+        val contactEmail = args.email
+        binding.btnProfileAction.setOnClickListener {
+            when (contactStatus) {
+                ContactStatus.CONNECTED.ordinal -> {
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("Hủy kết nối")
+                    builder.setMessage("Bạn có chắc chắn hủy kết bạn với người này?")
+                    builder.setPositiveButton("Chắc chắn") { dialog, _ ->
+                        dialog.cancel()
+                        deleteConnect(userEmail!!, contactEmail)
+                    }
+                    builder.setNegativeButton("Hủy") { dialog, _ ->
+                        dialog.cancel()
+                    }
+                    builder.show()
+                }
+                ContactStatus.UNCONNECTED.ordinal -> {
+                    addConnect(userEmail!!, contactEmail)
+                }
+                ContactStatus.REQUESTED.ordinal -> {
+                    rejectConnect(userEmail!!, contactEmail)
+                }
+                else -> {
+                    acceptConnect(userEmail!!, contactEmail)
+                }
+            }
+        }
+
         binding.btnProfileUnfriend.setOnClickListener {
-            val userEmail = ChitChatterUtils.getCurrentAccount(requireContext())
-            val contactEmail = args.email
-            if (contactStatus == ContactStatus.CONNECTED.ordinal) {
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setTitle("Hủy kết bạn")
-                builder.setMessage("Bạn có chắc chắn hủy kết bạn với người này?")
-                builder.setPositiveButton("Chắc chắn") { dialog, _ ->
-                    dialog.cancel()
-                    cancelConnect(userEmail, contactEmail)
-                }
-                builder.setNegativeButton("Hủy") { dialog, _ ->
-                    dialog.cancel()
-                }
-                builder.show()
-            } else if (contactStatus == ContactStatus.UNCONNECTED.ordinal) {
-                addConnect(userEmail, contactEmail)
-            } else {
-                cancelConnect(userEmail, contactEmail)
+            if (contactStatus == ContactStatus.RECEIVED.ordinal) {
+                rejectConnect(userEmail!!, contactEmail)
             }
         }
     }
 
-    private fun addConnect(userEmail: String?, contactEmail: String) {
-        viewModel.addContact(userEmail!!, contactEmail) { isSuccessful ->
+    private fun addConnect(userEmail: String, contactEmail: String) {
+        viewModel.addContact(userEmail, contactEmail) { isSuccessful ->
             if (isSuccessful) {
                 contactStatus = ContactStatus.REQUESTED.ordinal
                 Snackbar.make(
@@ -145,10 +169,35 @@ class AccountFragment : Fragment() {
         }
     }
 
-    private fun cancelConnect(userEmail: String?, contactEmail: String) {
-        viewModel.removeContact(userEmail!!, contactEmail) { isSuccessful ->
+    private fun deleteConnect(userEmail: String, contactEmail: String) {
+        viewModel.deleteContact(userEmail, contactEmail) { isSuccessful ->
             if (isSuccessful) {
-                contactStatus = ContactStatus.CONNECTED.ordinal
+                contactStatus = ContactStatus.UNCONNECTED.ordinal
+                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+            } else {
+                Snackbar.make(
+                    requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun acceptConnect(userEmail: String, contactEmail: String) {
+        viewModel.deleteContact(userEmail, contactEmail) { isSuccessful ->
+            if (isSuccessful) {
+                contactStatus = ContactStatus.UNCONNECTED.ordinal
+                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+            } else {
+                Snackbar.make(
+                    requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+    private fun rejectConnect(userEmail: String, contactEmail: String) {
+        viewModel.deleteContact(userEmail, contactEmail) { isSuccessful ->
+            if (isSuccessful) {
+                contactStatus = ContactStatus.UNCONNECTED.ordinal
                 setUpButton(R.string.txt_action_connect, R.color.primary_color)
             } else {
                 Snackbar.make(

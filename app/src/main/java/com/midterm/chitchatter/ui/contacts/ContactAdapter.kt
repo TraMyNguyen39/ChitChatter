@@ -23,7 +23,7 @@ class ContactAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (contactList[position].contactStatus) {
             ContactStatus.CONNECTED.ordinal -> 1
-            ContactStatus.UNCONNECTED.ordinal -> 2
+            ContactStatus.RECEIVED.ordinal -> 2
             else -> 0
         }
     }
@@ -52,31 +52,39 @@ class ContactAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (holder is ContactViewHolder)
-            holder.bind(contactList[position])
-        else if (holder is AddOrPendingContactViewHolder) {
-            holder.bind(contactList[position])
-            holder.binding.btnAddContact.setOnClickListener {
-                val contact = contactList[position]
-                if (contact.contactStatus == ContactStatus.UNCONNECTED.ordinal) {
-                    listener.onAddItemClick(contact)
-                } else {
+        when (holder) {
+            is ContactViewHolder -> holder.bind(contactList[position])
+            is AddOrPendingContactViewHolder -> {
+                holder.bind(contactList[position])
+                holder.binding.btnAddContact.setOnClickListener {
+                    val contact = contactList[position]
+                    if (contact.contactStatus == ContactStatus.UNCONNECTED.ordinal) {
+                        listener.onAddItemClick(contact)
+                    } else {
+                        listener.onRejectItemClick(contact)
+                    }
+                }
+            }
+
+            is ContactRequestViewHolder -> {
+                holder.bind(contactList[position])
+                holder.binding.btnContactAccept.setOnClickListener {
+                    val contact = contactList[position]
+                    listener.onAcceptItemClick(contact)
+                }
+                holder.binding.btnContactDeny.setOnClickListener {
+                    val contact = contactList[position]
                     listener.onRejectItemClick(contact)
                 }
-                notifyItemChanged(position)
             }
-        } else if (holder is ContactRequestViewHolder) {
-            holder.bind(contactList[position])
-            holder.binding.btnContactAccept.setOnClickListener {
-                val contact = contactList[position]
-                listener.onAcceptItemClick(contact)
-                notifyItemChanged(position)
-            }
-            holder.binding.btnContactDeny.setOnClickListener {
-                val contact = contactList[position]
-                listener.onRejectItemClick(contact)
-                notifyItemChanged(position)
-            }
+        }
+    }
+
+    fun notifyItemChange(account: Account) {
+        val index = contactList.indexOf(account)
+        if (index > -1) {
+            contactList[index] = account
+            notifyItemChanged(index)
         }
     }
 
@@ -117,23 +125,24 @@ class ContactAdapter(
                     // Xử lý lỗi nếu có
                     Log.e("FirebaseStorage", "Failed to get download URL", exception)
                 }
-
-                binding.btnDetail.setOnClickListener {
-                    listener.onDetailItemClick(contact)
-                }
-
-                binding.btnChat.setOnClickListener {
-                    listener.onChatItemClick(contact)
-                }
-
-                itemView.setOnClickListener {
-                    listener.onDetailItemClick(contact)
-                }
             } else {
                 Glide.with(binding.ivContactAvt)
                     .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
                     .error(R.drawable.android)
                     .into(binding.ivContactAvt)
+            }
+
+
+            binding.btnDetail.setOnClickListener {
+                listener.onDetailItemClick(contact)
+            }
+
+            binding.btnChat.setOnClickListener {
+                listener.onChatItemClick(contact)
+            }
+
+            itemView.setOnClickListener {
+                listener.onDetailItemClick(contact)
             }
         }
     }
@@ -162,15 +171,15 @@ class ContactAdapter(
                     // Xử lý lỗi nếu có
                     Log.e("FirebaseStorage", "Failed to get download URL", exception)
                 }
-
-                itemView.setOnClickListener {
-                    listener.onDetailItemClick(contact)
-                }
             } else {
                 Glide.with(binding.ivContactAvt)
                     .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
                     .error(R.drawable.android)
                     .into(binding.ivContactAvt)
+            }
+
+            itemView.setOnClickListener {
+                listener.onDetailItemClick(contact)
             }
         }
     }
@@ -179,15 +188,21 @@ class ContactAdapter(
         val binding: ItemAddContactBinding,
         private val listener: OnItemClickListener
     ) : ViewHolder(binding.root) {
+        @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(contact: Account) {
             binding.tvContactName.text = contact.name
             binding.tvContactEmail.text = contact.email
             if (contact.contactStatus == ContactStatus.REQUESTED.ordinal) {
                 binding.btnAddContact.text = "Hủy"
                 binding.btnAddContact.isActivated = false
+                binding.btnAddContact.setBackgroundColor(itemView.context.getColor(R.color.black))
+                binding.btnAddContact.setCompoundDrawables(itemView.context.resources.getDrawable(R.drawable.ic_remove), null, null, null)
 //                binding.btnAddContact.setBackgroundResource(androidx.appcompat.R.color.material_grey_600)
             } else {
                 binding.btnAddContact.text = "Kết nối"
+                binding.btnAddContact.setBackgroundColor(itemView.context.getColor(R.color.primary_color))
+                binding.btnAddContact.setCompoundDrawables(itemView.context.resources.getDrawable(R.drawable.ic_add), null, null, null)
+//                binding.btnAddContact.setCompoundDrawables(itemView.context.getResources().getDrawable(R.drawable.ic_contacts), null, null, null)
 //                binding.btnAddContact.setBackgroundResource(R.color.primary_color)
             }
 
@@ -207,15 +222,15 @@ class ContactAdapter(
                     // Xử lý lỗi nếu có
                     Log.e("FirebaseStorage", "Failed to get download URL", exception)
                 }
-
-                itemView.setOnClickListener {
-                    listener.onDetailItemClick(contact)
-                }
             } else {
                 Glide.with(binding.ivContactAvt)
                     .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
                     .error(R.drawable.android)
                     .into(binding.ivContactAvt)
+            }
+
+            itemView.setOnClickListener {
+                listener.onDetailItemClick(contact)
             }
         }
     }

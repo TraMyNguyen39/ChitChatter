@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.ui.contacts
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +25,8 @@ class ContactFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var viewModel: ContactViewModel
     private lateinit var adapter: ContactAdapter
-    private var userEmail : String? = null
+    private lateinit var searchView: SearchView
+    private var userEmail: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,12 +43,19 @@ class ContactFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchView = binding.searchContacts
+
         setUpViewModel()
         setupAdapter()
         setUpActions()
 
-        progressBar.visibility = View.VISIBLE
         viewModel.loadAllContact(ChitChatterUtils.getCurrentAccount(requireContext()))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        progressBar.visibility = View.VISIBLE
+        searchView.setQuery("", true)
     }
 
     private fun setUpViewModel() {
@@ -81,33 +90,31 @@ class ContactFragment : Fragment() {
             }
 
             override fun onAddItemClick(account: Account) {
-                val userEmail = ChitChatterUtils.getCurrentAccount(requireContext())
-                if (userEmail != null) {
-                    viewModel.addContact(userEmail, account.email) { isSuccessful ->
-                        if (isSuccessful) {
-                            Snackbar.make(
-                                requireView(), "Đã gửi lời mời kết bạn!", Snackbar.LENGTH_LONG
-                            ).show()
-                            account.contactStatus = ContactStatus.REQUESTED.ordinal
-                        } else {
-                            Snackbar.make(
-                                requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
-                            ).show()
-                        }
+                viewModel.addContact(userEmail!!, account.email) { isSuccessful ->
+                    if (isSuccessful) {
+                        Snackbar.make(
+                            requireView(), "Đã gửi lời mời kết bạn!", Snackbar.LENGTH_LONG
+                        ).show()
+                        account.contactStatus = ContactStatus.REQUESTED.ordinal
+                        adapter.notifyItemChange(account)
+                    } else {
+                        Snackbar.make(
+                            requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
+                        ).show()
                     }
                 }
+                ChitChatterUtils.hideKeyBoard(requireView())
             }
 
             override fun onAcceptItemClick(account: Account) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onRejectItemClick(account: Account) {
-                val userEmail = ChitChatterUtils.getCurrentAccount(requireContext())
-                if (userEmail != null) {
-                    viewModel.removeContact(userEmail, account.email) { isSuccessful ->
+                userEmail?.let {
+                    viewModel.acceptContact(it, account.email) { isSuccessful ->
                         if (isSuccessful) {
-                            account.contactStatus = ContactStatus.UNCONNECTED.ordinal
+                            Snackbar.make(
+                                requireView(), "Bạn đã kết nối với ${account.email}", Snackbar.LENGTH_LONG
+                            ).show()
+                            account.contactStatus = ContactStatus.CONNECTED.ordinal
+                            adapter.notifyItemChange(account)
                         } else {
                             Snackbar.make(
                                 requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
@@ -115,6 +122,21 @@ class ContactFragment : Fragment() {
                         }
                     }
                 }
+                ChitChatterUtils.hideKeyBoard(requireView())
+            }
+
+            override fun onRejectItemClick(account: Account) {
+                viewModel.rejectContact(userEmail!!, account.email) { isSuccessful ->
+                    if (isSuccessful) {
+                        account.contactStatus = ContactStatus.UNCONNECTED.ordinal
+                        adapter.notifyItemChange(account)
+                    } else {
+                        Snackbar.make(
+                            requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                }
+                ChitChatterUtils.hideKeyBoard(requireView())
             }
         }
 
@@ -134,7 +156,6 @@ class ContactFragment : Fragment() {
     }
 
     private fun setUpActions() {
-        val searchView: SearchView = binding.searchContacts
         searchView.isIconifiedByDefault = false
 
         binding.searchContacts.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -153,8 +174,8 @@ class ContactFragment : Fragment() {
     }
 
     private fun moveToContactDetail(email: String, contactStatus: Int) {
-//        val email = ChitChatterUtils.getCurrentAccount(requireContext())
-        val action = ContactFragmentDirections.actionContactsFragmentToAccountFragment(email, contactStatus)
+        val action =
+            ContactFragmentDirections.actionContactsFragmentToAccountFragment(email, contactStatus)
         findNavController().navigate(action)
     }
 

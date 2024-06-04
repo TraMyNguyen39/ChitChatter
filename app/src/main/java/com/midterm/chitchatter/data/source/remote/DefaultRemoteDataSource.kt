@@ -8,6 +8,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.AccountConnection
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.DataSource
 import kotlinx.coroutines.tasks.await
@@ -150,11 +151,36 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         contactEmail: String,
         token: String
     ): Boolean {
-        val baseUrl = "https://sendaddcontact-kz4isf6rva-uc.a.run.app"
+        val baseUrl = "https://addcontact-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
 
         try {
-            val response = retrofit.addContact(userEmail, contactEmail, token)
+            val response = retrofit.addContact(AccountConnection(userEmail, contactEmail, token))
+            if (response.isSuccessful) {
+                return true
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+                print(response)
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return false
+    }
+
+    override suspend fun deleteContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        val baseUrl = "https://deletecontact-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+
+        try {
+            val response = retrofit.deleteContact(AccountConnection(userEmail, contactEmail, token))
             if (response.isSuccessful) {
                 return true
             } else {
@@ -169,16 +195,40 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return false
     }
 
-    override suspend fun removeContact(
+    override suspend fun acceptContact(
         userEmail: String,
         contactEmail: String,
         token: String
     ): Boolean {
-        val baseUrl = "https://removecontact-kz4isf6rva-uc.a.run.app"
+        val baseUrl = "https://acceptcontact-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
 
         try {
-            val response = retrofit.removeContact(userEmail, contactEmail, token)
+            val response = retrofit.acceptContact(AccountConnection(userEmail, contactEmail, token))
+            if (response.isSuccessful) {
+                return true
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return false
+    }
+
+    override suspend fun rejectContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        val baseUrl = "https://rejectcontact-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+
+        try {
+            val response = retrofit.rejectContact(AccountConnection(userEmail, contactEmail, token))
             if (response.isSuccessful) {
                 return true
             } else {

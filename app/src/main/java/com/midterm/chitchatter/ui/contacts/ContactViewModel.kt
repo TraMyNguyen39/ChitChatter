@@ -49,10 +49,22 @@ class ContactViewModel(
         }
     }
 
-    fun removeContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
+    fun rejectContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val token = ChitChatterUtils.token!!
-            val isSuccessful = (repository as Repository.RemoteRepository).removeContact(
+            val isSuccessful = (repository as Repository.RemoteRepository).rejectContact(
+                userEmail,
+                contactEmail,
+                token
+            )
+            callback(isSuccessful)
+        }
+    }
+
+    fun acceptContact(userEmail: String, contactEmail: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val token = ChitChatterUtils.token!!
+            val isSuccessful = (repository as Repository.RemoteRepository).acceptContact(
                 userEmail,
                 contactEmail,
                 token
@@ -68,7 +80,8 @@ class ContactViewModel(
         searchJob = viewModelScope.launch {
             delay(500) // wait for 500ms of inactivity
             if (searchText.isBlank()) {
-                _searchResults.postValue(_contacts.value)
+                loadAllContact(email)
+//                _searchResults.postValue(_contacts.value)
             } else {
                 val listAccount = (repository as Repository.RemoteRepository)
                     .getContactsSearch(searchText, email, ChitChatterUtils.token!!)
@@ -76,7 +89,6 @@ class ContactViewModel(
             }
         }
     }
-
 }
 
 class ContactViewModelFactory(

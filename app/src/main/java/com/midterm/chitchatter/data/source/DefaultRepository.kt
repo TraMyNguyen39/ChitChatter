@@ -43,12 +43,28 @@ class DefaultRepository(
         return remoteDataSource.addContact(userEmail, contactEmail, token)
     }
 
-    override suspend fun removeContact(
+    override suspend fun deleteContact(
         userEmail: String,
         contactEmail: String,
         token: String
     ): Boolean {
-        return remoteDataSource.removeContact(userEmail, contactEmail, token)
+        return remoteDataSource.deleteContact(userEmail, contactEmail, token)
+    }
+
+    override suspend fun acceptContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        return remoteDataSource.acceptContact(userEmail, contactEmail, token)
+    }
+
+    override suspend fun rejectContact(
+        userEmail: String,
+        contactEmail: String,
+        token: String
+    ): Boolean {
+        return remoteDataSource.rejectContact(userEmail, contactEmail, token)
     }
 
     override suspend fun getContactsOfAccount(email: String, token: String): ArrayList<Account> {

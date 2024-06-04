@@ -165,7 +165,7 @@
             app:layout_constraintVertical_bias="1.0" />
 
         <Button
-            android:id="@+id/btn_profile_unfriend"
+            android:id="@+id/btn_profile_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/padding_btn_30dp"
@@ -173,9 +173,28 @@
             android:text="@string/txt_unfriend"
             android:textSize="@dimen/text_lg"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_profile_unfriend"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_profile_gender"
+            tools:ignore="TextContrastCheck" />
+
+        <Button
+            android:id="@+id/btn_profile_unfriend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/padding_btn_30dp"
+            android:paddingRight="@dimen/padding_btn_30dp"
+            android:text="@string/txt_deny"
+            android:backgroundTint="@android:color/darker_gray"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_lg"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_profile_action"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_profile_action"
+            app:layout_constraintTop_toTopOf="@+id/btn_profile_action"
             tools:ignore="TextContrastCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

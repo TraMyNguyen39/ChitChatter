@@ -57,3 +57,9 @@ data class Account(
         }
     }
 }
+
+data class AccountConnection(
+    val sender: String,
+    val receiver: String,
+    val token: String
+)

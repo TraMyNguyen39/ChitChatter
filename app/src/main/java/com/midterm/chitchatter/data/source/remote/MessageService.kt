@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.data.source.remote
 
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.AccountConnection
 import com.midterm.chitchatter.data.model.Message
 import retrofit2.Response
 import retrofit2.http.Body
@@ -43,19 +44,31 @@ interface MessageService {
         @Query("email") email: String,
     ): Response<ResponseResult<Account?>>
 
-    @GET("/")
-    suspend fun addContact (
-        @Query("userEmail") userEmail: String,
-        @Query("contactEmail") contactEmail: String,
-        @Query("token") token: String
-    ): Response<ResponseResult<Nothing>>
+//    @Headers(
+//        "Content-Type: application/json",
+//        "Authorization: key=AAAAB4y-Wag:APA91bFkXiF05lJrtHNbZhy_iOxGi2TM-JgyYA3bitXDeajc7KyU70unReN0QGYEXPUPpMhJKTpVL-iaquJV3O7_ckJ1JSh79vOcZAQxaRkDkl90HwwtK11IMUcDJITdoLbq1bLCA-KJ"
+//    )
 
-    @GET("/")
-    suspend fun removeContact (
-        @Query("userEmail") userEmail: String,
-        @Query("contactEmail") contactEmail: String,
-        @Query("token") token: String
-    ): Response<ResponseResult<Nothing>>
+    @POST("/")
+    suspend fun addContact (
+        @Body contactConnection: AccountConnection
+    ): Response<ResponseNoResult>
+
+    @POST("/")
+    suspend fun deleteContact (
+        @Body contactConnection: AccountConnection
+
+    ): Response<ResponseNoResult>
+
+    @POST("/")
+    suspend fun acceptContact (
+        @Body contactConnection: AccountConnection
+    ): Response<ResponseNoResult>
+
+    @POST("/")
+    suspend fun rejectContact (
+        @Body contactConnection: AccountConnection
+    ): Response<ResponseNoResult>
 
     @POST("/")
     suspend fun sendMessage(@Body message: Message): Response<ResponseResult<Account?>>
