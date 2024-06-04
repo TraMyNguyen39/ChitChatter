@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
@@ -175,13 +176,11 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         binding.includeMain.toolbarMain.setupWithNavController(navController, appBarConfiguration)
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.login_fragment
-                || destination.id == R.id.register_fragment
-                || destination.id == R.id.message_fragment
-            ) {
+            if (destination.id == R.id.message_fragment) {
                 binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back)
+            } else if (destination.id == R.id.account_fragment) {
+                binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back_w)
             } else if (destination.id == R.id.home_fragment
                 || destination.id == R.id.callsFragment
                 || destination.id == R.id.contactsFragment
@@ -194,7 +193,9 @@ class MainActivity : AppCompatActivity() {
         binding.includeMain.bottomNav.setupWithNavController(navController)
 
     }
-
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
     private fun setupToolbar() {
         setSupportActionBar(binding.includeMain.toolbarMain)
 

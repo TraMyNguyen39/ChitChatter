@@ -11,20 +11,18 @@
         android:layout_width="@dimen/avatar_w_lg"
         android:layout_height="@dimen/avatar_h_lg"
         android:layout_marginStart="@dimen/spacing_md"
-        android:layout_marginTop="@dimen/spacing_sm"
-        android:layout_marginBottom="@dimen/spacing_sm"
         app:cardCornerRadius="@dimen/card_corner_radius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@+id/linearLayout">
 
         <ImageView
             android:id="@+id/iv_sender"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:srcCompat="@tools:sample/avatars"
+            android:contentDescription="@string/sender_avatar"
             android:scaleType="centerCrop"
-            android:contentDescription="@string/sender_avatar" />
+            tools:srcCompat="@tools:sample/avatars" />
     </androidx.cardview.widget.CardView>
 
 
@@ -32,16 +30,17 @@
         android:id="@+id/tv_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xl"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="@dimen/spacing_xl"
         android:layout_marginBottom="@dimen/spacing_sm"
         android:text="@string/message"
+        android:maxLines="1"
+        android:ellipsize="marquee"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="@dimen/text_md"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/cv_receiver"
-        app:layout_constraintStart_toEndOf="@+id/cv_sender"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
@@ -71,7 +70,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xl"
+        android:layout_marginStart="@dimen/text_md"
         android:layout_marginTop="@dimen/spacing_sm"
         android:layout_marginEnd="@dimen/spacing_xl"
         android:orientation="horizontal"
@@ -87,7 +86,7 @@
             android:layout_weight="1"
             android:text="@string/sender_name"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textSize="@dimen/text_xl"
+            android:textSize="@dimen/text_lg"
             app:layout_constraintEnd_toStartOf="@+id/cv_receiver"
             app:layout_constraintStart_toEndOf="@+id/cv_sender"
             app:layout_constraintTop_toTopOf="parent" />

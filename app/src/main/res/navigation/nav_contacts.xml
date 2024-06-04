@@ -12,12 +12,15 @@
         tools:layout="@layout/fragment_contacts" >
         <action
             android:id="@+id/action_contactsFragment_to_accountFragment"
-            app:destination="@id/accountFragment" />
+            app:destination="@id/account_fragment" />
     </fragment>
     <fragment
-        android:id="@+id/accountFragment"
+        android:id="@+id/account_fragment"
         android:name="com.midterm.chitchatter.ui.account.AccountFragment"
         android:label="@string/title_account" >
         <argument android:name="email" />
+        <argument
+            android:name="contactStatus"
+            app:argType="integer" />
     </fragment>
 </navigation>
