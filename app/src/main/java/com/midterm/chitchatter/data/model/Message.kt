@@ -1,8 +1,10 @@
 package com.midterm.chitchatter.data.model
 
+import com.google.firebase.database.IgnoreExtraProperties
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import java.util.Date
+
 
 enum class MessageStatus(val value: Int) {
     SENT(1),
@@ -24,6 +26,7 @@ data class DataSendMessage(
     val photoMimeType: String? = null
 )
 
+@IgnoreExtraProperties
 data class Data(
     val text: String = "",
     val photoUrl: String? = null,
@@ -35,7 +38,7 @@ data class Notification(
     val body: String? = null
 )
 
-data class Message(
+data class Message @JvmOverloads constructor(
     val id: String,
     val sender: String = "",
     val receiver: String = "",
@@ -49,8 +52,7 @@ data class Message(
     val content: String = "",
 //    val isIncoming: Boolean = true,
     val url: String = "",
-    val formattedTime: String,
-//    val currentUserEmail: String
+    val formattedTime: String
 
 ) {
     override fun equals(other: Any?): Boolean {
