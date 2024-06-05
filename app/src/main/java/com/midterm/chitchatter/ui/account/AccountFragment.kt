@@ -10,6 +10,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
@@ -47,7 +48,7 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        contactStatus = args.contactStatus
+        contactStatus = if (args.contactStatus != -1) args.contactStatus else null
         setupViews()
         setupViewModel()
         setupActions()
@@ -57,31 +58,39 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         super.onResume()
         progressBar.visibility = View.VISIBLE
         binding.containerAccountFragment.visibility = View.INVISIBLE
-        viewModel.loadAccountInfo(args.email)
+        if (args.email != null) {
+            viewModel.loadAccountInfo(args.email)
+        } else {
+            viewModel.loadAccountInfo(userEmail)
+        }
     }
 
     private fun setupViews() {
         when (contactStatus) {
             ContactStatus.CONNECTED.ordinal -> {
                 binding.btnProfileDeny.visibility = View.GONE
-                setUpButton(R.string.txt_unfriend, R.color.black)
+                setUpButton1(R.string.txt_unfriend, R.color.black)
             }
             ContactStatus.UNCONNECTED.ordinal -> {
                 binding.btnProfileDeny.visibility = View.GONE
-                setUpButton(R.string.txt_action_connect, R.color.primary_color)
+                setUpButton1(R.string.txt_action_connect, R.color.primary_color)
             }
             ContactStatus.REQUESTED.ordinal -> {
                 binding.btnProfileDeny.visibility = View.GONE
-                setUpButton(R.string.txt_cancel_connect, androidx.appcompat.R.color.material_grey_600)
+                setUpButton1(R.string.txt_cancel_connect, androidx.appcompat.R.color.material_grey_600)
             }
-            else -> {
+            ContactStatus.RECEIVED.ordinal -> {
                 binding.btnProfileDeny.visibility = View.VISIBLE
-                setUpButton(R.string.txt_accept, R.color.primary_color)
+                setUpButton1(R.string.txt_accept, R.color.primary_color)
+            }
+            null -> {
+                binding.btnProfileDeny.visibility = View.GONE
+                setUpButton1(R.string.txt_edit, R.color.primary_color)
             }
         }
     }
 
-    private fun setUpButton(textResId: Int, color: Int) {
+    private fun setUpButton1(textResId: Int, color: Int) {
         binding.btnProfileAction.text = getString(textResId)
         binding.btnProfileAction.setBackgroundColor(requireActivity().getColor(color))
     }
@@ -117,7 +126,7 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                     }
                 } else {
                     Glide.with(binding.ivProfileAvt)
-                        .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
+                        .load(R.drawable.chitchatter)
                         .error(R.drawable.android).into(binding.ivProfileAvt)
                 }
             } else {
@@ -130,6 +139,21 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         val contactEmail = args.email
 
         binding.refreshAccount.setOnRefreshListener(this)
+
+        if (contactEmail == null) {
+            binding.btnProfileAction.setOnClickListener {
+                if (ChitChatterUtils.isOnline(requireContext())) {
+                    val action = AccountFragmentDirections.actionAccountFragmentToEditProfileFragment()
+                    findNavController().navigate(action)
+                } else {
+                    Snackbar.make(
+                        requireView(), R.string.message_no_internet, Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+            return
+        }
+
         binding.btnProfileAction.setOnClickListener {
             when (contactStatus) {
                 ContactStatus.CONNECTED.ordinal -> {
@@ -166,10 +190,6 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 progressBar.visibility = View.VISIBLE
                 rejectConnect(userEmail!!, contactEmail)
             }
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback {
-            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
@@ -240,7 +260,11 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         progressBar.visibility = View.VISIBLE
         binding.containerAccountFragment.visibility = View.INVISIBLE
-        viewModel.loadAccountInfo(userEmail, args.email)
+        if (contactStatus != null) {
+            viewModel.loadAccountInfo(userEmail, args.email)
+        } else {
+            viewModel.loadAccountInfo(userEmail)
+        }
         binding.refreshAccount.isRefreshing = false
     }
 }

@@ -29,7 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingHorizontal="@dimen/spacing_md"
-                    android:layout_marginTop="@dimen/margin_8"
+                    android:layout_marginTop="@dimen/spacing_md"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_contact" />
         </LinearLayout>

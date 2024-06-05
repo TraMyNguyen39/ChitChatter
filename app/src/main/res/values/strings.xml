@@ -45,6 +45,7 @@
     <string name="preference_email_key">com.midterm.chitchatter.preference_email_key</string>
     <string name="preference_token_key">com.midterm.chitchatter.preference_token_key</string>
     <string name="preference_display_name_key">com.midterm.chitchatter.preference_display_name</string>
+    <string name="preference_avt_url_key">com.midterm.chitchatter.preference_avt_url</string>
     <string name="msg_check_email_reset_password">Đã gửi link xác nhận đổi mật khẩu. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_signup">Đã gửi link xác nhận tài khoản. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_to_verify">Vui lòng kiểm tra email chúng tôi đã gửi để xác thực tài khoản!</string>
@@ -72,4 +73,13 @@
     <string name="txt_contact_request">Yêu cầu kết bạn</string>
     <string name="txt_accept">Chấp nhận</string>
     <string name="txt_deny">Từ chối</string>
+    <string name="txt_edit">Cập nhật thông tin</string>
+    <string name="txt_action_profile">Tài khoản</string>
+    <string name="txt_action_logout">Đăng xuất</string>
+    <string name="txt_action_noti">Thông báo</string>
+    <string name="txt_man">Nam</string>
+    <string name="txt_woman">Nữ</string>
+    <string name="txt_save_profile">Lưu thay đổi</string>
+    <string name="txt_enter_birthdate">Nhập ngày sinh</string>
+    <string name="title_edit_profile">Cập nhật tài khoản</string>
 </resources>

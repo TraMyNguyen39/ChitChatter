@@ -5,8 +5,8 @@
     android:id="@+id/container_account_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    android:visibility="invisible">
+    android:background="@color/black">
+<!--    android:visibility="invisible">-->
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh_account"
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_8"
-                android:layout_marginTop="@dimen/margin_32"
+                android:layout_marginTop="@dimen/margin_64"
                 android:text="@string/txt_full_email"
                 android:textSize="@dimen/text_lg"
                 android:textStyle="bold"
@@ -111,65 +111,80 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.35" />
 
-            <TextView
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tv_profile_email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_8"
                 android:layout_marginEnd="@dimen/margin_8"
-                android:gravity="end"
-                android:maxLines="2"
+                android:autofillHints=""
                 android:breakStrategy="simple"
-                android:ellipsize="marquee"
-                android:text="@string/txt_unknown"
+                android:clickable="false"
+                android:gravity="end"
+                android:hint="@string/txt_enter_email"
+                android:maxLines="2"
+                android:minHeight="48dp"
                 android:textSize="@dimen/text_lg"
+                app:layout_constraintBottom_toBottomOf="@+id/label_profile_email"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/label_profile_email"
                 app:layout_constraintTop_toTopOf="@+id/label_profile_email" />
 
-            <TextView
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tv_profile_display_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_8"
                 android:gravity="end"
-                android:text="@string/txt_unknown"
+                android:hint="@string/txt_enter_display_name"
+                android:minHeight="48dp"
                 android:textSize="@dimen/text_lg"
                 app:layout_constraintBottom_toBottomOf="@+id/label_profile_display_name"
                 app:layout_constraintEnd_toEndOf="@+id/tv_profile_email"
-                app:layout_constraintStart_toEndOf="@+id/label_profile_display_name"
+                app:layout_constraintStart_toStartOf="@+id/tv_profile_email"
                 app:layout_constraintTop_toTopOf="@+id/label_profile_display_name" />
 
 
-            <TextView
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tv_profile_birthdate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_8"
                 android:gravity="end"
-                android:text="@string/txt_unknown"
+                android:hint="@string/txt_enter_birthdate"
+                android:inputType="date"
+                android:minHeight="48dp"
                 android:textSize="@dimen/text_lg"
                 app:layout_constraintBottom_toBottomOf="@+id/label_profile_birthdate"
                 app:layout_constraintEnd_toEndOf="@+id/tv_profile_email"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/label_profile_birthdate"
-                app:layout_constraintTop_toBottomOf="@+id/tv_profile_display_name"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintTop_toTopOf="@+id/label_profile_birthdate" />
 
-            <TextView
-                android:id="@+id/tv_profile_gender"
+            <RadioGroup
+                android:id="@+id/radio_group_gender"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_8"
-                android:gravity="end"
-                android:text="@string/txt_unknown"
-                android:textSize="@dimen/text_lg"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:weightSum="2"
                 app:layout_constraintBottom_toBottomOf="@+id/label_profile_phone"
-                app:layout_constraintEnd_toEndOf="@+id/tv_profile_display_name"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/label_profile_phone"
-                app:layout_constraintTop_toTopOf="@+id/label_profile_phone"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintEnd_toEndOf="@+id/tv_profile_birthdate"
+                app:layout_constraintStart_toStartOf="@+id/tv_profile_birthdate"
+                app:layout_constraintTop_toTopOf="@+id/label_profile_phone">
+
+                <RadioButton
+                    android:id="@+id/radio_btn_male"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/txt_man" />
+
+                <RadioButton
+                    android:id="@+id/radio_btn_female"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/txt_woman" />
+            </RadioGroup>
 
             <Button
                 android:id="@+id/btn_profile_action"
@@ -178,34 +193,13 @@
                 android:minWidth="150dp"
                 android:paddingLeft="@dimen/padding_btn_30dp"
                 android:paddingRight="@dimen/padding_btn_30dp"
-                android:text="@string/txt_unfriend"
+                android:text="@string/txt_save_profile"
                 android:textSize="@dimen/text_lg"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_profile_deny"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_profile_gender"
-                tools:ignore="TextContrastCheck" />
-
-            <Button
-                android:id="@+id/btn_profile_deny"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="150dp"
-                android:backgroundTint="@android:color/darker_gray"
-                android:paddingLeft="@dimen/padding_btn_30dp"
-                android:paddingRight="@dimen/padding_btn_30dp"
-                android:text="@string/txt_deny"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_lg"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_profile_action"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/btn_profile_action"
-                app:layout_constraintTop_toTopOf="@+id/btn_profile_action"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/radio_group_gender"
                 tools:ignore="TextContrastCheck" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>
