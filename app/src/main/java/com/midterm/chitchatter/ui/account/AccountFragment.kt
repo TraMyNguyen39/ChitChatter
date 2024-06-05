@@ -19,6 +19,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.databinding.FragmentAccountBinding
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import com.midterm.chitchatter.utils.ContactStatus
@@ -100,38 +101,41 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             progressBar.visibility = View.GONE
             binding.containerAccountFragment.visibility = View.VISIBLE
             if (account != null) {
-                binding.textProfileDisplayName.text = account.name
-                binding.tvProfileEmail.text = account.email
-                binding.tvProfileDisplayName.text = account.name
-                binding.tvProfileBirthdate.text = account.birthday
-                binding.tvProfileGender.text = account.gender
-                if (account.contactStatus != null) {
-                    contactStatus = account.contactStatus
-                    setupViews()
-                }
-
-                if (account.imageUrl != null) {
-                    val fileName = account.imageUrl as String
-                    val bucketUrl = "gs://chitchatter-b97bf.appspot.com/"
-
-                    val storage: FirebaseStorage = FirebaseStorage.getInstance()
-                    val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
-                    val imageRef: StorageReference = storageRef.child(fileName)
-                    imageRef.downloadUrl.addOnSuccessListener { uri ->
-                        Glide.with(binding.ivProfileAvt).load(uri).error(R.drawable.chitchatter)
-                            .into(binding.ivProfileAvt)
-                    }.addOnFailureListener { exception ->
-                        // Xử lý lỗi nếu có
-                        Log.e("FirebaseStorage", "Failed to get download URL", exception)
-                    }
-                } else {
-                    Glide.with(binding.ivProfileAvt)
-                        .load(R.drawable.chitchatter)
-                        .error(R.drawable.android).into(binding.ivProfileAvt)
-                }
+                setupProfile(account)
             } else {
                 Snackbar.make(requireView(), R.string.unknown_error, Snackbar.LENGTH_LONG).show()
             }
+        }
+    }
+    private fun setupProfile(account: Account) {
+        binding.textProfileDisplayName.text = account.name
+        binding.tvProfileEmail.text = account.email
+        binding.tvProfileDisplayName.text = account.name
+        binding.tvProfileBirthdate.text = account.birthday
+        binding.tvProfileGender.text = account.gender
+        if (account.contactStatus != null) {
+            contactStatus = account.contactStatus
+            setupViews()
+        }
+
+        if (account.imageUrl != null) {
+            val fileName = account.imageUrl as String
+            val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
+
+            val storage: FirebaseStorage = FirebaseStorage.getInstance()
+            val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
+            val imageRef: StorageReference = storageRef.child(fileName)
+            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                Glide.with(binding.ivProfileAvt).load(uri).error(R.drawable.chitchatter)
+                    .into(binding.ivProfileAvt)
+            }.addOnFailureListener { exception ->
+                // Xử lý lỗi nếu có
+                Log.e("FirebaseStorage", "Failed to get download URL", exception)
+            }
+        } else {
+            Glide.with(binding.ivProfileAvt)
+                .load(R.drawable.chitchatter)
+                .error(R.drawable.android).into(binding.ivProfileAvt)
         }
     }
 

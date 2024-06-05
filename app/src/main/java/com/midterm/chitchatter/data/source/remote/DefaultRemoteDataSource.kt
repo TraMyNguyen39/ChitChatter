@@ -72,6 +72,13 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return result.isSuccessful
     }
 
+    override suspend fun updateAvatar(account: Account): Boolean {
+        val baseUrl = "https://updateavatar-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        val result = retrofit.updateAvatar(account)
+        return result.isSuccessful
+    }
+
     override suspend fun login(account: Account): Account? {
         val baseUrl = "https://getcurrentaccount-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)

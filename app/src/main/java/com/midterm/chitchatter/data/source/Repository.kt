@@ -10,6 +10,7 @@ interface Repository {
     interface RemoteRepository : Repository {
         suspend fun createAccount(account: Account) : String
         suspend fun updateAccount(account: Account) : Boolean
+        suspend fun updateAvatar(account: Account) : Boolean
         suspend fun login(account: Account) : Account?
         suspend fun logout(account: Account) : Boolean
         suspend fun sendResetPassword(email: String) : Int

@@ -84,8 +84,6 @@ class AccountViewModel(
             callback(isSuccessful)
         }
     }
-
-    private var searchJob: Job? = null
 }
 
 class AccountViewModelFactory(

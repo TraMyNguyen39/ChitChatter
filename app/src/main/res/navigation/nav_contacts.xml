@@ -32,6 +32,6 @@
     </fragment>
     <fragment
         android:id="@+id/edit_profile_fragment"
-        android:name="com.midterm.chitchatter.ui.EditProfileFragment"
+        android:name="com.midterm.chitchatter.ui.edit_profile.EditProfileFragment"
         android:label="@string/title_edit_profile" />
 </navigation>

@@ -18,6 +18,10 @@ class DefaultRepository(
         return remoteDataSource.updateAccount(account)
     }
 
+    override suspend fun updateAvatar(account: Account): Boolean {
+        return remoteDataSource.updateAvatar(account)
+    }
+
     override suspend fun login(account: Account): Account? {
         return remoteDataSource.login(account)
     }

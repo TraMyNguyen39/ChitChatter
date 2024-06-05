@@ -190,12 +190,16 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         binding.includeMain.toolbarMain.setupWithNavController(navController, appBarConfiguration)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.message_fragment) {
-                binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back)
-            } else if (destination.id == R.id.account_fragment) {
-                binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back_w)
-            } else if (destination.id == R.id.home_fragment || destination.id == R.id.callsFragment || destination.id == R.id.contactsFragment) {
-                binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_menu)
+            when (destination.id) {
+                R.id.message_fragment -> {
+                    binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back)
+                }
+                R.id.account_fragment, R.id.edit_profile_fragment -> {
+                    binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back_w)
+                }
+                R.id.home_fragment, R.id.callsFragment, R.id.contactsFragment -> {
+                    binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_menu)
+                }
             }
         }
 
@@ -211,6 +215,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupToolbar() {
         cardView = CardView(this)
+
         val cardParams = Toolbar.LayoutParams(
             resources.getDimensionPixelSize(R.dimen.avatar_w_md),
             resources.getDimensionPixelSize(R.dimen.avatar_h_md)
@@ -222,9 +227,11 @@ class MainActivity : AppCompatActivity() {
         cardView.radius = resources.getDimension(R.dimen.card_corner_radius)
 
         val imageView = ImageView(this)
+        imageView.id = R.id.iv_avatar_id
+
         val accountAvt = ChitChatterUtils.getCurrentAccountAvt(this)
         if (accountAvt != null) {
-            val bucketUrl = "gs://chitchatter-b97bf.appspot.com/"
+            val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 
             val storage: FirebaseStorage = FirebaseStorage.getInstance()
             val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
@@ -300,7 +307,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val background =
-                resources.getDrawable(android.R.drawable.editbox_background)
+                resources.getDrawable(android.R.drawable.editbox_background_normal)
             mDropdown.setBackgroundDrawable(background)
             mDropdown.showAsDropDown(cardView, 5, 5)
         } catch (e: Exception) {

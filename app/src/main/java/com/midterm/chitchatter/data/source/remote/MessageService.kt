@@ -21,7 +21,10 @@ interface MessageService {
     suspend fun createAccount(@Body account: Account): Response<ResponseResult<Account?>>
 
     @POST("/")
-    suspend fun updateAccount(@Body account: Account): Response<ResponseResult<Account?>>
+    suspend fun updateAccount(@Body account: Account): Response<ResponseResult<Nothing>>
+
+    @POST("/")
+    suspend fun updateAvatar(@Body account: Account): Response<ResponseResult<Nothing>>
 
     @POST("/")
     suspend fun getLoginAccount(@Body account: Account) : Response<Account?>
