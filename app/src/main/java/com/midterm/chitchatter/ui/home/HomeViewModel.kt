@@ -14,12 +14,15 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Data
+import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.ui.login.LoginViewModel
 import com.midterm.chitchatter.utils.ChitChatterUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeViewModel(
     private val repository: Repository
@@ -198,6 +201,50 @@ class HomeViewModel(
         }
     }
 
+    fun updateMessageStatus(data: DataUpdateStatus) {
+        viewModelScope.launch {
+            try {
+                val result = (repository as Repository.RemoteRepository).updateMessageStatus(data)
+                if (result) {
+                    val currentMessages = _messages.value ?: emptyList()
+                    val updatedMessages = mutableListOf<Message>()
+                    for (message in currentMessages) {
+                        if (message.id == data.id) {
+                            val newMessage =
+                                Message(
+                                    id = message.id,
+                                    sender = message.sender,
+                                    receiver = message.receiver,
+                                    data = Data(
+                                        text = message.data.text,
+                                        photoUrl = message.data.photoUrl,
+                                        photoMimeType = message.data.photoMimeType
+                                    ),
+                                    notification = Notification(
+                                        title = message.notification.title,
+                                        body = message.notification.body
+                                    ),
+                                    timestamp = message.timestamp,
+                                    status = data.status,
+                                    token = message.token,
+                                    name = message.name,
+                                    content = message.content,
+                                    url = message.url,
+                                    formattedTime = message.formattedTime)
+                            updatedMessages.add(newMessage)
+                        }
+                        else {
+                            updatedMessages.add(message)
+                        }
+                    }
+                    _messages.postValue(updatedMessages.reversed())
+                }
+            } catch (e: Exception) {
+                // Xử lý lỗi nếu có
+                Log.e("HomeViewModel", "Error fetching messages: ${e.message}")
+            }
+        }
+    }
 }
 
 class HomeViewModelFactory(

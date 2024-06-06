@@ -2,6 +2,7 @@ package com.midterm.chitchatter.data.source
 
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.DataSendMessage
+import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
 
 interface DataSource {
@@ -36,6 +37,8 @@ interface DataSource {
         suspend fun sendMessage(message: DataSendMessage): Boolean
 
         suspend fun getChat(sender: String, receiver: String): List<Message>
+        suspend fun updateMessageStatus(data: DataUpdateStatus): Boolean
+
     }
 
     interface LocalDataSource {

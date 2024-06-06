@@ -3,7 +3,9 @@ package com.midterm.chitchatter.data.source.remote
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.AccountConnection
 import com.midterm.chitchatter.data.model.DataSendMessage
+import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
+import com.midterm.chitchatter.data.model.ResponseUpdateStatus
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -91,5 +93,7 @@ interface MessageService {
 
     @GET("/")
     suspend fun getChat(@Query("sender") sender: String, @Query("receiver") receiver: String): Response<List<Message>>
+    @POST("/")
+    suspend fun updateMessageStatus(@Body data: DataUpdateStatus): Response<ResponseResult<ResponseUpdateStatus>>
 
 }

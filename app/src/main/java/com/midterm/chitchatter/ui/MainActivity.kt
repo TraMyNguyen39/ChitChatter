@@ -42,6 +42,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.databinding.ActivityMainBinding
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModelFactory
