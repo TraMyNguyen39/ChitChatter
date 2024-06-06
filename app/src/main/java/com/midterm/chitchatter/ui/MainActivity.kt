@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
@@ -42,7 +41,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
-import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.databinding.ActivityMainBinding
 import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModelFactory
@@ -95,14 +93,6 @@ class MainActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        val repository = (this.application as ChitChatterApplication).repository
-
-        viewModel = ViewModelProvider(
-            this,
-            HomeViewModelFactory(repository)
-        )[HomeViewModel::class.java]
-
-
         // Theo dõi trạng thái kết nối mạng
         connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
         connectedRef!!.addValueEventListener(object : ValueEventListener {
@@ -132,7 +122,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun setupViewModel() {
         val repository = (application as ChitChatterApplication).repository
-        viewModel = ViewModelProvider(this, HomeViewModelFactory(repository))[HomeViewModel::class.java]
+        viewModel =
+            ViewModelProvider(this, HomeViewModelFactory(repository))[HomeViewModel::class.java]
 
         viewModel.countUnreadNotifications(userEmail!!) {
             txtCountUnreadNoti.text = "($it)"
@@ -191,9 +182,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.message_fragment -> {
                     binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back)
                 }
-                R.id.account_fragment, R.id.edit_profile_fragment, R.id.contact_request_fragment-> {
+
+                R.id.account_fragment, R.id.edit_profile_fragment, R.id.contact_request_fragment -> {
                     binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back_w)
                 }
+
                 R.id.home_fragment, R.id.callsFragment, R.id.contactsFragment -> {
                     binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_menu)
                 }
@@ -291,11 +284,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun setupMenu() : PopupWindow? {
+    private fun setupMenu(): PopupWindow? {
         try {
             val mInflater = applicationContext
                 .getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val layout: View = mInflater.inflate(R.layout.nav_account, null)
+            layout.id = R.id.nav_account_id
             layout.measure(
                 View.MeasureSpec.UNSPECIFIED,
                 View.MeasureSpec.UNSPECIFIED
@@ -351,34 +345,34 @@ class MainActivity : AppCompatActivity() {
         return null
     }
 
-    private fun setupRealTimeNotification() {
-        // Set up Firebase Realtime Database listener
-        val database = FirebaseDatabase.getInstance()
-        val notificationsRef = database.getReference("contact_requests/${ChitChatterUtils}")
-
-        notificationsRef.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                // A new notification is received
-                showNotificationIndicator(true)
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                // Notification changed
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                // Notification removed
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                // Notification moved
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle possible errors.
-            }
-        })
-    }
+//    private fun setupRealTimeNotification() {
+//        // Set up Firebase Realtime Database listener
+//        val database = FirebaseDatabase.getInstance()
+//        val notificationsRef = database.getReference("contact_requests/${ChitChatterUtils}")
+//
+//        notificationsRef.addChildEventListener(object : ChildEventListener {
+//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+//                // A new notification is received
+//                showNotificationIndicator(true)
+//            }
+//
+//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+//                // Notification changed
+//            }
+//
+//            override fun onChildRemoved(snapshot: DataSnapshot) {
+//                // Notification removed
+//            }
+//
+//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+//                // Notification moved
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                // Handle possible errors.
+//            }
+//        })
+//    }
 
     private fun showNotificationIndicator(show: Boolean) {
         redDotView.visibility = if (show) View.VISIBLE else View.GONE

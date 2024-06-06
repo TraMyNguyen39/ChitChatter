@@ -1,45 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="@dimen/spacing_sm">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv_sender"
-        android:layout_width="@dimen/avatar_w_lg"
-        android:layout_height="@dimen/avatar_h_lg"
-        android:layout_marginStart="@dimen/spacing_md"
-        app:cardCornerRadius="@dimen/card_corner_radius"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/iv_sender"
+        android:layout_width="@dimen/avatar_w_normal"
+        android:layout_height="@dimen/avatar_h_normal"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:src="@drawable/chitchatter"
+        app:civ_border_color="@color/primary_color"
+        app:civ_border_width="1dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_message"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout">
-
-        <ImageView
-            android:id="@+id/iv_sender"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/sender_avatar"
-            android:scaleType="centerCrop"
-            tools:srcCompat="@tools:sample/avatars" />
-    </androidx.cardview.widget.CardView>
-
+        app:layout_constraintTop_toTopOf="@+id/linearLayout" />
 
     <TextView
         android:id="@+id/tv_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="@dimen/spacing_xl"
-        android:layout_marginBottom="@dimen/spacing_sm"
-        android:text="@string/message"
-        android:maxLines="1"
         android:ellipsize="marquee"
+        android:maxLines="1"
+        android:text="@string/message"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="@dimen/text_md"
+        android:textSize="@dimen/text_normal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cv_receiver"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
         app:layout_constraintStart_toStartOf="@+id/linearLayout"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
@@ -48,20 +37,18 @@
         android:id="@+id/cv_receiver"
         android:layout_width="@dimen/avatar_w_sm"
         android:layout_height="@dimen/avatar_h_sm"
-        android:layout_marginEnd="@dimen/spacing_md"
         app:cardCornerRadius="@dimen/card_corner_radius"
-        app:layout_constraintBottom_toBottomOf="@+id/cv_sender"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/cv_sender">
+        app:layout_constraintBottom_toBottomOf="@+id/tv_message"
+        app:layout_constraintEnd_toEndOf="@+id/tv_time"
+        app:layout_constraintTop_toTopOf="@+id/tv_message">
 
         <ImageView
             android:id="@+id/iv_receiver"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/sending_msg"
-            android:scaleType="centerCrop"
             android:contentDescription="@string/receiver_avatar"
-            />
+            android:scaleType="centerCrop"
+            android:src="@drawable/sending_msg" />
 
     </androidx.cardview.widget.CardView>
 
@@ -70,37 +57,37 @@
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/text_md"
-        android:layout_marginTop="@dimen/spacing_sm"
-        android:layout_marginEnd="@dimen/spacing_xl"
+        android:layout_marginStart="@dimen/text_lg"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:layout_marginEnd="@dimen/spacing_md"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toStartOf="@+id/cv_receiver"
-        app:layout_constraintStart_toEndOf="@+id/cv_sender"
+        app:layout_constraintEnd_toStartOf="@+id/tv_time"
+        app:layout_constraintStart_toEndOf="@+id/iv_sender"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spacing_lg"
             android:layout_weight="1"
             android:text="@string/sender_name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="@dimen/text_lg"
             app:layout_constraintEnd_toStartOf="@+id/cv_receiver"
-            app:layout_constraintStart_toEndOf="@+id/cv_sender"
+            app:layout_constraintStart_toEndOf="@+id/iv_sender"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/time"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="@dimen/text_md"
-            tools:layout_editor_absoluteX="337dp"
-            tools:layout_editor_absoluteY="14dp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_sm"
+        android:text="@string/time"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="@dimen/text_md"
+        app:layout_constraintBottom_toTopOf="@+id/tv_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

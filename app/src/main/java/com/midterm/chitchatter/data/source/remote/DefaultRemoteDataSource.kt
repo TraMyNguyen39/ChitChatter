@@ -345,14 +345,14 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         try {
             val response = retrofit.markAllAsRead(email, token)
 
-            if (response.isSuccessful) {
-                return true
+            return if (response.isSuccessful) {
+                true
             } else {
                 Log.e(
                     "API Request",
                     "Request failed with code: ${response.code()}, ${response.body()?.error}"
                 )
-                return false
+                false
             }
         } catch (e: Exception) {
             Log.e("API Request", "Error occurred: ${e.message}")
@@ -423,7 +423,6 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
             val result = retrofit.sendMessage(message)
 
             if (result.isSuccessful) {
-
                 Log.d("API Request", "Request successful wwith susccess: ${result.body()?.success}")
                 return result.body()?.success ?: false
             }

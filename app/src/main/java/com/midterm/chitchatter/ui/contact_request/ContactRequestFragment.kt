@@ -38,7 +38,8 @@ class ContactRequestFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener 
         }
         binding = FragmentContactRequestBinding.inflate(inflater, container, false)
         progressBar = requireActivity().findViewById(R.id.progress_bar_main)
-        txtCountUnreadNoti = requireActivity().findViewById(R.id.count_unread)
+        val layout = requireActivity().findViewById<View>(R.id.nav_account_id)
+        txtCountUnreadNoti = layout.findViewById(R.id.count_unread)
         return binding.root
     }
 

@@ -22,10 +22,12 @@
 
     <dimen name="avatar_h_lg">50dp</dimen>
     <dimen name="avatar_w_lg">50dp</dimen>
+    <dimen name="avatar_h_normal">45dp</dimen>
+    <dimen name="avatar_w_normal">45dp</dimen>
     <dimen name="avatar_w_md">40dp</dimen>
     <dimen name="avatar_h_md">40dp</dimen>
-    <dimen name="avatar_w_sm">20dp</dimen>
-    <dimen name="avatar_h_sm">20dp</dimen>
+    <dimen name="avatar_w_sm">16dp</dimen>
+    <dimen name="avatar_h_sm">16dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="card_corner_radius">1000dp</dimen>
 
