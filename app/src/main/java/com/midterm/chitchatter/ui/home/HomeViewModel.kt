@@ -11,6 +11,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.Message
@@ -23,6 +24,10 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val repository: Repository
 ) : ViewModel() {
+    private val firestore: FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
+
     private val _currentAccount = MutableLiveData<String>()
     val currentAccount: LiveData<String>
         get() = _currentAccount
@@ -159,6 +164,38 @@ class HomeViewModel(
                 // Handle error
             }
         })
+    }
+
+    fun updateOnlineStatus(isOnline: Boolean, email: String, token: String) {
+        if (email.isNotBlank()) {
+            val accountsRef = firestore.collection("accounts").document(email)
+
+            accountsRef.get().addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val tokens = documentSnapshot.get("tokens") as? List<Map<String, Any>>
+                    tokens?.let { tokenList ->
+                        val updatedTokens = tokenList.map { tokenMap ->
+                            if (tokenMap["token"] == token) {
+                                tokenMap.toMutableMap().apply { put("isOnline", isOnline) }
+                            } else {
+                                tokenMap
+                            }
+                        }
+                        accountsRef.update("tokens", updatedTokens).addOnSuccessListener {
+                            Log.d("OnlineStatus", "Token status updated for email: $email")
+                        }.addOnFailureListener { e ->
+                            Log.w("OnlineStatus", "Error updating token status for email: $email", e)
+                        }
+                    }
+                } else {
+                    Log.d("OnlineStatus", "Email not found: $email")
+                }
+            }.addOnFailureListener { e ->
+                Log.w("OnlineStatus", "Error finding email: $email", e)
+            }
+        } else {
+            Log.w("OnlineStatus", "Invalid email: $email")
+        }
     }
 
 }
