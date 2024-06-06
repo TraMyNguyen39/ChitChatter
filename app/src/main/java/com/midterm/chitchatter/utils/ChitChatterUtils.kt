@@ -55,13 +55,23 @@ object ChitChatterUtils {
     }
 
     fun getCurrentAccount(context: Context): String? {
-        var account_key = context.getString(R.string.preference_account_key);
-        var emailKey = context.getString(R.string.preference_email_key);
+        val account_key = context.getString(R.string.preference_account_key);
+        val emailKey = context.getString(R.string.preference_email_key);
 
-        val sharedPref: SharedPreferences = context.getSharedPreferences(account_key, Context.MODE_PRIVATE)
-        val email: String? = sharedPref.getString(emailKey, null)
+        val sharedPref: SharedPreferences =
+            context.getSharedPreferences(account_key, Context.MODE_PRIVATE)
 
-        return email
+        return sharedPref.getString(emailKey, null)
+    }
+
+    fun getCurrentAccountAvt(context: Context): String? {
+        val account_key = context.getString(R.string.preference_account_key)
+        val avtKey = context.getString(R.string.preference_avt_url_key)
+
+        val sharedPref: SharedPreferences =
+            context.getSharedPreferences(account_key, Context.MODE_PRIVATE)
+
+        return sharedPref.getString(avtKey, null)
     }
 
     fun convertSnapshotToMessage(snapshot: DataSnapshot, currentUserEmail: String): Message {

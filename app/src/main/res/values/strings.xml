@@ -2,9 +2,12 @@
     <string name="app_name">ChitChatter</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_notification_channel_id">CHITCHATTER_ID_DEFAULT</string>
-    <string name="message_denied">You are not allow this app showing notification.</string>
-    <string name="message_permission_prompt">You need accept this permission to see notifications.</string>
-    <string name="message_permission_denied">You are not allow this app showing notification.</string>
+    <string name="message_denied">Bạn không cho phép ứng dụng này thông báo.</string>
+    <string name="message_permission_prompt">Bạn cần cấp quyền thông báo cho ứng dụng.</string>
+    <string name="message_permission_denied">Bạn đã không cho phép ứng dụng thông báo.</string>
+    <string name="camera_denied">Bạn không cho phép ứng dụng truy cập vào thư viện.</string>
+    <string name="camera_permission_prompt">Bạn cần cấp quyền truy cập vào thư viện cho ứng dụng.</string>
+    <string name="camera_permission_denied">Bạn đã không cho phép ứng dụng truy cập vào thư viện.</string>
     <string name="desc_login_image">Ảnh logo\n</string>
     <string name="txt_enter_email">Nhập email</string>
     <string name="txt_enter_password">Nhập mật khẩu</string>
@@ -45,6 +48,7 @@
     <string name="preference_email_key">com.midterm.chitchatter.preference_email_key</string>
     <string name="preference_token_key">com.midterm.chitchatter.preference_token_key</string>
     <string name="preference_display_name_key">com.midterm.chitchatter.preference_display_name</string>
+    <string name="preference_avt_url_key">com.midterm.chitchatter.preference_avt_url</string>
     <string name="msg_check_email_reset_password">Đã gửi link xác nhận đổi mật khẩu. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_signup">Đã gửi link xác nhận tài khoản. Vui lòng kiểm tra email của bạn!</string>
     <string name="msg_check_email_to_verify">Vui lòng kiểm tra email chúng tôi đã gửi để xác thực tài khoản!</string>
@@ -67,4 +71,23 @@
     <string name="title_account">Thông tin</string>
     <string name="unknown_error">Có lỗi xảy ra!</string>
     <string name="txt_detail">Chi tiết</string>
+    <string name="txt_action_connect">Kết nối</string>
+    <string name="txt_cancel_connect">Hủy yêu cầu</string>
+    <string name="txt_contact_request">Yêu cầu kết bạn</string>
+    <string name="txt_accept">Chấp nhận</string>
+    <string name="txt_deny">Từ chối</string>
+    <string name="txt_edit">Cập nhật thông tin</string>
+    <string name="txt_action_profile">Tài khoản</string>
+    <string name="txt_action_logout">Đăng xuất</string>
+    <string name="txt_action_noti">Thông báo</string>
+    <string name="txt_man">Nam</string>
+    <string name="txt_woman">Nữ</string>
+    <string name="txt_save_profile">Lưu thay đổi</string>
+    <string name="txt_enter_birthdate">Nhập ngày sinh</string>
+    <string name="title_edit_profile">Cập nhật tài khoản</string>
+    <string name="txt_error_name_blank">Họ tên không được để trống</string>
+    <string name="txt_date_error">Ngày tháng không đúng định dạng</string>
+    <string name="txt_change_avt">Change avatar</string>
+    <string name="txt_update_profile_success">Cập nhật thành công!</string>
+    <string name="txt_update_avatar_success">Cập nhật ảnh đại diện thành công</string>
 </resources>

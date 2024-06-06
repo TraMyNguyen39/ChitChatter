@@ -1,5 +1,6 @@
 package com.midterm.chitchatter.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -7,9 +8,13 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup.LayoutParams
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,11 +23,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -33,18 +38,21 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.midterm.chitchatter.utils.ChitChatterUtils
-import com.midterm.chitchatter.ChitChatterApplication
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.ActivityMainBinding
+import com.midterm.chitchatter.ui.account.AccountViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModel
-import com.midterm.chitchatter.ui.home.HomeViewModelFactory
+import com.midterm.chitchatter.utils.ChitChatterUtils
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var cardView: CardView
 
     private var backPressedTime: Long = 0
     private var connectedRef: DatabaseReference? = null
@@ -55,6 +63,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var receiver: String
 
     private lateinit var viewModel: HomeViewModel
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -70,41 +79,24 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        onBackPressedDispatcher.addCallback {
-            if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                finish()
-            } else {
-                Toast.makeText(baseContext, "Nhấn BACK một lần nữa để thoát", Toast.LENGTH_SHORT).show()
-            }
-            backPressedTime = System.currentTimeMillis()
-        }
-//        val sharedPref = getSharedPreferences(
-//            getString(R.string.preference_account_key), Context.MODE_PRIVATE)
-//
-//        val email = sharedPref.getString(getString(R.string.preference_email_key), null)
-//        val name = sharedPref.getString(getString(R.string.preference_dislay_name_key), null)
-        Log.d("TOKENTOKEN",  ChitChatterUtils.token ?: "")
-
-        val repository = (application as ChitChatterApplication).repository
-        viewModel = ViewModelProvider(
-            this,
-            HomeViewModelFactory(repository)
-        )[HomeViewModel::class.java]
-
+        setupBackButton()
         setupNavigation()
         askNotificationPermission()
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Theo dõi trạng thái kết nối mạng
 
         // Theo dõi trạng thái kết nối mạng
         connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
         connectedRef!!.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val connected = snapshot.getValue(Boolean::class.java)!!
-                updateOnlineStatus(connected, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
+                updateOnlineStatus(
+                    connected,
+                    ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "",
+                    ChitChatterUtils.token ?: ""
+                )
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -112,8 +104,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-
-        receiver = (ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "").substringBefore('@')
+        receiver =
+            (ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "").substringBefore('@')
         // Đường dẫn để lắng nghe tất cả các tin nhắn đến cho người nhận
         messagePath = "messages/$receiver"
 
@@ -121,49 +113,70 @@ class MainActivity : AppCompatActivity() {
 //        listenForMessages()
     }
 
+    private fun setupBackButton() {
+        onBackPressedDispatcher.addCallback {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                finish()
+            } else {
+                Toast.makeText(baseContext, "Nhấn back một lần nữa để thoát", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            backPressedTime = System.currentTimeMillis()
+        }
+    }
+
     override fun onStart() {
         super.onStart()
-        updateOnlineStatus(true, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
+        updateOnlineStatus(
+            true,
+            ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "",
+            ChitChatterUtils.token ?: ""
+        )
     }
 
     override fun onStop() {
         super.onStop()
-        updateOnlineStatus(false, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
+        updateOnlineStatus(
+            false,
+            ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "",
+            ChitChatterUtils.token ?: ""
+        )
     }
 
     private fun updateOnlineStatus(isOnline: Boolean, email: String, token: String) {
         val accountsRef = firestore!!.collection("accounts").document(email)
 
-        accountsRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    val tokens = documentSnapshot.get("tokens") as? List<Map<String, Any>>
-                    tokens?.let { tokenList ->
-                        val updatedTokens = tokenList.map { tokenMap ->
-                            if (tokenMap["token"] == token) {
-                                tokenMap.toMutableMap().apply { put("isOnline", isOnline) }
-                            } else {
-                                tokenMap
-                            }
+        accountsRef.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                val tokens = documentSnapshot.get("tokens") as? List<Map<String, Any>>
+                tokens?.let { tokenList ->
+                    val updatedTokens = tokenList.map { tokenMap ->
+                        if (tokenMap["token"] == token) {
+                            tokenMap.toMutableMap().apply { put("isOnline", isOnline) }
+                        } else {
+                            tokenMap
                         }
-                        accountsRef.update("tokens", updatedTokens)
-                            .addOnSuccessListener {
-                                Log.d("OnlineStatus", "Token status updated for email: $email")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w("OnlineStatus", "Error updating token status for email: $email", e)
-                            }
                     }
-                } else {
-                    Log.d("OnlineStatus", "Email not found: $email")
+                    accountsRef.update("tokens", updatedTokens).addOnSuccessListener {
+                        Log.d("OnlineStatus", "Token status updated for email: $email")
+                    }.addOnFailureListener { e ->
+                        Log.w(
+                            "OnlineStatus",
+                            "Error updating token status for email: $email",
+                            e
+                        )
+                    }
                 }
+            } else {
+                Log.d("OnlineStatus", "Email not found: $email")
             }
-            .addOnFailureListener { e ->
-                Log.w("OnlineStatus", "Error finding email: $email", e)
-            }
+        }.addOnFailureListener { e ->
+            Log.w("OnlineStatus", "Error finding email: $email", e)
+        }
     }
 
     private fun setupNavigation() {
+        setSupportActionBar(binding.includeMain.toolbarMain)
         val navHostFragment: NavHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
@@ -176,18 +189,17 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         binding.includeMain.toolbarMain.setupWithNavController(navController, appBarConfiguration)
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.login_fragment
-                || destination.id == R.id.register_fragment
-                || destination.id == R.id.message_fragment
-            ) {
-                binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back)
-            } else if (destination.id == R.id.home_fragment
-                || destination.id == R.id.callsFragment
-                || destination.id == R.id.contactsFragment
-            ) {
-                binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_menu)
+            when (destination.id) {
+                R.id.message_fragment -> {
+                    binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back)
+                }
+                R.id.account_fragment, R.id.edit_profile_fragment -> {
+                    binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_back_w)
+                }
+                R.id.home_fragment, R.id.callsFragment, R.id.contactsFragment -> {
+                    binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_menu)
+                }
             }
         }
 
@@ -196,10 +208,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setupToolbar() {
-        setSupportActionBar(binding.includeMain.toolbarMain)
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
 
-        val cardView = CardView(this)
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun setupToolbar() {
+        cardView = CardView(this)
+
         val cardParams = Toolbar.LayoutParams(
             resources.getDimensionPixelSize(R.dimen.avatar_w_md),
             resources.getDimensionPixelSize(R.dimen.avatar_h_md)
@@ -211,24 +227,98 @@ class MainActivity : AppCompatActivity() {
         cardView.radius = resources.getDimension(R.dimen.card_corner_radius)
 
         val imageView = ImageView(this)
-        imageView.setImageResource(R.drawable.android)
+        imageView.id = R.id.iv_avatar_id
+
+        val accountAvt = ChitChatterUtils.getCurrentAccountAvt(this)
+        if (accountAvt != null) {
+            val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
+
+            val storage: FirebaseStorage = FirebaseStorage.getInstance()
+            val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
+            val imageRef: StorageReference = storageRef.child(accountAvt)
+            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                Glide.with(imageView).load(uri).error(R.drawable.chitchatter)
+                    .into(imageView)
+            }.addOnFailureListener { exception ->
+                Glide.with(imageView).load(R.drawable.chitchatter).error(R.drawable.chitchatter)
+                    .into(imageView)
+                // Xử lý lỗi nếu có
+                Log.e("FirebaseStorage", "Failed to get download URL", exception)
+            }
+        } else {
+            Glide.with(imageView).load(R.drawable.chitchatter).error(R.drawable.chitchatter)
+                .into(imageView)
+        }
+//        imageView.setImageResource(R.drawable.android)
         imageView.layoutParams = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT
+            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
         )
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
 
         cardView.addView(imageView)
-        cardView.setOnClickListener {
-            logout()
-        }
+        cardView.setOnClickListener { _ -> setupMenu() }
 
         binding.includeMain.toolbarMain.addView(cardView)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun setupMenu() {
+        try {
+            val mInflater = applicationContext
+                .getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val layout: View = mInflater.inflate(R.layout.nav_account, null)
+            layout.measure(
+                View.MeasureSpec.UNSPECIFIED,
+                View.MeasureSpec.UNSPECIFIED
+            )
+            val mDropdown = PopupWindow(
+                layout, FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT, true
+            )
+
+            //If you want to add any listeners to your textviews, these are two //textviews.
+            val itemLogout = layout.findViewById<View>(R.id.action_logout) as TextView
+            val itemProfile = layout.findViewById<View>(R.id.action_profile) as TextView
+            val itemNotification = layout.findViewById<View>(R.id.action_noti) as TextView
+
+            itemLogout.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_logout, 0, 0, 0)
+            itemProfile.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_pro, 0, 0, 0)
+            itemNotification.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_noti, 0, 0, 0
+            )
+
+            itemLogout.setOnClickListener {
+                logout()
+            }
+            itemProfile.setOnClickListener { _ ->
+                val args = Bundle()
+                args.putString("email", null)
+
+                navController.currentDestination?.let {
+                    navController.popBackStack(it.id, true)
+                }
+                navController.navigate(R.id.nav_contacts)
+                navController.navigate(R.id.account_fragment, args)
+                mDropdown.dismiss()
+
+            }
+            itemNotification.setOnClickListener {
+                mDropdown.dismiss()
+            }
+
+            val background =
+                resources.getDrawable(android.R.drawable.editbox_background_normal)
+            mDropdown.setBackgroundDrawable(background)
+            mDropdown.showAsDropDown(cardView, 5, 5)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun logout() {
         val sharedPref = getSharedPreferences(
-            getString(R.string.preference_account_key), Context.MODE_PRIVATE)
+            getString(R.string.preference_account_key), Context.MODE_PRIVATE
+        )
         val emailKey = getString(R.string.preference_email_key)
         val currentEmail = sharedPref.getString(emailKey, null)
         if (currentEmail != null) {
@@ -249,16 +339,17 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {
                 ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.POST_NOTIFICATIONS
+                    this, android.Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     postNotification()
                 }
+
                 ActivityCompat.shouldShowRequestPermissionRationale(
                     this, android.Manifest.permission.POST_NOTIFICATIONS
                 ) -> {
                     showMessage(R.string.message_permission_prompt, Snackbar.LENGTH_LONG, true)
                 }
+
                 else -> {
                     requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                 }
@@ -282,6 +373,7 @@ class MainActivity : AppCompatActivity() {
         }
         snackBar.show()
     }
+
     fun hideNavigation() {
         val toolbar: Toolbar = findViewById(R.id.toolbar_main)
         toolbar.visibility = View.GONE
@@ -304,7 +396,9 @@ class MainActivity : AppCompatActivity() {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 // Xử lý dữ liệu khi có tin nhắn mới
                 Log.d("onChildAdded", snapshot.toString());
-                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "")
+                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(
+                    snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
+                )
                 Log.d("newMessage", newMessage.toString())
 //                val message = snapshot.getValue(Message::class.java)
 //                message?.let {
@@ -315,7 +409,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 Log.d("onChildChanged", snapshot.toString());
-                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "")
+                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(
+                    snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
+                )
                 Log.d("newMessage", newMessage.toString())
             }
 

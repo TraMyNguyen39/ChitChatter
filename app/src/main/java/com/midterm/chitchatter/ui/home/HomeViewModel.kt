@@ -102,6 +102,7 @@ class HomeViewModel(
                 Log.d("NEW_MESSAGE", updatedMessage.toString())
                 val currentMessages = _messages.value ?: emptyList()
                 val updatedMessages = mutableListOf<Message>()
+
                 var newestMessage : Message = updatedMessage
                 if (currentMessages.isEmpty()) {
 //                    updatedMessages.add(updatedMessage)

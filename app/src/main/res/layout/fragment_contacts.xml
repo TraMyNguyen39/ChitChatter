@@ -20,13 +20,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:queryHint="Nhập từ khóa tìm kiếm"
                     tools:ignore="RtlSymmetry" />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_contacts"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingHorizontal="@dimen/spacing_md"
-                    tools:srcCompat="@tools:sample/avatars"
+                    android:layout_marginTop="@dimen/spacing_md"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_contact" />
         </LinearLayout>

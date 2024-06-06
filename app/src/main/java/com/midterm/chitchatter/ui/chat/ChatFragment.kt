@@ -1,16 +1,13 @@
 package com.midterm.chitchatter.ui.chat
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -26,7 +23,6 @@ import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.FragmentChatBinding
 import com.midterm.chitchatter.ui.MainActivity
 import com.midterm.chitchatter.utils.ChitChatterUtils
-
 
 class ChatFragment : Fragment() {
 
@@ -55,7 +51,9 @@ class ChatFragment : Fragment() {
         displayName = arguments?.getString(ARG_DISPLAY_NAME)
         val repository = (requireActivity().application as ChitChatterApplication).repository
 
-        viewModelFactory = ChatViewModelFactory(repository, null, null)
+
+        viewModelFactory = ChatViewModelFactory(repository, senderEmail, receiverEmail)
+
         chatViewModel = ViewModelProvider(this, viewModelFactory)[ChatViewModel::class.java]
         chatViewModel.updateInteractingAccount(Account(email = receiverEmail ?: ""))
 
