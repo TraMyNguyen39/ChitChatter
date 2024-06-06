@@ -51,7 +51,9 @@ class ChatFragment : Fragment() {
         displayName = arguments?.getString(ARG_DISPLAY_NAME)
         val repository = (requireActivity().application as ChitChatterApplication).repository
 
+
         viewModelFactory = ChatViewModelFactory(repository, senderEmail, receiverEmail)
+
         chatViewModel = ViewModelProvider(this, viewModelFactory)[ChatViewModel::class.java]
         chatViewModel.updateInteractingAccount(Account(email = receiverEmail ?: ""))
 

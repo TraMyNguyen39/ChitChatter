@@ -32,6 +32,7 @@ class AccountAdapter(
 //            }
             if (!lastMsg?.url.isNullOrEmpty()) {
                 val fileName = lastMsg?.url as String
+
                 val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 
                 val storage: FirebaseStorage = FirebaseStorage.getInstance()
@@ -67,6 +68,7 @@ class AccountAdapter(
                     when (lastMsg.status) {
                         MessageStatus.SEEN.toInt() -> {
                             val fileName = lastMsg.url
+
                             val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 
                             val storage: FirebaseStorage = FirebaseStorage.getInstance()
