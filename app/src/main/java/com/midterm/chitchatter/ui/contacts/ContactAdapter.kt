@@ -111,7 +111,7 @@ class ContactAdapter(
 
             if (contact.imageUrl != null) {
                 val fileName = contact.imageUrl as String
-                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/"
+                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 
                 val storage: FirebaseStorage = FirebaseStorage.getInstance()
                 val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
@@ -157,7 +157,7 @@ class ContactAdapter(
 
             if (contact.imageUrl != null) {
                 val fileName = contact.imageUrl as String
-                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/"
+                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 
                 val storage: FirebaseStorage = FirebaseStorage.getInstance()
                 val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
@@ -203,7 +203,7 @@ class ContactAdapter(
 
             if (contact.imageUrl != null) {
                 val fileName = contact.imageUrl as String
-                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/"
+                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 
                 val storage: FirebaseStorage = FirebaseStorage.getInstance()
                 val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
