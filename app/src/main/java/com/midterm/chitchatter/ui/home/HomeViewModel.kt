@@ -245,7 +245,6 @@ class HomeViewModel(
             }
         }
     }
-
 }
 
 class HomeViewModelFactory(
