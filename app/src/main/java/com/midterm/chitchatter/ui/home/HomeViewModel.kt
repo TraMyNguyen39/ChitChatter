@@ -57,7 +57,6 @@ class HomeViewModel(
                 val currentUserEmail = getCurrentAccount() ?: ""
                 val updatedMessages = ArrayList<Message>()
                 messages.forEach { message ->
-                    message.currentUserEmail = currentUserEmail
                     updatedMessages.add(message)
                 }
                 _messages.postValue(updatedMessages)
@@ -103,39 +102,46 @@ class HomeViewModel(
                 Log.d("NEW_MESSAGE", updatedMessage.toString())
                 val currentMessages = _messages.value ?: emptyList()
                 val updatedMessages = mutableListOf<Message>()
+                var newestMessage : Message = updatedMessage
+                if (currentMessages.isEmpty()) {
+//                    updatedMessages.add(updatedMessage)
+                    newestMessage = updatedMessage
+                }
+                else {
+                    for (message in currentMessages) {
+                        if (
+                            (message.sender == updatedMessage.sender && message.receiver == updatedMessage.receiver) ||
+                            (message.sender == updatedMessage.receiver && message.receiver == updatedMessage.sender)
+                        ) {
+                            newestMessage =
+                                Message(
+                                    id = updatedMessage.id,
+                                    sender = updatedMessage.sender,
+                                    receiver = updatedMessage.receiver,
+                                    data = Data(
+                                        text = updatedMessage.data.text,
+                                        photoUrl = updatedMessage.data.photoUrl,
+                                        photoMimeType = updatedMessage.data.photoMimeType
+                                    ),
+                                    notification = Notification(
+                                        title = updatedMessage.notification.title,
+                                        body = updatedMessage.notification.body
+                                    ),
+                                    timestamp = updatedMessage.timestamp,
+                                    status = updatedMessage.status,
+                                    token = updatedMessage.token,
+                                    name = message.name,
+                                    content = updatedMessage.content,
+                                    url = message.url,
+                                    formattedTime = updatedMessage.formattedTime)
 
-                for (message in currentMessages) {
-                    if (message.sender == updatedMessage.sender || message.sender == updatedMessage.receiver) {
-                        updatedMessages.add(
-                            Message(
-                                id = updatedMessage.id,
-                                sender = updatedMessage.sender,
-                                receiver = updatedMessage.receiver,
-                                data = Data(
-                                    text = updatedMessage.data.text,
-                                    photoUrl = updatedMessage.data.photoUrl,
-                                    photoMimeType = updatedMessage.data.photoMimeType
-                                ),
-                                notification = Notification(
-                                    title = updatedMessage.notification.title,
-                                    body = updatedMessage.notification.body
-                                ),
-                                timestamp = updatedMessage.timestamp,
-                                status = updatedMessage.status,
-                                token = updatedMessage.token,
-                                name = message.name,
-                                content = updatedMessage.content,
-                                url = message.url,
-                                formattedTime = updatedMessage.formattedTime,
-                                currentUserEmail = message.currentUserEmail
-                            )
-                        )
-                    } else {
-                        updatedMessages.add(message)
+                        } else {
+                            updatedMessages.add(message)
+                        }
                     }
                 }
-
-                _messages.postValue(updatedMessages)
+                updatedMessages.add(newestMessage)
+                _messages.postValue(updatedMessages.reversed())
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {

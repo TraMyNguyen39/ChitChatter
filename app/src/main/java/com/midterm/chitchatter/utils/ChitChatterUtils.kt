@@ -74,6 +74,8 @@ object ChitChatterUtils {
         val receiver = value["receiver"] as? String ?: ""
         val content = value["content"] as? String ?: ""
         val statusInt = (value["status"] as? Long)?.toInt() ?: MessageStatus.SENDING.toInt()
+        val name = value["name"] as? String ?: ""
+
 
         // Parse createdAt to timestamp (milliseconds)
         val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
@@ -100,7 +102,7 @@ object ChitChatterUtils {
             timestamp = createdAt,
             status = statusInt,
             token = null,
-            name = "",
+            name = name,
             content = content,
             url = "",
             formattedTime = formattedTime

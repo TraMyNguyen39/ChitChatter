@@ -22,6 +22,7 @@ import com.midterm.chitchatter.ChitChatterService
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.adapter.MessageAdapter
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.FragmentChatBinding
 import com.midterm.chitchatter.ui.MainActivity
 import com.midterm.chitchatter.utils.ChitChatterUtils
@@ -54,7 +55,7 @@ class ChatFragment : Fragment() {
         displayName = arguments?.getString(ARG_DISPLAY_NAME)
         val repository = (requireActivity().application as ChitChatterApplication).repository
 
-        viewModelFactory = ChatViewModelFactory(repository)
+        viewModelFactory = ChatViewModelFactory(repository, null, null)
         chatViewModel = ViewModelProvider(this, viewModelFactory)[ChatViewModel::class.java]
         chatViewModel.updateInteractingAccount(Account(email = receiverEmail ?: ""))
 
