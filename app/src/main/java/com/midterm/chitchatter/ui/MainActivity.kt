@@ -23,6 +23,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -31,7 +32,6 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -40,11 +40,11 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
-import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.ActivityMainBinding
-import com.midterm.chitchatter.ui.account.AccountViewModel
 import com.midterm.chitchatter.ui.home.HomeViewModel
+import com.midterm.chitchatter.ui.home.HomeViewModelFactory
 import com.midterm.chitchatter.utils.ChitChatterUtils
 
 
@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
     private var connectedRef: DatabaseReference? = null
     private var firestore: FirebaseFirestore? = null
     private var auth: FirebaseAuth? = null
-    private val database = FirebaseDatabase.getInstance()
     private lateinit var messagePath: String
     private lateinit var receiver: String
 
@@ -86,13 +85,20 @@ class MainActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+        val repository = (this.application as ChitChatterApplication).repository
+
+        viewModel = ViewModelProvider(
+            this,
+            HomeViewModelFactory(repository)
+        )[HomeViewModel::class.java]
+
 
         // Theo dõi trạng thái kết nối mạng
         connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
         connectedRef!!.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val connected = snapshot.getValue(Boolean::class.java)!!
-                updateOnlineStatus(
+                viewModel.updateOnlineStatus(
                     connected,
                     ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "",
                     ChitChatterUtils.token ?: ""
@@ -127,51 +133,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        updateOnlineStatus(
-            true,
-            ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "",
-            ChitChatterUtils.token ?: ""
-        )
+        val email = ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
+        if (email.isNotBlank()) {
+            viewModel.updateOnlineStatus(true, email, ChitChatterUtils.token ?: "")
+        } else {
+            Log.w("MainActivity", "Invalid email: $email")
+        }
     }
 
-    override fun onStop() {
-        super.onStop()
-        updateOnlineStatus(
-            false,
-            ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "",
-            ChitChatterUtils.token ?: ""
-        )
-    }
-
-    private fun updateOnlineStatus(isOnline: Boolean, email: String, token: String) {
-        val accountsRef = firestore!!.collection("accounts").document(email)
-
-        accountsRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
-                val tokens = documentSnapshot.get("tokens") as? List<Map<String, Any>>
-                tokens?.let { tokenList ->
-                    val updatedTokens = tokenList.map { tokenMap ->
-                        if (tokenMap["token"] == token) {
-                            tokenMap.toMutableMap().apply { put("isOnline", isOnline) }
-                        } else {
-                            tokenMap
-                        }
-                    }
-                    accountsRef.update("tokens", updatedTokens).addOnSuccessListener {
-                        Log.d("OnlineStatus", "Token status updated for email: $email")
-                    }.addOnFailureListener { e ->
-                        Log.w(
-                            "OnlineStatus",
-                            "Error updating token status for email: $email",
-                            e
-                        )
-                    }
-                }
-            } else {
-                Log.d("OnlineStatus", "Email not found: $email")
-            }
-        }.addOnFailureListener { e ->
-            Log.w("OnlineStatus", "Error finding email: $email", e)
+    override fun onResume() {
+        super.onResume()
+        val email = ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
+        if (email.isNotBlank()) {
+            viewModel.updateOnlineStatus(false, email, ChitChatterUtils.token ?: "")
+        } else {
+            Log.w("MainActivity", "Invalid email: $email")
         }
     }
 
@@ -388,55 +364,4 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.VISIBLE
     }
 
-    private fun listenForMessages() {
-        Log.d("MessagePath", messagePath);
-        val dbRef = database.getReference(messagePath)
-
-        dbRef.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                // Xử lý dữ liệu khi có tin nhắn mới
-                Log.d("onChildAdded", snapshot.toString());
-                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(
-                    snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
-                )
-                Log.d("newMessage", newMessage.toString())
-//                val message = snapshot.getValue(Message::class.java)
-//                message?.let {
-//                    // Hiển thị tin nhắn lên giao diện người dùng (UI)
-//                    displayMessage(it)
-//                }
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("onChildChanged", snapshot.toString());
-                val newMessage: Message = ChitChatterUtils.convertSnapshotToMessage(
-                    snapshot, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
-                )
-                Log.d("newMessage", newMessage.toString())
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                Log.d("onChildRemoved", snapshot.toString());
-
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("onChildMoved", snapshot.toString());
-
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.w("onCancelled", "Failed to read value.", error.toException())
-            }
-
-            // Các phương thức khác của ChildEventListener có thể được bỏ qua
-        })
-    }
-
-    private fun displayMessage(message: Message) {
-        // Hiển thị tin nhắn lên giao diện người dùng (UI)
-        // Bạn có thể cập nhật TextView, RecyclerView, v.v.
-        Log.d("MainActivity", "Message: ${message.content} from ${message.sender}")
-        // Ví dụ: textViewMessage.text = "${message.sender}: ${message.content}"
-    }
 }
