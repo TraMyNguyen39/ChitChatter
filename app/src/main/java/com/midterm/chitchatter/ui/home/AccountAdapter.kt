@@ -2,8 +2,10 @@ package com.midterm.chitchatter.ui.home
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface
+import android.opengl.Visibility
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -62,11 +64,19 @@ class AccountAdapter(
                     if (lastMsg.status == MessageStatus.SENT.toInt()) {
                         binding.ivReceiver.setImageResource(R.drawable.received_msg)
                         binding.tvMessage.setTypeface(null, Typeface.BOLD)
+                        binding.cvReceiver.visibility = View.VISIBLE
+                    }
+                    else if (lastMsg.status == MessageStatus.SEEN.toInt()) {
+                        binding.tvMessage.setTypeface(null, Typeface.NORMAL)
+                        binding.cvReceiver.visibility = View.GONE
                     }
                 } else {
                     binding.tvMessage.text = "You: ${lastMsg.content}"
+                    binding.tvMessage.setTypeface(null, Typeface.NORMAL)
                     when (lastMsg.status) {
                         MessageStatus.SEEN.toInt() -> {
+                            Log.d("STATUS_OF_MESSAGE", "SEEN")
+//                            binding.ivReceiver.visibility = View.GONE
                             val fileName = lastMsg.url
 
                             val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
@@ -84,15 +94,18 @@ class AccountAdapter(
                         }
 
                         MessageStatus.SENDING.toInt() -> {
+                            Log.d("STATUS_OF_MESSAGE", "SENDING")
                             binding.ivReceiver.setImageResource(R.drawable.sending_msg)
                         }
 
                         MessageStatus.SENT.toInt() -> {
+                            Log.d("STATUS_OF_MESSAGE", "SENT")
                             binding.ivReceiver.setImageResource(R.drawable.sent_msg)
                         }
 
                         else -> {
                             // Xem như đang gửi
+                            Log.d("STATUS_OF_MESSAGE", "OTHER")
                             binding.ivReceiver.setImageResource(R.drawable.sending_msg)
                         }
                     }

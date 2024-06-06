@@ -10,6 +10,7 @@ import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.AccountConnection
 import com.midterm.chitchatter.data.model.DataSendMessage
+import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.DataSource
 import kotlinx.coroutines.tasks.await
@@ -398,6 +399,32 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         }
         Log.d("API", "Ending getChat API call with sender: $sender, receiver: $receiver")
         return emptyList()
+    }
+
+    override suspend fun updateMessageStatus(
+        data: DataUpdateStatus
+    ): Boolean {
+        val baseUrl = "https://updatemessagestatus-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val result = retrofit.updateMessageStatus(data)
+            if (result.isSuccessful) {
+                Log.d(
+                    "API update",
+                    "update status successfully -  ${result.body().toString()} "
+                )
+                return true
+            } else {
+                Log.d(
+                    "API update",
+                    "update status failed -  ${result.body().toString()} "
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("API update", "exception: ${e.message}")
+        }
+        Log.d("API", "Ending API update status")
+        return false
     }
 
     private fun createRetrofitService(baseUrl: String): Retrofit {

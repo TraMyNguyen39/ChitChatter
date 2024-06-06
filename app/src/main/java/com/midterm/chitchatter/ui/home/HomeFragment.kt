@@ -14,7 +14,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
+import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.databinding.FragmentHomeBinding
 import com.midterm.chitchatter.ui.chat.ChatFragment
 import com.midterm.chitchatter.utils.ChitChatterUtils
@@ -47,6 +49,13 @@ class HomeFragment : Fragment() {
                 Log.d("HomeFragment", "onItemClick token: $token")
                 val gson = Gson()
                 val messageJson = gson.toJson(message)
+                val data = DataUpdateStatus(
+                    message.id,
+                    MessageStatus.SEEN.toInt(),
+                    ChitChatterUtils.getCurrentAccount(requireContext()),
+                    ChitChatterUtils.token
+                )
+                viewModel.updateMessageStatus(data)
                 navigateToChatFragment(senderEmail , receiverEmail,displayName, messageJson, token)
 
             }

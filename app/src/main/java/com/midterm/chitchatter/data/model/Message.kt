@@ -26,6 +26,18 @@ data class DataSendMessage(
     val photoMimeType: String? = null
 )
 
+data class DataUpdateStatus(
+    val id: String,
+    val status: Int,
+    val email: String? = "",
+    val token: String? = ""
+)
+
+data class ResponseUpdateStatus(
+    val id: String,
+    val status: Int
+)
+
 @IgnoreExtraProperties
 data class Data(
     val text: String = "",
