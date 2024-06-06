@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_contactsFragment_to_accountFragment"
             app:destination="@id/account_fragment" />
+        <action
+            android:id="@+id/action_contactsFragment_to_contactRequestFragment"
+            app:destination="@id/contact_request_fragment" />
     </fragment>
     <fragment
         android:id="@+id/account_fragment"
@@ -34,4 +37,8 @@
         android:id="@+id/edit_profile_fragment"
         android:name="com.midterm.chitchatter.ui.edit_profile.EditProfileFragment"
         android:label="@string/title_edit_profile" />
+    <fragment
+        android:id="@+id/contact_request_fragment"
+        android:name="com.midterm.chitchatter.ui.contact_request.ContactRequestFragment"
+        android:label="@string/txt_contact_request" />
 </navigation>

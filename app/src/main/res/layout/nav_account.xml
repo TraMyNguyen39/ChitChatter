@@ -19,18 +19,33 @@
         android:textSize="@dimen/text_lg"
         app:drawableLeftCompat="@drawable/ic_user_pro" />
 
-    <TextView
-        android:id="@+id/action_noti"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="@dimen/margin_8"
-        android:drawablePadding="15dp"
-        android:text="@string/txt_action_noti"
-        android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Large"
-        android:textSize="@dimen/text_lg"
-        app:drawableLeftCompat="@drawable/ic_noti" />
+        android:layout_marginStart="@dimen/margin_8"
+
+        >
+
+        <TextView
+            android:id="@+id/action_noti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:drawablePadding="15dp"
+            android:text="@string/txt_action_noti"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Large"
+            android:textSize="@dimen/text_lg"
+            app:drawableLeftCompat="@drawable/ic_noti" />
+        <TextView
+            android:id="@+id/count_unread"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_count_unread"
+            android:textColor="@color/dark_gray"
+            android:textSize="@dimen/text_normal" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/action_logout"

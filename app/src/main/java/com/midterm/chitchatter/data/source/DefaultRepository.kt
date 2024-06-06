@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.data.source
 
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
@@ -79,6 +80,21 @@ class DefaultRepository(
 
     override suspend fun getContactsOfAccount(email: String, token: String): ArrayList<Account> {
         return remoteDataSource.getContactsOfAccount(email, token)
+    }
+
+    override suspend fun getContactRequests(
+        email: String,
+        token: String
+    ): ArrayList<ContactRequestSender> {
+        return remoteDataSource.getContactRequests(email, token)
+    }
+
+    override suspend fun countUnreadNotifications(email: String, token: String): Int {
+        return remoteDataSource.countUnreadNotifications(email, token)
+    }
+
+    override suspend fun markAllAsRead(email: String, token: String): Boolean {
+        return remoteDataSource.markAllAsRead(email, token)
     }
 
     override suspend fun getContactsSearch(textSearch: String, email: String,token: String): ArrayList<Account> {

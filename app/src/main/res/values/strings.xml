@@ -90,4 +90,7 @@
     <string name="txt_change_avt">Change avatar</string>
     <string name="txt_update_profile_success">Cập nhật thành công!</string>
     <string name="txt_update_avatar_success">Cập nhật ảnh đại diện thành công</string>
+    <string name="txt_title_contact_request">Yêu cầu kết nối</string>
+    <string name="txt_empty_request">Không có yêu cầu nào</string>
+    <string name="txt_count_unread">(0)</string>
 </resources>
