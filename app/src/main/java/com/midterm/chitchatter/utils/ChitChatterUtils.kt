@@ -12,6 +12,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.DataSnapshot
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Data
+import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.data.model.Notification
@@ -85,6 +86,7 @@ object ChitChatterUtils {
         val content = value["content"] as? String ?: ""
         val statusInt = (value["status"] as? Long)?.toInt() ?: MessageStatus.SENDING.toInt()
         val name = value["name"] as? String ?: ""
+        val url = value["url"] as? String ?: ""
 
 
         // Parse createdAt to timestamp (milliseconds)
@@ -114,11 +116,20 @@ object ChitChatterUtils {
             token = null,
             name = name,
             content = content,
-            url = "",
+            url = url,
             formattedTime = formattedTime
         )
 
         return message
+    }
+
+    fun convertSnapshotToStatusMessage(snapshot: DataSnapshot): DataUpdateStatus {
+        val key = snapshot.key ?: ""
+        val value = snapshot.value?.toString()?.toIntOrNull() ?: 1
+        return DataUpdateStatus(
+            id = key,
+            status = value
+        )
     }
 
     fun saveTokenToSharedPreferences(context: Context, token: String) {

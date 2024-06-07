@@ -19,9 +19,7 @@ import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.utils.ChitChatterUtils
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class HomeViewModel(
     private val repository: Repository
@@ -54,14 +52,16 @@ class HomeViewModel(
 
     private lateinit var receiver: String
     private lateinit var messagePath: String
+    private lateinit var statusMessagePath: String
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private lateinit var messagesRef: DatabaseReference
+    private lateinit var statusMessageRef: DatabaseReference
+    private var isUpdateStatusFirstTime: Boolean = true
 
     fun fetchAllLastMessages(email: String) {
         viewModelScope.launch {
             try {
                 val messages = (repository as Repository.RemoteRepository).getAllLastMessages(email)
-                val currentUserEmail = getCurrentAccount() ?: ""
                 val updatedMessages = ArrayList<Message>()
                 messages.forEach { message ->
                     updatedMessages.add(message)
@@ -102,8 +102,12 @@ class HomeViewModel(
     private fun initializePaths(email: String) {
         receiver = email.substringBefore('@')
         messagePath = "messages/$receiver"
+        statusMessagePath = "statusMessage/${getCurrentAccount()?.substringBefore('@')}"
+        Log.d("STATUS_MESSAGE_PATH", statusMessagePath)
         messagesRef = firebaseDatabase.getReference(messagePath)
+        statusMessageRef = firebaseDatabase.getReference(statusMessagePath)
         startListeningForMessages()
+        startListeningForStatusMessages()
     }
 
     private fun startListeningForMessages() {
@@ -150,7 +154,7 @@ class HomeViewModel(
                                     token = updatedMessage.token,
                                     name = message.name,
                                     content = updatedMessage.content,
-                                    url = message.url,
+                                    url = updatedMessage.url,
                                     formattedTime = updatedMessage.formattedTime)
 
                         } else {
@@ -158,8 +162,70 @@ class HomeViewModel(
                         }
                     }
                 }
-                updatedMessages.add(newestMessage)
-                _messages.postValue(updatedMessages.reversed())
+                updatedMessages.add(0, newestMessage)
+                _messages.postValue(updatedMessages)
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val removedMessage: Message =
+                    ChitChatterUtils.convertSnapshotToMessage(snapshot, _currentAccount.value ?: "")
+                _messages.postValue(_messages.value?.filterNot { it.id == removedMessage.id })
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // Handle if needed
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+    private fun startListeningForStatusMessages() {
+        statusMessageRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if (isUpdateStatusFirstTime) {
+                    isUpdateStatusFirstTime = false
+                }
+                else {
+                    val statusUpdated = ChitChatterUtils.convertSnapshotToStatusMessage(snapshot)
+                    val currentMessages = _messages.value ?: emptyList()
+                    val updatedMessages = mutableListOf<Message>()
+                    for (message in currentMessages) {
+                        if (message.id == statusUpdated.id) {
+                            val newMessage =
+                                Message(
+                                    id = message.id,
+                                    sender = message.sender,
+                                    receiver = message.receiver,
+                                    data = Data(
+                                        text = if (message.data == null) "" else message.data.text,
+                                        photoUrl = if (message.data == null) "" else message.data.photoUrl,
+                                        photoMimeType = if (message.data == null) "" else message.data.photoMimeType
+                                    ),
+                                    notification = Notification(
+                                        title = if (message.notification == null) "" else message.notification.title,
+                                        body = if (message.notification == null) "" else message.notification.body
+                                    ),
+                                    timestamp = message.timestamp,
+                                    status = statusUpdated.status,
+                                    token = message.token,
+                                    name = message.name,
+                                    content = message.content,
+                                    url = message.url,
+                                    formattedTime = message.formattedTime)
+                            updatedMessages.add(newMessage)
+                        }
+                        else {
+                            updatedMessages.add(message)
+                        }
+                    }
+                    _messages.postValue(updatedMessages)
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -246,7 +312,7 @@ class HomeViewModel(
                             updatedMessages.add(message)
                         }
                     }
-                    _messages.postValue(updatedMessages.reversed())
+                    _messages.postValue(updatedMessages)
                 }
             } catch (e: Exception) {
                 // Xử lý lỗi nếu có

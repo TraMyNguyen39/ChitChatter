@@ -12,7 +12,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Data
@@ -21,9 +20,7 @@ import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.data.source.Repository
-import com.midterm.chitchatter.ui.login.LoginViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient

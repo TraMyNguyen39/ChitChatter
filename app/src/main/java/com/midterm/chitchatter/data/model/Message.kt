@@ -1,7 +1,6 @@
 package com.midterm.chitchatter.data.model
 
 import com.google.firebase.database.IgnoreExtraProperties
-import com.midterm.chitchatter.ui.home.HomeViewModel
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import java.util.Date
 

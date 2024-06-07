@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
                 navigateToChatFragment(senderEmail , receiverEmail,displayName, messageJson, token)
 
             }
-        })
+        }, ChitChatterUtils.getCurrentAccount(requireContext()) ?: "")
 
         binding.rvHome.adapter = adapter
 
