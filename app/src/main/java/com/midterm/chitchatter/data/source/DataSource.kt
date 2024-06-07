@@ -1,6 +1,7 @@
 package com.midterm.chitchatter.data.source
 
 import com.midterm.chitchatter.data.model.Account
+import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
@@ -26,6 +27,9 @@ interface DataSource {
         suspend fun acceptContact(userEmail: String, contactEmail: String, token: String): Boolean
         suspend fun rejectContact(userEmail: String, contactEmail: String, token: String): Boolean
         suspend fun getContactsOfAccount(email: String, token: String): ArrayList<Account>
+        suspend fun getContactRequests(email: String, token: String): ArrayList<ContactRequestSender>
+        suspend fun countUnreadNotifications(email: String, token: String): Int
+        suspend fun markAllAsRead(email: String, token: String): Boolean
         suspend fun getContactsSearch(
             textSearch: String,
             email: String,

@@ -8,7 +8,7 @@
     <dimen name="margin_24">24dp</dimen>
     <dimen name="margin_32">32dp</dimen>
     <dimen name="margin_48">48dp</dimen>
-    <dimen name="text_size_small">16sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
     <dimen name="padding_btn_30dp">30dp</dimen>
     <dimen name="text_size_30">30sp</dimen>
     <dimen name="padding_btn_12dp">12dp</dimen>
@@ -22,10 +22,12 @@
 
     <dimen name="avatar_h_lg">50dp</dimen>
     <dimen name="avatar_w_lg">50dp</dimen>
+    <dimen name="avatar_h_normal">45dp</dimen>
+    <dimen name="avatar_w_normal">45dp</dimen>
     <dimen name="avatar_w_md">40dp</dimen>
     <dimen name="avatar_h_md">40dp</dimen>
-    <dimen name="avatar_w_sm">20dp</dimen>
-    <dimen name="avatar_h_sm">20dp</dimen>
+    <dimen name="avatar_w_sm">16dp</dimen>
+    <dimen name="avatar_h_sm">16dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="card_corner_radius">1000dp</dimen>
 
@@ -48,9 +50,9 @@
 
     <dimen name="text_xxl">24sp</dimen>
     <dimen name="text_xl">20sp</dimen>
-    <dimen name="text_lg">18sp</dimen>
-    <dimen name="text_normal">16sp</dimen>
-    <dimen name="text_md">14sp</dimen>
+    <dimen name="text_lg">16sp</dimen>
+    <dimen name="text_normal">14sp</dimen>
+    <dimen name="text_md">12sp</dimen>
     <dimen name="margin_64">64dp</dimen>
 
     <dimen name="message_padding_vertical">16dp</dimen>
@@ -70,6 +72,9 @@
     <dimen name="icon_size_sm">24dp</dimen>
     <dimen name="card_size_150">150dp</dimen>
     <dimen name="img_size_normal">100dp</dimen>
+    <dimen name="dot_size">10dp</dimen>
+    <dimen name="dot_margin_end">0dp</dimen>
+    <dimen name="dot_margin_top">0dp</dimen>
 
 
 </resources>

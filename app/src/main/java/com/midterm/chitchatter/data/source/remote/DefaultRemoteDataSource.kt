@@ -9,6 +9,7 @@ import com.google.firebase.ktx.Firebase
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.AccountConnection
+import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
@@ -294,6 +295,71 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return ArrayList()
     }
 
+    override suspend fun getContactRequests(
+        email: String,
+        token: String
+    ): ArrayList<ContactRequestSender> {
+        val baseUrl = "https://getcontactrequests-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.getContactRequests(email, token)
+
+            if (response.isSuccessful) {
+                return response.body()?.data ?: ArrayList()
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+
+        return ArrayList()
+    }
+
+    override suspend fun countUnreadNotifications(email: String, token: String): Int {
+        val baseUrl = "https://countunreadnotifications-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.countUnreadNotifications(email, token)
+
+            if (response.isSuccessful) {
+                return response.body()?.data ?: 0
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return 0
+    }
+
+    override suspend fun markAllAsRead(email: String, token: String): Boolean {
+        val baseUrl = "https://markallasread-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.markAllAsRead(email, token)
+
+            return if (response.isSuccessful) {
+                true
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return false
+    }
+
     override suspend fun getContactsSearch(
         textSearch: String,
         email: String,
@@ -358,7 +424,6 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
             val result = retrofit.sendMessage(message)
 
             if (result.isSuccessful) {
-
                 Log.d("API Request", "Request successful wwith susccess: ${result.body()?.success}")
                 return result.body()?.success ?: false
             }

@@ -2,6 +2,7 @@ package com.midterm.chitchatter.data.source.remote
 
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.AccountConnection
+import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
@@ -38,6 +39,22 @@ interface MessageService {
         @Query("email") email: String,
         @Query("token") token: String
     ): Response<ResponseResult<ArrayList<Account>>>
+    @GET("/")
+    suspend fun countUnreadNotifications(
+        @Query("email") email: String,
+        @Query("token") token: String
+    ): Response<ResponseResult<Int>>
+
+    @GET("/")
+    suspend fun markAllAsRead(
+        @Query("email") email: String,
+        @Query("token") token: String
+    ): Response<ResponseResult<Nothing>>
+    @GET("/")
+    suspend fun getContactRequests(
+        @Query("email") email: String,
+        @Query("token") token: String
+    ): Response<ResponseResult<ArrayList<ContactRequestSender>>>
     @GET("/")
     suspend fun getContactsSearch(
         @Query("searchText") textSearch: String,

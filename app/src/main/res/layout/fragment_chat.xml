@@ -13,23 +13,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:padding="8dp"
         android:background="@drawable/border_bottom">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageViewBack"
-            android:layout_width="@dimen/icon_size_lg"
-            android:layout_height="@dimen/icon_size_lg"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
             android:src="@drawable/ic_back" />
 
         <de.hdodenhof.circleimageview.CircleImageView
+            app:civ_border_color="@color/primary_color"
+            app:civ_border_width="1dp"
             android:id="@+id/imageViewProfile"
-            android:layout_width="40sp"
-            android:layout_height="40sp"
+            android:layout_width="@dimen/avatar_h_normal"
+            android:layout_height="@dimen/avatar_w_normal"
             android:src="@drawable/profile"
+            android:scaleType="centerCrop"
             android:layout_gravity="center_vertical"
             >
         </de.hdodenhof.circleimageview.CircleImageView>
@@ -47,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sender_name"
-                android:textSize="@dimen/text_xl"
+                android:textSize="@dimen/text_medium"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 >
@@ -57,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/txtActiveNow"
-                android:textSize="@dimen/text_lg"
+                android:textSize="@dimen/text_normal"
                 android:textColor="@color/black"
                 android:layout_marginTop="1dp"
                 >
@@ -67,8 +69,9 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageViewCall"
-            android:layout_width="@dimen/icon_size_lg"
-            android:layout_height="@dimen/icon_size_lg"
+            android:layout_width="28dp"
+            android:layout_height="29dp"
+            android:layout_marginEnd="10dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_call"
             >
@@ -89,14 +92,11 @@
         android:id="@+id/recycler_message"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:layout_weight="1"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        app:stackFromEnd="true"
+        android:paddingLeft="@dimen/spacing_xs"
+        android:paddingRight="@dimen/spacing_xs"
         android:scrollbars="vertical"
-        >
+        app:stackFromEnd="true">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -106,10 +106,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@drawable/border_top"
-        android:paddingEnd="10dp"
-        android:paddingStart="10dp"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:padding="@dimen/spacing_lg"
         >
         <ImageButton
             android:id="@+id/btn_right"
@@ -152,12 +149,31 @@
             >
         </ImageButton>
 
+
+        <FrameLayout
+            android:id="@+id/layoutAttach"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="9dp"
+            android:backgroundTint="@android:color/transparent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_attach"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/margin_8"
+                android:paddingTop="5dp"
+                android:src="@drawable/ic_attach">
+
+            </androidx.appcompat.widget.AppCompatImageView>
+        </FrameLayout>
+
         <com.midterm.chitchatter.ui.chat.ChatEditText
             android:id="@+id/chat_edit_input"
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:autofillHints="name"
             android:background="@drawable/background_chat_input"
@@ -165,22 +181,34 @@
             android:gravity="center_vertical"
             android:hint="@string/txtMess"
             android:inputType="text"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:textSize="20sp"
-            android:focusable="true"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="@dimen/spacing_lg"
+            android:paddingEnd="@dimen/spacing_lg"
+            android:textSize="@dimen/text_lg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
         </com.midterm.chitchatter.ui.chat.ChatEditText>
 
-        <ImageButton
-            android:id="@+id/btn_send"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/ic_send">
 
-        </ImageButton>
+        <FrameLayout
+            android:id="@+id/image_send"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/background_chat_input"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="5dp"
+            android:layout_marginStart="@dimen/margin_8"
+            >
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/send"
+                app:tint="@color/white">
 
     </LinearLayout>
     <RelativeLayout

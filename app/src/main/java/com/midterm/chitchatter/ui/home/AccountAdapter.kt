@@ -2,7 +2,6 @@ package com.midterm.chitchatter.ui.home
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface
-import android.opengl.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -64,6 +63,7 @@ class AccountAdapter(
                     if (lastMsg.status == MessageStatus.SENT.toInt()) {
                         binding.ivReceiver.setImageResource(R.drawable.received_msg)
                         binding.tvMessage.setTypeface(null, Typeface.BOLD)
+                        binding.tvName.setTypeface(null, Typeface.BOLD)
                         binding.cvReceiver.visibility = View.VISIBLE
                     }
                     else if (lastMsg.status == MessageStatus.SEEN.toInt()) {
