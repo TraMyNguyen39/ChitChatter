@@ -89,15 +89,15 @@ class HomeViewModel(
         }
     }
 
-    fun countUnreadNotifications(email: String, callback: (Int) -> Unit) {
-        viewModelScope.launch {
-            val count = (repository as Repository.RemoteRepository).countUnreadNotifications(
-                email,
-                ChitChatterUtils.token!!
-            )
-            callback(count)
-        }
-    }
+//    fun countUnreadNotifications(email: String, callback: (Int) -> Unit) {
+//        viewModelScope.launch {
+//            val count = (repository as Repository.RemoteRepository).countUnreadNotifications(
+//                email,
+//                ChitChatterUtils.token!!
+//            )
+//            callback(count)
+//        }
+//    }
 
     private fun initializePaths(email: String) {
         receiver = email.substringBefore('@')

@@ -50,6 +50,12 @@ interface MessageService {
         @Query("email") email: String,
         @Query("token") token: String
     ): Response<ResponseResult<Nothing>>
+
+    @GET("/")
+    suspend fun removeContactRequestFromRealtimeDB(
+        @Query("receiver") email: String,
+        @Query("token") token: String
+    ): Response<ResponseResult<Nothing>>
     @GET("/")
     suspend fun getContactRequests(
         @Query("email") email: String,

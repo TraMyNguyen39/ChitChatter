@@ -31,6 +31,7 @@ interface Repository {
         suspend fun getContactRequests(email: String, token: String): ArrayList<ContactRequestSender>
         suspend fun countUnreadNotifications(email: String, token: String): Int
         suspend fun markAllAsRead(email: String, token: String): Boolean
+        suspend fun removeContactRequestFromRealtimeDB(email: String, token: String): Boolean
         suspend fun getContactsSearch(textSearch: String, email: String, token: String) : ArrayList<Account>
         suspend fun getAllLastMessages(email: String) : ArrayList<Message>
         suspend fun getChat(sender: String, receiver: String): List<Message>

@@ -13,10 +13,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.databinding.FragmentContactRequestBinding
+import com.midterm.chitchatter.ui.MainActivity
 import com.midterm.chitchatter.ui.contacts.ContactFragmentDirections
 import com.midterm.chitchatter.utils.ChitChatterUtils
 
@@ -26,7 +31,6 @@ class ContactRequestFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener 
     private lateinit var viewModel: ContactRequestViewModel
     private lateinit var progressBar: ProgressBar
     private var userEmail: String? = null
-    private lateinit var txtCountUnreadNoti: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,8 +42,7 @@ class ContactRequestFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener 
         }
         binding = FragmentContactRequestBinding.inflate(inflater, container, false)
         progressBar = requireActivity().findViewById(R.id.progress_bar_main)
-        val layout = requireActivity().findViewById<View>(R.id.nav_account_id)
-        txtCountUnreadNoti = layout.findViewById(R.id.count_unread)
+
         return binding.root
     }
 
@@ -49,12 +52,9 @@ class ContactRequestFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener 
         setupAdapter()
         setUpActions()
 
-        viewModel.loadAllRequests(userEmail)
-        viewModel.markAllAsRead(userEmail!!) {
-            if (it) {
-                txtCountUnreadNoti.text = "(0)"
-            }
-        }
+        viewModel.markAllAsRead(userEmail!!)
+//        viewModel.loadAllRequests(userEmail)
+        setupRealTimeNotification()
     }
 
     override fun onStart() {
@@ -145,6 +145,35 @@ class ContactRequestFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener 
 
     private fun setUpActions() {
        binding.refreshRequests.setOnRefreshListener(this)
+    }
+
+    private fun setupRealTimeNotification() {
+        // Set up Firebase Realtime Database listener
+        val database = FirebaseDatabase.getInstance()
+        val splitEmail = userEmail!!.split("@")[0]
+        val notificationsRef = database.getReference("requestContact/${splitEmail}")
+
+        notificationsRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                viewModel.loadAllRequests(userEmail!!)
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                viewModel.loadAllRequests(userEmail!!)
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                viewModel.loadAllRequests(userEmail!!)
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // Notification moved
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle possible errors.
+            }
+        })
     }
 
     private fun moveToContactDetail(email: String) {
