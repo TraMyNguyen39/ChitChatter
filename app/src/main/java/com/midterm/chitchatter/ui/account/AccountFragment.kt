@@ -60,7 +60,7 @@ class AccountFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         progressBar.visibility = View.VISIBLE
         binding.containerAccountFragment.visibility = View.INVISIBLE
         if (args.email != null) {
-            viewModel.loadAccountInfo(args.email)
+            viewModel.loadAccountInfo(userEmail, args.email) //
         } else {
             viewModel.loadAccountInfo(userEmail)
         }

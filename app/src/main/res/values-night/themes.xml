@@ -5,6 +5,7 @@
         <item name="android:windowActionBar">@color/primary_color</item>
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="colorPrimary">@color/dark_black</item>
+        <item name="android:textColor">@color/text_black</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/dark_black</item>
         <item name="colorPrimaryVariant">@color/dark_black</item>
@@ -13,6 +14,7 @@
         <item name="toolbarStyle">@style/MyToolBarStyle</item>
         <item name="android:navigationBarColor">@color/dark_black</item>
         <item name="iconPadding">@dimen/padding_btn_12dp</item>
+        <item name="iconSize">30dp</item>
     </style>
 
     <style name="MyActionBar" parent="Widget.AppCompat.ActionBar">

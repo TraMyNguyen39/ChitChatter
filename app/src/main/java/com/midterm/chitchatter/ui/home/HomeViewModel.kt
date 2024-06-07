@@ -18,7 +18,6 @@ import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.data.source.Repository
-import com.midterm.chitchatter.ui.login.LoginViewModel
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,6 +86,16 @@ class HomeViewModel(
                 // Xử lý lỗi nếu có
                 Log.e("LOGOUT", "Error removeToken: ${e.message}")
             }
+        }
+    }
+
+    fun countUnreadNotifications(email: String, callback: (Int) -> Unit) {
+        viewModelScope.launch {
+            val count = (repository as Repository.RemoteRepository).countUnreadNotifications(
+                email,
+                ChitChatterUtils.token!!
+            )
+            callback(count)
         }
     }
 

@@ -19,7 +19,6 @@ import android.widget.ProgressBar
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -60,7 +59,7 @@ class EditProfileFragment : Fragment() {
         }
     }
 
-    private val cameraLauncher = registerForActivityResult<Intent, ActivityResult>(
+    private val cameraLauncher = registerForActivityResult(
         StartActivityForResult(), this::handleResult
     )
 
@@ -237,7 +236,7 @@ class EditProfileFragment : Fragment() {
         val snackBar = Snackbar.make(binding.root, messageId, duration)
         if (showAction && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             snackBar.setAction("OK") {
-                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
             snackBar.setAction("No thank") {
                 showMessage(R.string.camera_permission_denied, Snackbar.LENGTH_LONG)
