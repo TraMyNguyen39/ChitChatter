@@ -89,7 +89,9 @@ class ChatFragment : Fragment() {
         val message = try {
             gson.fromJson(messageJson, Message::class.java)
         } catch (e: Exception) {
-            Message()
+            val message = Message()
+            message.isIncoming = false
+            message
         }
         token = arguments?.getString(ARG_TOKEN)
         Log.d("ChatFragment", "token: $token")
@@ -117,7 +119,7 @@ class ChatFragment : Fragment() {
 //            chatViewModel = ViewModelProvider(this, ChatViewModelFactory(repository, email)).get(ChatViewModel::class.java)
         }
 
-        val interactingAccountEmail = if (message.isIncoming) receiverEmail else senderEmail
+        val interactingAccountEmail = if (message?.isIncoming == true) receiverEmail else senderEmail
         Log.d("ChatFragment", "interactingAccountEmail: $interactingAccountEmail")
         chatViewModel.updateInteractingAccount(Account(email = interactingAccountEmail ?: ""))
         chatViewModel.updateInteractingAccountToken(
