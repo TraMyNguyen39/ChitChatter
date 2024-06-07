@@ -88,7 +88,7 @@ class ContactFragment : Fragment() {
             }
 
             override fun onChatItemClick(account: Account) {
-                moveToChatFragment(account.email, account.name)
+                moveToChatFragment(account.email, account.name, account.imageUrl)
             }
 
             override fun onAddItemClick(account: Account) {
@@ -113,7 +113,9 @@ class ContactFragment : Fragment() {
                     viewModel.acceptContact(it, account.email) { isSuccessful ->
                         if (isSuccessful) {
                             Snackbar.make(
-                                requireView(), "Bạn đã kết nối với ${account.email}", Snackbar.LENGTH_LONG
+                                requireView(),
+                                "Bạn đã kết nối với ${account.email}",
+                                Snackbar.LENGTH_LONG
                             ).show()
                             account.contactStatus = ContactStatus.CONNECTED.ordinal
                             adapter.notifyItemChange(account)
@@ -183,8 +185,15 @@ class ContactFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    private fun moveToChatFragment(receiverEmail: String, displayName: String) {
-        val chatFragment = ChatFragment.newInstance(userEmail!!, receiverEmail, displayName)
+    private fun moveToChatFragment(receiverEmail: String, displayName: String, imageUrl: String?) {
+        val chatFragment = ChatFragment.newInstance(
+            userEmail!!,
+            receiverEmail,
+            displayName,
+            imageUrl,
+            null,
+            ChitChatterUtils.token!!
+        )
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(this@ContactFragment.id, chatFragment)
             .addToBackStack(null)

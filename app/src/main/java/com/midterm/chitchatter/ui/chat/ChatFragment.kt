@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -16,15 +17,18 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.gson.Gson
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
@@ -38,7 +42,7 @@ import java.io.ByteArrayOutputStream
 
 class ChatFragment : Fragment() {
 
-    private var binding: FragmentChatBinding? = null
+    private lateinit var binding: FragmentChatBinding
     private lateinit var progressBar: ProgressBar
     private lateinit var chatViewModel: ChatViewModel
     private lateinit var chatAdapter: ChatAdapter
@@ -46,29 +50,56 @@ class ChatFragment : Fragment() {
     private var senderEmail: String? = null
     private var receiverEmail: String? = null
     private var displayName: String? = null
+    private var avtUrl: String? = null
     private var token: String? = null
     private lateinit var viewModelFactory: ChatViewModelFactory
 
     private var photoUri: Uri? = null
-    private var photoMimeType: String? = null
 
     private val REQUEST_CAMERA_PERMISSION = 200
     private val REQUEST_GALLERY_PERMISSION = 300
     private val REQUEST_CODE_PICK_IMAGE = 100
     val REQUEST_CODE_CAPTURE_IMAGE = 101
 
+    private val requestGalleryPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            pickImageFromGallery()
+        } else {
+            showMessage(R.string.gallery_denied, Snackbar.LENGTH_LONG)
+        }
+    }
+
+    private val requestCameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            pickImageFromCamera()
+        } else {
+            showMessage(R.string.gallery_denied, Snackbar.LENGTH_LONG)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val messageJson = arguments?.getString(ARG_MESSAGE_JSON)
         val gson = Gson()
-        val message = gson.fromJson(messageJson, Message::class.java)
+
+        val message = try {
+            gson.fromJson(messageJson, Message::class.java)
+        } catch (e: Exception) {
+            val message = Message()
+            message.isIncoming = false
+            message
+        }
         token = arguments?.getString(ARG_TOKEN)
         Log.d("ChatFragment", "token: $token")
         email = arguments?.getString(ARG_EMAIL)
         senderEmail = arguments?.getString(ARG_SENDER_EMAIL)
         receiverEmail = arguments?.getString(ARG_RECEIVER_EMAIL)
         displayName = arguments?.getString(ARG_DISPLAY_NAME)
+        avtUrl = arguments?.getString(ARG_AVT_URL)
         val repository = (requireActivity().application as ChitChatterApplication).repository
 
 
@@ -80,28 +111,32 @@ class ChatFragment : Fragment() {
 //        viewModelFactory = ChatViewModelFactory(repository)
 //        chatViewModel = ViewModelProvider(this, viewModelFactory)[ChatViewModel::class.java]
         if (senderEmail != null && receiverEmail != null) {
-            chatViewModel = ViewModelProvider(this, ChatViewModelFactory(repository, senderEmail, receiverEmail)).get(ChatViewModel::class.java)
-        }
-        else
-        {
+            chatViewModel = ViewModelProvider(
+                this, ChatViewModelFactory(repository, senderEmail, receiverEmail)
+            ).get(ChatViewModel::class.java)
+        } else {
             Log.d("ChatFragment", "senderEmail: $senderEmail, receiverEmail: $receiverEmail")
 //            chatViewModel = ViewModelProvider(this, ChatViewModelFactory(repository, email)).get(ChatViewModel::class.java)
         }
 
-        val interactingAccountEmail = if (message.isIncoming) receiverEmail else senderEmail
+        val interactingAccountEmail = if (message?.isIncoming == true) receiverEmail else senderEmail
         Log.d("ChatFragment", "interactingAccountEmail: $interactingAccountEmail")
-        chatViewModel.updateInteractingAccount(Account(email = interactingAccountEmail?: ""))
-        chatViewModel.updateInteractingAccountToken(Account(email = interactingAccountEmail?: "").token ?: "")
+        chatViewModel.updateInteractingAccount(Account(email = interactingAccountEmail ?: ""))
+        chatViewModel.updateInteractingAccountToken(
+            Account(
+                email = interactingAccountEmail ?: ""
+            ).token ?: ""
+        )
 
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         binding = FragmentChatBinding.inflate(inflater, container, false)
         progressBar = requireActivity().findViewById(R.id.progress_bar_main)
-        return binding?.root
+        progressBar.visibility = View.VISIBLE
+        return binding.root
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -112,21 +147,48 @@ class ChatFragment : Fragment() {
         setupViewModel()
         setupViews()
         setupActions()
-        val adapter = MessageAdapter()
+        setupAdapter()
+
+    }
+    override fun onDetach() {
+        super.onDetach()
+        binding.containerZoomLayout.visibility = View.GONE
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun setupAdapter() {
+        val imageUrl = chatViewModel.interactingAccount.value?.imageUrl
+        Log.d("ChatFragment", "imageUrl: $imageUrl")
+        chatAdapter = ChatAdapter(requireContext(), imageUrl) {}
+        binding.recyclerMessage.adapter = chatAdapter
+
+        val longListener = object : MessageAdapter.OnItemLongClickListener {
+            override fun onDeleteMessage(account: Message) {
+                TODO("Not yet implemented")
+            }
+        }
+        val listener = object : MessageAdapter.OnItemClickListener {
+            override fun onZoomImage(imageUrl: String) {
+                binding.containerZoomLayout.visibility = View.VISIBLE
+                Glide.with(binding.imageZoom)
+                    .load(imageUrl)
+                    .error(R.drawable.ic_loading)
+                    .into(binding.imageZoom)
+            }
+        }
+        val adapter = MessageAdapter(avtUrl, longListener, listener)
         adapter.clear()
         adapter.setCurrentAccountEmail(senderEmail ?: "")
         val layoutManager = LinearLayoutManager(context)
         layoutManager.stackFromEnd = true
-//        layoutManager.reverseLayout = true
 
-        binding?.recyclerMessage?.layoutManager = layoutManager
-        binding?.recyclerMessage?.adapter = adapter
-        binding?.textViewName?.text = displayName
+        binding.recyclerMessage.layoutManager = layoutManager
+        binding.recyclerMessage.adapter = adapter
 
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.submitList(messages)
             adapter.notifyDataSetChanged()
-            binding?.recyclerMessage?.scrollToPosition(messages.size - 1)
+            binding.recyclerMessage.scrollToPosition(messages.size - 1)
         }
     }
 
@@ -136,61 +198,83 @@ class ChatFragment : Fragment() {
             requireActivity(), ChatViewModelFactory(repository, senderEmail, receiverEmail)
         )[ChatViewModel::class.java]
 
-        progressBar.visibility = View.VISIBLE
 
-        Log.d("ChatFragment", "load message with senderEmail: $senderEmail, receiverEmail: $receiverEmail")
+        Log.d(
+            "ChatFragment",
+            "load message with senderEmail: $senderEmail, receiverEmail: $receiverEmail"
+        )
 
         chatViewModel.loadMessage(senderEmail ?: "", receiverEmail ?: "")
         chatViewModel.interactingAccount.observe(viewLifecycleOwner) { account ->
             requireActivity().title = account?.name
-            binding?.textViewName?.text = account?.name
+            binding.textViewName.text = account?.name
             Log.d("ChatFragment", "Displayname: ${account?.name}")
         }
         chatViewModel.messages.observe(viewLifecycleOwner) {
             Log.d("ChatFragment", "Received ${it.size} messages from API")
             chatAdapter.submitList(it)
-            binding?.recyclerMessage?.scrollToPosition(it.size - 1)
+            binding.recyclerMessage.scrollToPosition(it.size - 1)
             progressBar.visibility = View.GONE
         }
 
         chatViewModel.photo.observe(viewLifecycleOwner) {
             if (it == null) {
-                binding?.imagePhoto?.visibility = View.GONE
+                binding.imagePhoto.visibility = View.GONE
             } else {
-                binding?.imagePhoto?.visibility = View.VISIBLE
-                binding?.let { it1 ->
-                    Glide.with(it1.imagePhoto).load(it).into(binding!!.imagePhoto)
+                binding.imagePhoto.visibility = View.VISIBLE
+                binding.let { it1 ->
+                    Glide.with(it1.imagePhoto).load(it).into(binding.imagePhoto)
                 }
             }
         }
-
-//        ChitChatterService.remoteMessage.observe(requireActivity()) {
-//            if (ChatViewModel.isActive) {
-//                chatViewModel.pushIncomingMessage(it.data)
-//            }
-//        }
     }
 
     private fun setupViews() {
-        val imageUrl = chatViewModel.interactingAccount.value?.imageUrl
-        Log.d("ChatFragment", "imageUrl: $imageUrl")
-        chatAdapter = ChatAdapter(requireContext(), imageUrl) {}
-        binding?.recyclerMessage?.adapter = chatAdapter
-//        Glide.with(binding?.imagePhoto ?: return).load(imageUrl).into(binding?.imageViewProfile ?: return)
+        binding.textViewName.text = displayName
+        if (avtUrl.isNullOrEmpty()) {
+            Glide.with(binding.imageViewProfile).load(R.drawable.chitchatter)
+                .error(R.drawable.chitchatter).into(binding.imageViewProfile)
+        } else {
+            try {
+                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
+
+                val storage: FirebaseStorage = FirebaseStorage.getInstance()
+                val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
+                val imageRef: StorageReference = storageRef.child(avtUrl!!)
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    Glide.with(binding.imageViewProfile).load(uri).error(R.drawable.chitchatter)
+                        .into(binding.imageViewProfile)
+                }.addOnFailureListener { exception ->
+                    // Xử lý lỗi nếu có
+                    Log.e("FirebaseStorage", "Failed to get download URL", exception)
+                }
+            } catch (e: Exception) {
+                Glide.with(binding.imageViewProfile).load(R.drawable.chitchatter)
+                    .error(R.drawable.chitchatter).into(binding.imageViewProfile)
+            }
+        }
+
+        binding.btnClose.setOnClickListener {
+            binding.containerZoomLayout.visibility = View.GONE
+        }
     }
 
     private fun setupActions() {
         requireActivity().onBackPressedDispatcher.addCallback {
-            requireActivity().supportFragmentManager.popBackStack()
-            showNavigationView()
+            if (binding.containerZoomLayout.visibility == View.GONE) {
+                showNavigationView()
+                requireActivity().supportFragmentManager.popBackStack()
+            } else {
+                binding.containerZoomLayout.visibility = View.VISIBLE
+            }
         }
 
-        binding?.imageViewCall?.setOnClickListener {
+        binding.imageViewCall.setOnClickListener {
             voiceCall()
         }
-        binding?.chatEditInput?.setOnImageAddedListener { contentUri, mimeType, label ->
+        binding.chatEditInput?.setOnImageAddedListener { contentUri, mimeType, label ->
             chatViewModel.setPhoto(contentUri, mimeType)
-            if (binding?.chatEditInput?.text.isNullOrBlank()) {
+            if (binding.chatEditInput?.text.isNullOrBlank()) {
                 binding?.chatEditInput?.setText(label)
             }
         }
@@ -239,44 +323,70 @@ class ChatFragment : Fragment() {
                 binding?.btnCamera?.visibility = View.GONE
                 binding?.btnGallery?.visibility = View.GONE
                 binding?.btnRecord?.visibility = View.GONE
-            }
-            else {
+            } else {
                 binding?.btnRight?.visibility = View.GONE
                 binding?.btnCamera?.visibility = View.VISIBLE
                 binding?.btnGallery?.visibility = View.VISIBLE
                 binding?.btnRecord?.visibility = View.VISIBLE
             }
         }
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+//        if (ContextCompat.checkSelfPermission(
+//                requireContext(), Manifest.permission.CAMERA
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            ActivityCompat.requestPermissions(
+//                requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION
+//            )
+//        }
+        binding.btnCamera.setOnClickListener {
+            askPermission(Manifest.permission.CAMERA)
+//            if (ContextCompat.checkSelfPermission(
+//                    requireContext(), Manifest.permission.CAMERA
+//                ) == PackageManager.PERMISSION_GRANTED
+//            ) {
+//                Log.d("ChatFragment", "Open camera")
+//                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//                photoUri = createImageUri()
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+//                startActivityForResult(intent, REQUEST_CODE_CAPTURE_IMAGE)
+//            } else {
+//                Log.d("ChatFragment", "Request camera permission")
+//                ActivityCompat.requestPermissions(
+//                    requireActivity(),
+//                    arrayOf(Manifest.permission.CAMERA),
+//                    REQUEST_CAMERA_PERMISSION
+//                )
+//            }
         }
-        binding?.btnCamera?.setOnClickListener {
-            if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                Log.d("ChatFragment", "Open camera")
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                photoUri = createImageUri()
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-                startActivityForResult(intent, REQUEST_CODE_CAPTURE_IMAGE)
-            }
-            else {
-                Log.d("ChatFragment", "Request camera permission")
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
-            }
-        }
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_GALLERY_PERMISSION)
-        }
-        binding?.btnGallery?.setOnClickListener {
-            if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                Log.d("ChatFragment", "Open gallery")
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                intent.type = "image/*"
-                startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
-            }
-            else {
-                Log.d("ChatFragment", "Request gallery permission")
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_GALLERY_PERMISSION)
-            }
+//        if (ContextCompat.checkSelfPermission(
+//                requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            ActivityCompat.requestPermissions(
+//                requireActivity(),
+//                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+//                REQUEST_GALLERY_PERMISSION
+//            )
+//        }
+        binding.btnGallery?.setOnClickListener {
+            askPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+//            if (ContextCompat.checkSelfPermission(
+//                    requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE
+//                ) != PackageManager.PERMISSION_GRANTED
+//            ) {
+//                Log.d("ChatFragment", "Open gallery")
+//                val intent =
+//                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//                intent.type = "image/*"
+//                startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
+//            } else {
+//                Log.d("ChatFragment", "Request gallery permission")
+//                ActivityCompat.requestPermissions(
+//                    requireActivity(),
+//                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+//                    REQUEST_GALLERY_PERMISSION
+//                )
+//            }
         }
         binding?.btnRecord?.setOnClickListener {
             Log.d("ChatFragment", "Record voice")
@@ -288,12 +398,15 @@ class ChatFragment : Fragment() {
         }
 
     }
+
     private fun createImageUri(): Uri {
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.TITLE, "New Picture")
             put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
         }
-        return requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)!!
+        return requireActivity().contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+        )!!
     }
 
 
@@ -317,6 +430,7 @@ class ChatFragment : Fragment() {
 //            }
 //        }
     }
+
     fun selectImageAndSendMessage() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -349,6 +463,7 @@ class ChatFragment : Fragment() {
         val mainActivity = requireActivity() as MainActivity
         mainActivity.showNavigation()
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -367,11 +482,14 @@ class ChatFragment : Fragment() {
                         val receiverEmail = receiverEmail ?: ""
                         val senderEmail = senderEmail ?: ""
                         val token = token ?: ""
-                        chatViewModel.uploadImageAndSendMessage(imageUri, receiverEmail, senderEmail, token)
+                        chatViewModel.uploadImageAndSendMessage(
+                            imageUri, receiverEmail, senderEmail, token
+                        )
 
 
                     }
                 }
+
                 REQUEST_CODE_CAPTURE_IMAGE -> {
                     val imageBitmap = data.extras?.get("data") as Bitmap
                     binding?.imagePhoto?.setImageBitmap(imageBitmap)
@@ -385,7 +503,9 @@ class ChatFragment : Fragment() {
                         val receiverEmail = receiverEmail ?: ""
                         val senderEmail = senderEmail ?: ""
                         val token = token ?: ""
-                        chatViewModel.uploadImageAndSendMessage(imageUri, receiverEmail, senderEmail, token)
+                        chatViewModel.uploadImageAndSendMessage(
+                            imageUri, receiverEmail, senderEmail, token
+                        )
                     }
                 }
             }
@@ -401,11 +521,75 @@ class ChatFragment : Fragment() {
 //            }
 //        }
     }
+
     fun getImageUriFromBitmap(bitmap: Bitmap): Uri? {
         val bytes = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(context?.contentResolver, bitmap, "Title", null)
+        val path =
+            MediaStore.Images.Media.insertImage(context?.contentResolver, bitmap, "Title", null)
         return Uri.parse(path)
+    }
+
+    fun askPermission(permission: String) {
+        // Kiểm tra quyền truy cập
+        when {
+            ContextCompat.checkSelfPermission(
+                requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                if (permission == Manifest.permission.READ_EXTERNAL_STORAGE) {
+                    pickImageFromGallery()
+                } else if (permission == Manifest.permission.CAMERA) {
+                    pickImageFromCamera()
+                }
+            }
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
+            ) -> {
+                if (permission == Manifest.permission.READ_EXTERNAL_STORAGE) {
+                    showMessage(R.string.gallery_permission_prompt, Snackbar.LENGTH_LONG, true)
+                } else if (permission == Manifest.permission.CAMERA) {
+                    showMessage(R.string.camera_permission_prompt, Snackbar.LENGTH_LONG, true)
+                }
+            }
+
+            else -> {
+                if (permission == Manifest.permission.READ_EXTERNAL_STORAGE) {
+                    requestGalleryPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                } else if (permission == Manifest.permission.CAMERA) {
+                    requestCameraPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            }
+        }
+    }
+
+    private fun pickImageFromCamera() {
+        // Intent để chọn ảnh từ gallery\
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        photoUri = createImageUri()
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+        startActivityForResult(intent, REQUEST_CODE_CAPTURE_IMAGE)
+    }
+
+    private fun pickImageFromGallery() {
+        // Intent để chọn ảnh từ gallery\
+        val intent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
+    }
+
+    private fun showMessage(messageId: Int, duration: Int, showAction: Boolean = false) {
+        val snackBar = Snackbar.make(binding.root, messageId, duration)
+        if (showAction && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            snackBar.setAction("OK") {
+                requestGalleryPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            snackBar.setAction("No thank") {
+                showMessage(R.string.camera_permission_denied, Snackbar.LENGTH_LONG)
+            }
+        }
+        snackBar.show()
     }
 
     companion object {
@@ -414,38 +598,45 @@ class ChatFragment : Fragment() {
         private const val ARG_SENDER_EMAIL = "sender_email"
         private const val ARG_RECEIVER_EMAIL = "receiver_email"
         private const val ARG_DISPLAY_NAME = "display_name"
+        private const val ARG_AVT_URL = "avt_url"
         private const val ARG_MESSAGE_JSON = "message_json"
         private const val ARG_TOKEN = "token"
 
 
         @JvmStatic
-        fun newInstance(email: String) =
-            ChatFragment().apply {
-                arguments = Bundle().apply {
-                    putString("email", email)
-                    Log.d("email", email)
-                }
+        fun newInstance(email: String) = ChatFragment().apply {
+            arguments = Bundle().apply {
+                putString("email", email)
+                Log.d("email", email)
             }
+        }
 
-        fun newInstance(senderEmail: String, receiverEmail: String, displayName: String) =
-            ChatFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_SENDER_EMAIL, senderEmail)
-                    putString(ARG_RECEIVER_EMAIL, receiverEmail)
-                    putString(ARG_DISPLAY_NAME, displayName)
-
-                }
+        //        fun newInstance(senderEmail: String, receiverEmail: String, displayName: String) =
+//            ChatFragment().apply {
+//                arguments = Bundle().apply {
+//                    putString(ARG_SENDER_EMAIL, senderEmail)
+//                    putString(ARG_RECEIVER_EMAIL, receiverEmail)
+//                    putString(ARG_DISPLAY_NAME, displayName)
+//
+//                }
+//            }
+        fun newInstance(
+            senderEmail: String,
+            receiverEmail: String,
+            displayName: String,
+            imageUrl: String?,
+            messageJson: String?,
+            token: String
+        ) = ChatFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_SENDER_EMAIL, senderEmail)
+                putString(ARG_RECEIVER_EMAIL, receiverEmail)
+                putString(ARG_DISPLAY_NAME, displayName)
+                putString(ARG_AVT_URL, imageUrl)
+                putString(ARG_MESSAGE_JSON, messageJson)
+                putString(ARG_TOKEN, token)
             }
-        fun newInstance(senderEmail: String, receiverEmail: String, displayName: String, messageJson: String, token: String) =
-            ChatFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_SENDER_EMAIL, senderEmail)
-                    putString(ARG_RECEIVER_EMAIL, receiverEmail)
-                    putString(ARG_DISPLAY_NAME, displayName)
-                    putString(ARG_MESSAGE_JSON, messageJson)
-                    putString(ARG_TOKEN, token)
-                }
-            }
+        }
 
     }
 }

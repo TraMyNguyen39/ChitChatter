@@ -5,8 +5,10 @@
     <string name="message_denied">Bạn không cho phép ứng dụng này thông báo.</string>
     <string name="message_permission_prompt">Bạn cần cấp quyền thông báo cho ứng dụng.</string>
     <string name="message_permission_denied">Bạn đã không cho phép ứng dụng thông báo.</string>
-    <string name="camera_denied">Bạn không cho phép ứng dụng truy cập vào thư viện.</string>
-    <string name="camera_permission_prompt">Bạn cần cấp quyền truy cập vào thư viện cho ứng dụng.</string>
+    <string name="gallery_denied">Bạn không cho phép ứng dụng truy cập vào thư viện.</string>
+    <string name="camera_denied">Bạn không cho phép ứng dụng truy cập vào máy ảnh.</string>
+    <string name="gallery_permission_prompt">Bạn cần cấp quyền truy cập vào thư viện cho ứng dụng.</string>
+    <string name="camera_permission_prompt">Bạn cần cấp quyền truy cập vào máy ảnh cho ứng dụng.</string>
     <string name="camera_permission_denied">Bạn đã không cho phép ứng dụng truy cập vào thư viện.</string>
     <string name="desc_login_image">Ảnh logo\n</string>
     <string name="txt_enter_email">Nhập email</string>

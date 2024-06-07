@@ -42,7 +42,7 @@ class AccountAdapter(
                 imageRef.downloadUrl.addOnSuccessListener { uri ->
                     Glide.with(binding.ivSender)
                         .load(uri)
-                        .error(R.drawable.android)
+                        .error(R.drawable.chitchatter)
                         .into(binding.ivSender)
                 }.addOnFailureListener { exception ->
                     // Xử lý lỗi nếu có
@@ -50,8 +50,8 @@ class AccountAdapter(
                 }
             } else {
                 Glide.with(binding.ivSender)
-                    .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
-                    .error(R.drawable.android)
+                    .load(R.drawable.chitchatter)
+                    .error(R.drawable.chitchatter)
                     .into(binding.ivSender)
             }
 

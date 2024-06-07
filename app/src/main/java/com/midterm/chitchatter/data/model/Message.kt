@@ -51,20 +51,20 @@ data class Notification(
 )
 
 data class Message @JvmOverloads constructor(
-    val id: String,
+    val id: String = "",
     val sender: String = "",
     val receiver: String = "",
-    val data: Data,
-    val notification: Notification,
+    val data: Data = Data(),
+    val notification: Notification = Notification(),
     val timestamp: Long = Date().time,
-    val status: Int,
+    val status: Int = 0,
     val token: String? = null,
     val name: String = "",
 //    val createdAt: String = Date().time.toString(),
     val content: String = "",
 //    val isIncoming: Boolean = true,
     val url: String? = "",
-    val formattedTime: String,
+    val formattedTime: String = "",
     val photoUrl: String? = null,
     val photoMimeType: String? = null
 
@@ -88,6 +88,6 @@ data class Message @JvmOverloads constructor(
     }
     var currentUserEmail: String = ""
         get() = ChitChatterUtils.currentAccountEmail ?: ""
-    val isIncoming: Boolean
+    var isIncoming: Boolean = false
         get() = (currentUserEmail ?: "").compareTo(sender) != 0
 }

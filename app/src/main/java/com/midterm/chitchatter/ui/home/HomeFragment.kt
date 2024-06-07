@@ -1,17 +1,14 @@
 package com.midterm.chitchatter.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.gson.Gson
 import com.midterm.chitchatter.ChitChatterApplication
 import com.midterm.chitchatter.R
@@ -40,7 +37,8 @@ class HomeFragment : Fragment() {
             override fun onItemClick(message: Message) {
                 val senderEmail = ChitChatterUtils.getCurrentAccount(requireContext()) ?: ""
 //                val receiverEmail =  if (message.isIncoming) message.sender else message.receiver
-                val receiverEmail =  if (message.sender == senderEmail) message.receiver else message.sender
+                val receiverEmail =
+                    if (message.sender == senderEmail) message.receiver else message.sender
                 val displayName = message.name
 //                Log.d("HomeFragment", "message.token: ${message.token}")
 //                val token = message.token ?: ""
@@ -57,7 +55,14 @@ class HomeFragment : Fragment() {
                     ChitChatterUtils.token
                 )
                 viewModel.updateMessageStatus(data)
-                navigateToChatFragment(senderEmail , receiverEmail,displayName, messageJson, token)
+                navigateToChatFragment(
+                    senderEmail,
+                    receiverEmail,
+                    displayName,
+                    message.url,
+                    messageJson,
+                    token
+                )
 
             }
         })
@@ -104,8 +109,17 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
-    private fun navigateToChatFragment(senderEmail: String, receiverEmail: String, displayName: String, messageJson: String, token : String) {
-        val chatFragment = ChatFragment.newInstance(senderEmail, receiverEmail,displayName, messageJson, token)
+
+    private fun navigateToChatFragment(
+        senderEmail: String,
+        receiverEmail: String,
+        displayName: String,
+        avtUrl: String?,
+        messageJson: String,
+        token: String
+    ) {
+        val chatFragment =
+            ChatFragment.newInstance(senderEmail, receiverEmail, displayName, avtUrl,messageJson, token)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(this@HomeFragment.id, chatFragment)
             .addToBackStack(null)
