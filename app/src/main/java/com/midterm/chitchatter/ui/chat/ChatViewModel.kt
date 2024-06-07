@@ -54,7 +54,7 @@ class ChatViewModel(
     val database = Firebase.database
     val sanitizedSenderEmail = senderEmail?.substringBefore('@')
     val sanitizedReceiverEmail = receiverEmail?.substringBefore('@')
-    val myRef = database.getReference("messages/$sanitizedReceiverEmail/$sanitizedSenderEmail")
+    val myRef = database.getReference("messages/$sanitizedSenderEmail/$sanitizedReceiverEmail")
 
     init {
         Log.d("ChatViewModel", "Instance created with hashcode: ${this.hashCode()}")
@@ -63,15 +63,20 @@ class ChatViewModel(
     }
     private fun listenningForMessages() {
         myRef.addValueEventListener(object : ValueEventListener {
+
             override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("ChatViewModel", "reff : $myRef")
                 val newMessageSnapshot = snapshot.children.lastOrNull()
-                Log.d("ChatViewModel", "New message snapshot: $newMessageSnapshot")
+                Log.d("ChatViewModel", "New message snapshot RTDB: $newMessageSnapshot")
                 if (newMessageSnapshot != null) {
                     var sender: String? = null
                     var receiver: String? = null
                     var content: String? = null
                     var status: Int? = null
                     var formattedTime: String? = null
+                    var photoUrl: String? = null
+                    val photoMimeType: String? = null
+
                     for (child in snapshot.children) {
                         val key = child.key ?: continue
                         val value = child.getValue<Any>()
@@ -81,10 +86,12 @@ class ChatViewModel(
                             "content" -> content = value as? String
                             "status" -> status = value as? Int ?: MessageStatus.SENT.toInt()
                             "formattedTime" -> formattedTime = value as? String ?: SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis())
+                            "photoUrl" -> photoUrl = value as? String
+                            "photoMimeType" -> photoUrl = value as? String ?: ""
                         }
                     }
 
-                    Log.d("ChatViewModel", "New message: $sender - $receiver - $content - $status - $formattedTime")
+                    Log.d("ChatViewModel", "New message RTDB: $sender - $receiver - $content - $status - $formattedTime - $photoUrl - $photoMimeType")
                     val newMessage = Message(
                         "",
                         data = Data("", "", ""),
@@ -95,7 +102,9 @@ class ChatViewModel(
                         status = status ?: MessageStatus.SENT.toInt(),
                         notification = Notification(),
                         timestamp = System.currentTimeMillis(),
-                        formattedTime = formattedTime ?: SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis())
+                        formattedTime = formattedTime ?: SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis()),
+                        photoUrl = photoUrl,
+                        photoMimeType = photoMimeType
                     )
                     Log.d("ChatViewModel", "New class message: $newMessage")
                     addMessage(newMessage)

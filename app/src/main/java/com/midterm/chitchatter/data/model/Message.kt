@@ -63,7 +63,7 @@ data class Message @JvmOverloads constructor(
 //    val createdAt: String = Date().time.toString(),
     val content: String = "",
 //    val isIncoming: Boolean = true,
-    val url: String = "",
+    val url: String? = "",
     val formattedTime: String,
     val photoUrl: String? = null,
     val photoMimeType: String? = null
