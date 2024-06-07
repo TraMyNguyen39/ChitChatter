@@ -12,6 +12,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.google.firebase.database.getValue
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.storage
 import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.DataSendMessage
@@ -170,11 +172,57 @@ class ChatViewModel(
         }
         return isMessageSent
     }
+    fun sendMessage(text: String,photoUrl: String, photoMimeType: String, senderEmail: String, receiverEmail: String, token: String): Boolean {
+        var isMessageSent = false
+
+        val interactingAccountValue = interactingAccount.value
+        viewModelScope.launch {
+            if (senderEmail != "" && receiverEmail != ""){
+                val dataSendMessage = DataSendMessage(
+                    token = token,
+                    sender = senderEmail,
+                    receiver = receiverEmail,
+                    content = text,
+                    photoUrl = photoUrl,
+                    photoMimeType = photoMimeType
+                )
+                Log.d("ChatViewModel", "Sending message datasend : $dataSendMessage")
+
+                val newMessage = Message(
+                    "",
+                    data = Data(text, _photoUri.value.toString(), _photoMimeType ?: ""),
+                    content = text,
+                    receiver = receiverEmail,
+                    sender = senderEmail,
+                    token = token,
+                    status = MessageStatus.SENT.toInt(),
+                    notification = Notification(),
+                    timestamp = System.currentTimeMillis(),
+                    formattedTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis())
+                )
+                addMessage(newMessage)
+
+//                isMessageSent = async { (repository as Repository.RemoteRepository).sendMessage(dataSendMessage) }.await()
+                isMessageSent = withContext(Dispatchers.IO) { (repository as Repository.RemoteRepository).sendMessage(dataSendMessage) }
+                // thực ra đoạn này phải check isMessageSent ...
+
+
+                withContext(Dispatchers.IO) {
+                    Log.d("ChatViewModel", "Sending message to server")
+                    sendFCMNotification(receiverEmail, senderEmail, text)
+                }
+
+
+            }
+        }
+        return isMessageSent
+    }
     fun loadMessage(senderEmail: String?, receiverEmail: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             if (!senderEmail.isNullOrBlank() && !receiverEmail.isNullOrBlank()) {
                 Log.d("ChatViewModel", "load message with senderEmail: $senderEmail, receiverEmail: $receiverEmail")
                 val messages = (repository as Repository.RemoteRepository).getChat(senderEmail, receiverEmail)
+                Log.d("ChatViewModel", "load message: $messages")
                 _listMessage.clear()
                 _listMessage.addAll(messages.reversed())
                 _messages.postValue(_listMessage)
@@ -185,16 +233,10 @@ class ChatViewModel(
     private fun addMessage(message: Message) {
         _listMessage.add(message)
         _messages.postValue(_listMessage)
-        //
+
+        Log.d("ChatViewModel", "New message added: $message")
     }
     fun sendFCMNotification(receiverEmail: String, senderEmail: String, message: String) {
-//        val payload = mapOf(
-//            "to" to receiverEmail,
-//            "data" to mapOf(
-//                "senderEmail" to senderEmail,
-//                "message" to message
-//            )
-//        )
         val payload = JSONObject()
         payload.put("to", receiverEmail)
         val data = JSONObject()
@@ -249,6 +291,36 @@ class ChatViewModel(
             formattedTime = dateFormat.format(timestamp),
         )
         addMessage(message)
+    }
+    fun uploadImageAndSendMessage(uri: Uri, receiverEmail: String, senderEmail: String, token: String) {
+
+        val storageRef = Firebase.storage.reference
+        val path = uri.lastPathSegment
+        val fileName = path?.substring(path.lastIndexOf('/') )
+        val imageRef = storageRef.child("images/${sanitizedSenderEmail}/${sanitizedReceiverEmail}/${fileName}")
+        val photoMimeType = fileName?.substring(fileName.lastIndexOf('.')).toString()
+
+        val uploadTask = imageRef.putFile(uri)
+        uploadTask.addOnSuccessListener {
+            imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                sendMessage(" ", downloadUri.toString(), photoMimeType, senderEmail, receiverEmail, token)
+                val message = Message(
+                    "",
+                    data = Data("", downloadUri.toString(), photoMimeType),
+                    receiver = receiverEmail,
+                    sender = senderEmail,
+                    token = token,
+                    status = 1,
+                    notification = Notification(),
+                    timestamp = System.currentTimeMillis(),
+                    formattedTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis()),
+                )
+                addMessage(message)
+
+            }
+        }.addOnFailureListener {
+            Log.e("ChatViewModel", "Failed to upload image", it)
+        }
     }
 
     companion object {
