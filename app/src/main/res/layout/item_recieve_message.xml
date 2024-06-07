@@ -5,13 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/spacing_xs"
-    android:paddingBottom="@dimen/spacing_xs">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
