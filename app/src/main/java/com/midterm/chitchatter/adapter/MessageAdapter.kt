@@ -1,10 +1,12 @@
 package com.midterm.chitchatter.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.ItemRecieveMessageBinding
 import com.midterm.chitchatter.databinding.ItemContainerSentMessageBinding
@@ -48,8 +50,23 @@ class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiff
     }
     class SentMessageViewHolder(private val binding: ItemContainerSentMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
+            Log.d("MessageAdapter", "message: ${message}")
             binding.tvMessage.text = message.content
             binding.tvTime.text = message.formattedTime
+
+            if (message?.photoUrl != null) {
+                Glide.with(binding.imageView)
+                    .load(message.photoUrl)
+                    .into(binding.imageView)
+                binding.imageView.visibility = android.view.View.VISIBLE
+                binding.tvMessage.visibility = android.view.View.GONE
+                Log.d("MessageAdapter", "photoUrl: ${message.photoUrl}")
+
+            } else {
+                binding.imageView.visibility = android.view.View.GONE
+                binding.tvMessage.visibility = android.view.View.VISIBLE
+            }
+
         }
     }
 
@@ -57,6 +74,17 @@ class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiff
         fun bind(message: Message) {
             binding.tvMessage.text = message.content
             binding.tvTime.text = message.formattedTime
+
+            if (message?.photoUrl != null) {
+                Glide.with(binding.imageView)
+                    .load(message.photoUrl)
+                    .into(binding.imageView)
+                binding.imageView.visibility = android.view.View.VISIBLE
+                binding.tvMessage.visibility = android.view.View.GONE
+            } else {
+                binding.imageView.visibility = android.view.View.GONE
+                binding.tvMessage.visibility = android.view.View.VISIBLE
+            }
         }
     }
 }

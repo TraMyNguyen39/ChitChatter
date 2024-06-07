@@ -77,7 +77,7 @@ class AccountAdapter(
                         MessageStatus.SEEN.toInt() -> {
                             Log.d("STATUS_OF_MESSAGE", "SEEN")
 //                            binding.ivReceiver.visibility = View.GONE
-                            val fileName = lastMsg.url
+                            val fileName = lastMsg?.url ?: ""
 
                             val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 

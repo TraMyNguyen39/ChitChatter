@@ -1,21 +1,32 @@
 package com.midterm.chitchatter.ui.chat
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
+import android.content.ContentValues
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.activity.addCallback
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.midterm.chitchatter.ChitChatterApplication
-import com.midterm.chitchatter.ChitChatterService
 import com.midterm.chitchatter.R
 import com.midterm.chitchatter.adapter.MessageAdapter
 import com.midterm.chitchatter.data.model.Account
@@ -23,6 +34,7 @@ import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.FragmentChatBinding
 import com.midterm.chitchatter.ui.MainActivity
 import com.midterm.chitchatter.utils.ChitChatterUtils
+import java.io.ByteArrayOutputStream
 
 class ChatFragment : Fragment() {
 
@@ -36,6 +48,14 @@ class ChatFragment : Fragment() {
     private var displayName: String? = null
     private var token: String? = null
     private lateinit var viewModelFactory: ChatViewModelFactory
+
+    private var photoUri: Uri? = null
+    private var photoMimeType: String? = null
+
+    private val REQUEST_CAMERA_PERMISSION = 200
+    private val REQUEST_GALLERY_PERMISSION = 300
+    private val REQUEST_CODE_PICK_IMAGE = 100
+    val REQUEST_CODE_CAPTURE_IMAGE = 101
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -178,12 +198,30 @@ class ChatFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
             showNavigationView()
         }
-        binding?.imageSend?.setOnClickListener {
+        binding?.btnSend?.setOnClickListener {
             send(senderEmail ?: "", receiverEmail ?: "", token ?: "")
+            binding?.imagePhoto?.visibility = View.GONE
+            binding?.btnCancel?.visibility = View.GONE
         }
-        binding?.imageAttach?.setOnClickListener {
-//            attach()
+        binding?.chatEditInput?.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                v.requestFocus()
+                Log.d("ChatFragment", "Focus on touch")
+                binding?.btnRight?.visibility = View.VISIBLE
+                binding?.btnCamera?.visibility = View.GONE
+                binding?.btnGallery?.visibility = View.GONE
+                binding?.btnRecord?.visibility = View.GONE
+                v.performClick()
+            }
+            false
         }
+        binding?.btnRight?.setOnClickListener {
+            binding?.btnRight?.visibility = View.GONE
+            binding?.btnCamera?.visibility = View.VISIBLE
+            binding?.btnGallery?.visibility = View.VISIBLE
+            binding?.btnRecord?.visibility = View.VISIBLE
+        }
+
         binding?.chatEditInput?.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 send(senderEmail ?: "", receiverEmail ?: "", token ?: "")
@@ -197,27 +235,92 @@ class ChatFragment : Fragment() {
             if (!hasFocus && !v.hasFocus()) {
                 binding?.chatEditInput?.clearFocus()
                 ChitChatterUtils.hideKeyBoard(requireView())
+                binding?.btnRight?.visibility = View.VISIBLE
+                binding?.btnCamera?.visibility = View.GONE
+                binding?.btnGallery?.visibility = View.GONE
+                binding?.btnRecord?.visibility = View.GONE
             }
-//            else {
-//                if (hasFocus) {
-////                    navBar.visibility = View.GONE
-//
-//                }
-//            }
+            else {
+                binding?.btnRight?.visibility = View.GONE
+                binding?.btnCamera?.visibility = View.VISIBLE
+                binding?.btnGallery?.visibility = View.VISIBLE
+                binding?.btnRecord?.visibility = View.VISIBLE
+            }
         }
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        }
+        binding?.btnCamera?.setOnClickListener {
+            if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                Log.d("ChatFragment", "Open camera")
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                photoUri = createImageUri()
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                startActivityForResult(intent, REQUEST_CODE_CAPTURE_IMAGE)
+            }
+            else {
+                Log.d("ChatFragment", "Request camera permission")
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+            }
+        }
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_GALLERY_PERMISSION)
+        }
+        binding?.btnGallery?.setOnClickListener {
+            if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Log.d("ChatFragment", "Open gallery")
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                intent.type = "image/*"
+                startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
+            }
+            else {
+                Log.d("ChatFragment", "Request gallery permission")
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_GALLERY_PERMISSION)
+            }
+        }
+        binding?.btnRecord?.setOnClickListener {
+            Log.d("ChatFragment", "Record voice")
+        }
+        binding?.btnCancel?.setOnClickListener {
+            binding?.imagePhoto?.setImageDrawable(null)
+            binding?.imagePhoto?.visibility = View.GONE
+            binding?.btnCancel?.visibility = View.GONE
+        }
+
+    }
+    private fun createImageUri(): Uri {
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.TITLE, "New Picture")
+            put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
+        }
+        return requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)!!
     }
 
 
     private fun send(senderEmail: String, receiverEmail: String, token: String) {
-        binding?.chatEditInput?.text?.let { text ->
-            if (text.isNotEmpty()) {
-                chatViewModel.sendMessage(text.toString(), senderEmail, receiverEmail, token)
-                text.clear()
-            } else {
-                Log.d("ChatFragment", "Empty message")
-
-            }
+        val text = binding?.chatEditInput?.text.toString() ?: ""
+//        val imageUri = chatViewModel.photo.value
+        Log.d("ChatFragment", "text: $text, photo: $photoUri")
+        if (text.isNotEmpty() || photoUri != null) {
+            chatViewModel.sendMessage(text, senderEmail, receiverEmail, token)
+            binding?.chatEditInput?.text?.clear()
+        } else {
+            Log.d("ChatFragment", "Empty message")
         }
+//        binding?.chatEditInput?.text?.let { text ->
+//            if (text.isNotEmpty()) {
+//                chatViewModel.sendMessage(text.toString(), senderEmail, receiverEmail, token)
+//                text.clear()
+//            } else {
+//                Log.d("ChatFragment", "Empty message")
+//
+//            }
+//        }
+    }
+    fun selectImageAndSendMessage() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
     }
 
     private fun voiceCall() {
@@ -245,6 +348,64 @@ class ChatFragment : Fragment() {
     private fun showNavigationView() {
         val mainActivity = requireActivity() as MainActivity
         mainActivity.showNavigation()
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK && data != null) {
+            when (requestCode) {
+                REQUEST_CODE_PICK_IMAGE -> {
+                    val selectedImageUri = data.data
+                    binding?.imagePhoto?.setImageURI(selectedImageUri)
+                    binding?.imagePhoto?.visibility = View.VISIBLE
+                    binding?.btnCancel?.visibility = View.VISIBLE
+
+                    val imageUri = data.data
+                    photoUri = imageUri
+                    Log.d("ChatFragment", "Gallery imageUri: $imageUri")
+                    if (imageUri != null) {
+                        val receiverEmail = receiverEmail ?: ""
+                        val senderEmail = senderEmail ?: ""
+                        val token = token ?: ""
+                        chatViewModel.uploadImageAndSendMessage(imageUri, receiverEmail, senderEmail, token)
+
+
+                    }
+                }
+                REQUEST_CODE_CAPTURE_IMAGE -> {
+                    val imageBitmap = data.extras?.get("data") as Bitmap
+                    binding?.imagePhoto?.setImageBitmap(imageBitmap)
+                    binding?.imagePhoto?.visibility = View.VISIBLE
+                    binding?.btnCancel?.visibility = View.VISIBLE
+
+                    val imageUri = getImageUriFromBitmap(imageBitmap)
+                    photoUri = imageUri
+                    Log.d("ChatFragment", "Camera imageUri: $imageUri")
+                    if (imageUri != null) {
+                        val receiverEmail = receiverEmail ?: ""
+                        val senderEmail = senderEmail ?: ""
+                        val token = token ?: ""
+                        chatViewModel.uploadImageAndSendMessage(imageUri, receiverEmail, senderEmail, token)
+                    }
+                }
+            }
+        }
+//        if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+//            val imageUri = data.data
+//            Log.d("ChatFragment", "imageUri: $imageUri")
+//            if (imageUri != null) {
+//                val receiverEmail = receiverEmail ?: ""
+//                val senderEmail = senderEmail ?: ""
+//                val token = token ?: ""
+//                chatViewModel.uploadImageAndSendMessage(imageUri, receiverEmail, senderEmail, token)
+//            }
+//        }
+    }
+    fun getImageUriFromBitmap(bitmap: Bitmap): Uri? {
+        val bytes = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(context?.contentResolver, bitmap, "Title", null)
+        return Uri.parse(path)
     }
 
     companion object {

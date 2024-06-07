@@ -417,6 +417,7 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return false
     }
     override suspend fun sendMessage(message: DataSendMessage): Boolean {
+        Log.d("API Request", "Sending message: $message")
         val baseUrl = "https://sendmessage-kz4isf6rva-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
         try {

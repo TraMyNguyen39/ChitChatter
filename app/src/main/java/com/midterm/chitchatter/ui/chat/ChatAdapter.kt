@@ -6,7 +6,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -58,11 +60,28 @@ class ChatAdapter(
                 padding.horizontalLong, padding.vertical
             )
             // Load the image if it exists
-            message.data.photoUrl?.let { photoUrl ->
-                Glide.with(binding.tvMessage)
-                    .load(photoUrl)
+//                message.data.photoUrl?.let { photoUrl ->
+//                Log.d("ChatAdapter", "photoUrl: $message.data.photoUrl")
+//                Glide.with(binding.imageView)
+//                    .load(photoUrl)
+//                    .error(R.drawable.missing)
+//                    .into(CompoundBottomTarget(binding.tvMessage, photoSize, photoSize))
+//                binding.imageView.visibility = View.VISIBLE
+//                binding.tvMessage.visibility = View.GONE
+            Log.d("ChatAdapter", "photoUrl: ${message.data.photoUrl}")
+            if (message.data.photoUrl != null) {
+                binding.imageView.visibility = View.VISIBLE
+                binding.tvMessage.visibility = View.GONE
+                Glide.with(binding.imageView)
+                    .load(message.data.photoUrl)
                     .error(R.drawable.missing)
-                    .into(CompoundBottomTarget(binding.tvMessage, photoSize, photoSize))
+                    .into(binding.imageView)
+                binding.imageView.setOnClickListener {
+                    onPhotoClicked(Uri.parse(message.data.photoUrl))
+                }
+            } else {
+                binding.imageView.visibility = View.GONE
+                binding.tvMessage.visibility = View.VISIBLE
             }
         }
     }
@@ -80,11 +99,11 @@ class ChatAdapter(
                 padding.horizontalShort, padding.vertical
             )
             // Load the profile image
-            Glide.with(binding.imageProfile)
+            Glide.with(binding.imageView)
                 .load(imageUrl)
                 .circleCrop()
                 .error(R.drawable.profile)
-                .into(binding.imageProfile)
+                .into(binding.imageView)
         }
     }
 
@@ -114,6 +133,22 @@ class ChatAdapter(
         } else {
             // Bind data for sent message
             (holder as SentMessageViewHolder).bind(message)
+//            val lastMessage = message.value?.last() // Lấy message cuối cùng từ danh sách
+            val photoUrl = message?.data?.photoUrl // Lấy photoUrl từ message
+
+            if (photoUrl != null) {
+                val imageView = holder.itemView.findViewById<ImageView>(R.id.imageView)
+                imageView.visibility = View.VISIBLE
+
+                Glide.with(holder.itemView)
+                    .load(photoUrl)
+                    .into(imageView)
+                Log.d("ChatAdapter", "photoUrl load success: $photoUrl")
+            }
+            else {
+                val imageView = holder.itemView.findViewById<ImageView>(R.id.imageView)
+                imageView.visibility = View.GONE
+            }
         }
     }
 
@@ -123,6 +158,12 @@ class ChatAdapter(
         } else {
             VIEW_TYPE_OUTGOING
         }
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        Log.d("ChatAdapter", "Adapter has been attached to RecyclerView")
+
     }
 
     companion object {
