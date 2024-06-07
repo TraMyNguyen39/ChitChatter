@@ -62,7 +62,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
+        <receiver android:name=".NotificationReceiver" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_message" />
@@ -71,7 +71,10 @@
             android:resource="@color/green_50" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
+            android:value="com.midterm.chitchatter.chat-notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.request_notification_channel_id"
+            android:value="com.midterm.chitchatter.contact-request-notification" />
     </application>
 
 </manifest>

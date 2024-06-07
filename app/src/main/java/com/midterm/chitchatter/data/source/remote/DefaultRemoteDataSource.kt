@@ -360,6 +360,27 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return false
     }
 
+    override suspend fun removeContactRequestFromRealtimeDB(email: String, token: String): Boolean {
+        val baseUrl = "https://removecontactrequestfromrealtimedb-kz4isf6rva-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        try {
+            val response = retrofit.removeContactRequestFromRealtimeDB(email, token)
+
+            return if (response.isSuccessful) {
+                true
+            } else {
+                Log.e(
+                    "API Request",
+                    "Request failed with code: ${response.code()}, ${response.body()?.error}"
+                )
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("API Request", "Error occurred: ${e.message}")
+        }
+        return false
+    }
+
     override suspend fun getContactsSearch(
         textSearch: String,
         email: String,

@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -89,10 +90,10 @@ class MainActivity : AppCompatActivity() {
         setupNavigation()
         setupViewModel()
         askNotificationPermission()
-
+        setupRealTimeNotification()
+        
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-
         // Theo dõi trạng thái kết nối mạng
         connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
         connectedRef!!.addValueEventListener(object : ValueEventListener {
@@ -116,7 +117,17 @@ class MainActivity : AppCompatActivity() {
         messagePath = "messages/$receiver"
 
         // Lắng nghe thay đổi tại đường dẫn messagePath
-//        listenForMessages()
+
+        checkNavigation()
+    }
+
+    private fun checkNavigation() {
+        val navigator = intent.getStringExtra("navigation")
+        if (navigator == MainActivity.NAVIGATE_TO_CONTACT_REQUEST) {
+            navigateToContactRequestFragment()
+        } else if (navigator == MainActivity.NAVIGATE_TO_CHAT) {
+
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -125,10 +136,10 @@ class MainActivity : AppCompatActivity() {
         viewModel =
             ViewModelProvider(this, HomeViewModelFactory(repository))[HomeViewModel::class.java]
 
-        viewModel.countUnreadNotifications(userEmail!!) {
-            txtCountUnreadNoti.text = "($it)"
-            showNotificationIndicator(it != 0)
-        }
+//        viewModel.countUnreadNotifications(userEmail!!) {
+//            updateNumOfUnreadNoti(it)
+//            showNotificationIndicator(it != 0)
+//        }
     }
 
     private fun setupBackButton() {
@@ -265,12 +276,13 @@ class MainActivity : AppCompatActivity() {
         dotParams.marginEnd = resources.getDimensionPixelSize(R.dimen.dot_margin_end)
         dotParams.topMargin = resources.getDimensionPixelSize(R.dimen.dot_margin_top)
         redDotView.layoutParams = dotParams
+        redDotView.elevation = cardView.elevation + 1
         redDotView.visibility = View.GONE
 
-        // Add red dot view to FrameLayout
-        frameLayout.addView(redDotView)
         // Add CardView to FrameLayout
         frameLayout.addView(cardView)
+        // Add red dot view to FrameLayout
+        frameLayout.addView(redDotView)
 
         // Add FrameLayout to Toolbar
         binding.includeMain.toolbarMain.addView(frameLayout)
@@ -315,23 +327,12 @@ class MainActivity : AppCompatActivity() {
                 logout()
             }
             itemProfile.setOnClickListener { _ ->
-                val args = Bundle()
-                args.putString("email", null)
-
-                navController.currentDestination?.let {
-                    navController.popBackStack(it.id, true)
-                }
-                navController.navigate(R.id.nav_contacts)
-                navController.navigate(R.id.account_fragment, args)
+                navigateToProfileFragment()
                 mDropdown.dismiss()
 
             }
             itemNotification.setOnClickListener {
-                navController.currentDestination?.let {
-                    navController.popBackStack(it.id, true)
-                }
-                navController.navigate(R.id.nav_contacts)
-                navController.navigate(R.id.contact_request_fragment)
+                navigateToContactRequestFragment()
                 mDropdown.dismiss()
             }
 
@@ -345,37 +346,57 @@ class MainActivity : AppCompatActivity() {
         return null
     }
 
-//    private fun setupRealTimeNotification() {
-//        // Set up Firebase Realtime Database listener
-//        val database = FirebaseDatabase.getInstance()
-//        val notificationsRef = database.getReference("contact_requests/${ChitChatterUtils}")
-//
-//        notificationsRef.addChildEventListener(object : ChildEventListener {
-//            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                // A new notification is received
-//                showNotificationIndicator(true)
-//            }
-//
-//            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-//                // Notification changed
-//            }
-//
-//            override fun onChildRemoved(snapshot: DataSnapshot) {
-//                // Notification removed
-//            }
-//
-//            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-//                // Notification moved
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                // Handle possible errors.
-//            }
-//        })
-//    }
+    private fun setupRealTimeNotification() {
+        // Set up Firebase Realtime Database listener
+        val database = FirebaseDatabase.getInstance()
+        val splitEmail = userEmail!!.split("@")[0]
+        val notificationsRef = database.getReference("requestContact/${splitEmail}")
 
-    private fun showNotificationIndicator(show: Boolean) {
+        notificationsRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                handleNotification(snapshot)
+
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                handleNotification(snapshot)
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                showNotificationIndicator(false)
+                updateNumOfUnreadNoti(0)
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // Notification moved
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle possible errors.
+            }
+        })
+    }
+    private fun handleNotification(snapshot: DataSnapshot) {
+        if (snapshot.key == "numOfUnreadNotifications") {
+            val numOfUnreadNotifications = snapshot.getValue(Int::class.java)
+            numOfUnreadNotifications?.let {
+                showNotificationIndicator(numOfUnreadNotifications > 0)
+                updateNumOfUnreadNoti(numOfUnreadNotifications)
+            }
+        }
+    }
+
+    fun showNotificationIndicator(show: Boolean) {
         redDotView.visibility = if (show) View.VISIBLE else View.GONE
+    }
+    @SuppressLint("SetTextI18n")
+    fun updateNumOfUnreadNoti(num: Int) {
+        txtCountUnreadNoti.text = "(${num})"
+        if (num > 0) {
+            txtCountUnreadNoti.setTextColor(ContextCompat.getColor(this, R.color.red))
+        } else {
+            txtCountUnreadNoti.setTextColor(ContextCompat.getColor(this, R.color.dark_gray))
+        }
     }
 
     private fun logout() {
@@ -451,4 +472,26 @@ class MainActivity : AppCompatActivity() {
         bottomNav.visibility = View.VISIBLE
     }
 
+    private fun navigateToProfileFragment() {
+        val args = Bundle()
+        args.putString("email", null)
+
+        navController.currentDestination?.let {
+            navController.popBackStack(it.id, true)
+        }
+        navController.navigate(R.id.nav_contacts)
+        navController.navigate(R.id.account_fragment, args)
+    }
+    private fun navigateToContactRequestFragment() {
+        navController.currentDestination?.let {
+            navController.popBackStack(it.id, true)
+        }
+        navController.navigate(R.id.nav_contacts)
+        navController.navigate(R.id.contact_request_fragment)
+    }
+
+    companion object {
+        const val NAVIGATE_TO_CHAT = "NAVIGATE_TO_CHAT"
+        const val NAVIGATE_TO_CONTACT_REQUEST = "NAVIGATE_TO_CONTACT_REQUEST"
+    }
 }

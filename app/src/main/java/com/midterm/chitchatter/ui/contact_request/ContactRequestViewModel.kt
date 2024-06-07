@@ -72,13 +72,16 @@ class ContactRequestViewModel(
         }
     }
 
-    fun markAllAsRead(email: String, callback: (Boolean) -> Unit) {
+    fun markAllAsRead(email: String) {
         viewModelScope.launch {
-            val isSuccessful = (repository as Repository.RemoteRepository).markAllAsRead(
+            (repository as Repository.RemoteRepository).markAllAsRead(
                 email,
                 ChitChatterUtils.token!!
             )
-            callback(isSuccessful)
+            repository.removeContactRequestFromRealtimeDB(
+                email,
+                ChitChatterUtils.token!!
+            )
         }
     }
 }

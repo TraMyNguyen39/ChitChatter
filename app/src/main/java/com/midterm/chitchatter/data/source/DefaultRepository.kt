@@ -97,6 +97,10 @@ class DefaultRepository(
         return remoteDataSource.markAllAsRead(email, token)
     }
 
+    override suspend fun removeContactRequestFromRealtimeDB(email: String, token: String): Boolean {
+        return remoteDataSource.removeContactRequestFromRealtimeDB(email, token)
+    }
+
     override suspend fun getContactsSearch(textSearch: String, email: String,token: String): ArrayList<Account> {
         return remoteDataSource.getContactsSearch(textSearch, email, token)
     }
