@@ -8,18 +8,6 @@
     android:paddingTop="@dimen/spacing_xs"
     android:paddingBottom="@dimen/spacing_xs">
 
-    <ImageView
-        android:id="@+id/image_view"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:adjustViewBounds="true"
-        android:maxHeight="300dp"
-        android:src="@drawable/profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,8 +26,10 @@
             app:layout_constraintHorizontal_bias="0.39"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.377">
+            app:layout_constraintVertical_bias="0.377"
+            android:src="@drawable/chitchatter_logo">
         </de.hdodenhof.circleimageview.CircleImageView>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -54,22 +44,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rouder_image"
-                    android:visibility="gone">
-
+                    android:src="@drawable/chitchatter_logo"
+                    android:visibility="visible">
                 </ImageView>
 
             </androidx.cardview.widget.CardView>
-
-
 
             <TextView
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:maxWidth="300dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
                 android:background="@drawable/background_recive_message_top"
                 android:backgroundTint="#E0E0E0"
                 android:paddingStart="16dp"
@@ -78,7 +63,7 @@
                 android:paddingEnd="16dp"
                 android:text="Đây là tin nhắn nhận"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_lg"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.494"
@@ -108,8 +93,8 @@
             android:text="@string/time"
             android:layout_marginStart="20dp"
             android:textSize="14sp"
-            android:layout_marginBottom="8dp"
             android:visibility="gone"
             >
+        </TextView>
   </LinearLayout>
 </LinearLayout>

@@ -10,7 +10,6 @@
     android:gravity="end"
     android:paddingEnd="15dp"
     android:paddingTop="@dimen/spacing_xs"
-    android:paddingBottom="@dimen/margin_4"
     >
 
     <androidx.cardview.widget.CardView
@@ -22,18 +21,6 @@
             android:id="@+id/image_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxHeight="300dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:paddingStart="16dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="6dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.973"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:visibility="visible"
             android:adjustViewBounds="true"
 
@@ -47,7 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/background_sent_message_bottom"
         android:maxWidth="300dp"
         android:paddingStart="16dp"
