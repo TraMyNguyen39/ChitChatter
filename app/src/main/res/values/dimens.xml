@@ -48,7 +48,7 @@
     <dimen name="rounded_11xl">90dp</dimen>
     <dimen name="rounded_12xl">100dp</dimen>
 
-    <dimen name="text_xxl">24sp</dimen>
+    <dimen name="text_xxl">22sp</dimen>
     <dimen name="text_xl">20sp</dimen>
     <dimen name="text_lg">16sp</dimen>
     <dimen name="text_normal">14sp</dimen>
@@ -69,9 +69,11 @@
     <dimen name="chat_image_width">128dp</dimen>
     <dimen name="chat_image_height">128dp</dimen>
     <dimen name="icon_size_lg">30dp</dimen>
+    <dimen name="icon_size_normal">26dp</dimen>
     <dimen name="icon_size_sm">24dp</dimen>
     <dimen name="card_size_150">150dp</dimen>
     <dimen name="img_size_normal">100dp</dimen>
+    <dimen name="img_size_small">35dp</dimen>
     <dimen name="dot_size">12dp</dimen>
     <dimen name="dot_margin_end">0dp</dimen>
     <dimen name="dot_margin_top">0dp</dimen>

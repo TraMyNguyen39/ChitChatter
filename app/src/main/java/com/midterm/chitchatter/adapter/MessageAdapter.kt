@@ -1,17 +1,26 @@
 package com.midterm.chitchatter.adapter
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.midterm.chitchatter.R
 import com.midterm.chitchatter.data.model.Message
-import com.midterm.chitchatter.databinding.ItemRecieveMessageBinding
 import com.midterm.chitchatter.databinding.ItemContainerSentMessageBinding
+import com.midterm.chitchatter.databinding.ItemRecieveMessageBinding
 
-class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+class MessageAdapter(
+    private val avtUrl: String?,
+    private val longListener: OnItemLongClickListener,
+    private val listener: OnItemClickListener
+) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     private var currentAccountEmail: String? = null
 
@@ -28,11 +37,19 @@ class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiff
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == VIEW_TYPE_SENT) {
-            val binding = ItemContainerSentMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            SentMessageViewHolder(binding)
+            val binding = ItemContainerSentMessageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            SentMessageViewHolder(binding, longListener, listener)
         } else {
-            val binding = ItemRecieveMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            ReceivedMessageViewHolder(binding)
+            val binding = ItemRecieveMessageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            ReceivedMessageViewHolder(binding, avtUrl, longListener, listener)
         }
     }
 
@@ -44,48 +61,139 @@ class MessageAdapter : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiff
             (holder as ReceivedMessageViewHolder).bind(message)
         }
     }
+
+    @SuppressLint("NotifyDataSetChanged")
     fun clear() {
         this.currentList.clear()
         notifyDataSetChanged()
     }
-    class SentMessageViewHolder(private val binding: ItemContainerSentMessageBinding) : RecyclerView.ViewHolder(binding.root) {
+
+    class SentMessageViewHolder(
+        private val binding: ItemContainerSentMessageBinding,
+        private val longListener: OnItemLongClickListener,
+        private val listener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             Log.d("MessageAdapter", "message: ${message}")
             binding.tvMessage.text = message.content
             binding.tvTime.text = message.formattedTime
 
-            if (message?.photoUrl != null) {
+            if (message.photoUrl != null) {
                 Glide.with(binding.imageView)
                     .load(message.photoUrl)
                     .into(binding.imageView)
-                binding.imageView.visibility = android.view.View.VISIBLE
-                binding.tvMessage.visibility = android.view.View.GONE
+                binding.imageView.visibility = View.VISIBLE
                 Log.d("MessageAdapter", "photoUrl: ${message.photoUrl}")
 
             } else {
-                binding.imageView.visibility = android.view.View.GONE
-                binding.tvMessage.visibility = android.view.View.VISIBLE
+                binding.imageView.visibility = View.GONE
             }
 
+            if (message.content != null && message.content.isNotBlank()) {
+                binding.tvMessage.visibility = View.VISIBLE
+            } else {
+                binding.tvMessage.visibility = View.GONE
+            }
+
+            binding.tvMessage.setOnClickListener {
+                binding.tvTime.visibility =
+                    if (binding.tvTime.visibility == View.GONE) View.VISIBLE
+                    else View.GONE
+
+            }
+            binding.tvMessage.setOnLongClickListener {
+                longListener.onDeleteMessage(message)
+                true
+            }
+            binding.imageView.setOnClickListener {
+                if (message.photoUrl != null) {
+                    listener.onZoomImage(message.photoUrl)
+                }
+            }
         }
     }
 
-    class ReceivedMessageViewHolder(private val binding: ItemRecieveMessageBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ReceivedMessageViewHolder(
+        private val binding: ItemRecieveMessageBinding,
+        private val avtUrl: String?,
+        private val longListener: OnItemLongClickListener,
+        private val listener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.tvMessage.text = message.content
             binding.tvTime.text = message.formattedTime
 
-            if (message?.photoUrl != null) {
+            if (avtUrl != null) {
+                try {
+                    val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
+
+                    val storage: FirebaseStorage = FirebaseStorage.getInstance()
+                    val storageRef: StorageReference = storage.getReferenceFromUrl(bucketUrl)
+                    val imageRef: StorageReference = storageRef.child(avtUrl)
+                    imageRef.downloadUrl.addOnSuccessListener { uri ->
+                        Glide.with(binding.imageProfile)
+                            .load(uri)
+                            .error(R.drawable.chitchatter)
+                            .into(binding.imageProfile)
+                    }.addOnFailureListener { exception ->
+                        // Xử lý lỗi nếu có
+                        Log.e("FirebaseStorage", "Failed to get download URL", exception)
+                    }
+                } catch (e: Exception) {
+                    Glide.with(binding.imageView)
+                        .load(R.drawable.chitchatter)
+                        .error(R.drawable.chitchatter)
+                        .into(binding.imageView)
+                }
+            } else {
+                Glide.with(binding.imageView)
+                    .load(R.drawable.chitchatter)
+                    .error(R.drawable.chitchatter)
+                    .into(binding.imageView)
+            }
+
+            if (message.photoUrl != null) {
                 Glide.with(binding.imageView)
                     .load(message.photoUrl)
+                    .error(R.drawable.ic_loading)
                     .into(binding.imageView)
-                binding.imageView.visibility = android.view.View.VISIBLE
-                binding.tvMessage.visibility = android.view.View.GONE
+                binding.imageView.visibility = View.VISIBLE
             } else {
-                binding.imageView.visibility = android.view.View.GONE
-                binding.tvMessage.visibility = android.view.View.VISIBLE
+                binding.imageView.visibility = View.GONE
+            }
+
+            if (message.content.isNotBlank()) {
+                binding.linearText.visibility = View.VISIBLE
+            } else {
+                binding.linearText.visibility = View.GONE
+            }
+
+            binding.tvMessage.setOnClickListener {
+                binding.tvTime.visibility =
+                    if (binding.tvTime.visibility == View.GONE) View.VISIBLE
+                    else View.GONE
+
+            }
+
+            binding.tvMessage.setOnLongClickListener {
+                longListener.onDeleteMessage(message)
+                true
+            }
+
+            binding.imageView.setOnClickListener {
+                if (message.photoUrl != null) {
+                    listener.onZoomImage(message.photoUrl)
+                }
             }
         }
+    }
+
+    interface OnItemLongClickListener {
+        fun onDeleteMessage(account: Message)
+    }
+
+    interface OnItemClickListener {
+        fun onZoomImage(imageUrl: String)
     }
 }
 

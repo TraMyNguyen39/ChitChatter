@@ -94,10 +94,10 @@ class ChatAdapter(
 
             // Set the background and padding for the message
             binding.tvMessage.setBackgroundResource(R.drawable.message_incoming)
-            binding.tvMessage.setPadding(
-                padding.horizontalLong, padding.vertical,
-                padding.horizontalShort, padding.vertical
-            )
+//            binding.tvMessage.setPadding(
+//                padding.horizontalLong, padding.vertical,
+//                padding.horizontalShort, padding.vertical
+//            )
             // Load the profile image
             Glide.with(binding.imageView)
                 .load(imageUrl)
@@ -197,4 +197,5 @@ private class CompoundBottomTarget(
             null, null, null, placeholder
         )
     }
+
 }

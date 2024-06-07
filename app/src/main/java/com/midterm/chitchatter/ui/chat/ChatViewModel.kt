@@ -312,7 +312,7 @@ class ChatViewModel(
         val uploadTask = imageRef.putFile(uri)
         uploadTask.addOnSuccessListener {
             imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                sendMessage(" ", downloadUri.toString(), photoMimeType, senderEmail, receiverEmail, token)
+                sendMessage("", downloadUri.toString(), photoMimeType, senderEmail, receiverEmail, token)
                 val message = Message(
                     "",
                     data = Data("", downloadUri.toString(), photoMimeType),

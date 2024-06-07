@@ -200,10 +200,11 @@
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/txt_change_avt"
                 android:elevation="10dp"
+                app:layout_constraintHorizontal_bias="0.9"
                 app:layout_constraintBottom_toBottomOf="@+id/cardView9"
                 app:layout_constraintEnd_toEndOf="@+id/cardView9"
-                app:layout_constraintStart_toEndOf="@+id/cardView9"
-                app:srcCompat="@drawable/ic_camera"
+                app:layout_constraintStart_toStartOf="@+id/cardView9"
+                app:srcCompat="@drawable/ic_camera_black"
                 tools:ignore="TouchTargetSizeCheck" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

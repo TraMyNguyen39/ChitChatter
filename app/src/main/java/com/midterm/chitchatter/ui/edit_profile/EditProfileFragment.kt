@@ -55,7 +55,7 @@ class EditProfileFragment : Fragment() {
         if (isGranted) {
             pickImageFromGallery()
         } else {
-            showMessage(R.string.camera_denied, Snackbar.LENGTH_LONG)
+            showMessage(R.string.gallery_denied, Snackbar.LENGTH_LONG)
         }
     }
 
@@ -170,7 +170,7 @@ class EditProfileFragment : Fragment() {
                 ActivityCompat.shouldShowRequestPermissionRationale(
                     requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
                 ) -> {
-                    showMessage(R.string.camera_permission_prompt, Snackbar.LENGTH_LONG, true)
+                    showMessage(R.string.gallery_permission_prompt, Snackbar.LENGTH_LONG, true)
                 }
 
                 else -> {
