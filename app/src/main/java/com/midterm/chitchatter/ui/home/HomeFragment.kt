@@ -76,7 +76,12 @@ class HomeFragment : Fragment() {
 
         if (currentAccount != null) {
             progressBar.visibility = View.VISIBLE
-            viewModel.fetchAllLastMessages(currentAccount)
+            if (ChitChatterUtils.isOnline(requireContext())) {
+                viewModel.fetchAllLastMessages(currentAccount)
+            }
+            else {
+                viewModel.fetchAllLastMessagesFromLocalDatabase()
+            }
         }
 
         viewModel.messages.observe(viewLifecycleOwner, Observer { messages ->

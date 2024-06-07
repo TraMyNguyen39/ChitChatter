@@ -11,11 +11,11 @@ import android.view.inputmethod.InputMethodManager
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.DataSnapshot
 import com.midterm.chitchatter.R
-import com.midterm.chitchatter.data.model.Data
+//import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.MessageStatus
-import com.midterm.chitchatter.data.model.Notification
+//import com.midterm.chitchatter.data.model.Notification
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -101,16 +101,16 @@ object ChitChatterUtils {
         val formattedTime = value["formattedTime"] as? String ?: ""
 
         // Create Data and Notification objects with default values (or based on snapshot data if needed)
-        val data = Data(text = content)
-        val notification = Notification(title = "", body = content)
+//        val data = Data(text = content)
+//        val notification = Notification(title = "", body = content)
 
         // Construct the Message object
         val message = Message(
             id = id,
             sender = sender,
             receiver = receiver,
-            data = data,
-            notification = notification,
+//            data = data,
+//            notification = notification,
             timestamp = createdAt,
             status = statusInt,
             token = null,

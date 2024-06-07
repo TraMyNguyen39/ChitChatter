@@ -5,6 +5,8 @@ import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
+import com.midterm.chitchatter.data.source.remote.ResponseNoResult
+import com.midterm.chitchatter.data.source.remote.ResponseResult
 
 interface DataSource {
     interface RemoteDataSource {
@@ -47,6 +49,13 @@ interface DataSource {
     }
 
     interface LocalDataSource {
-        // Todo
+//        interface DataSourceCallback {
+//            fun onCompleted(result: ResponseResult<List<Message>>)
+//            fun onCompleted(result: ResponseNoResult)
+//        }
+
+        suspend fun loadData() : ArrayList<Message>
+        suspend fun clearDatabase(): Boolean
+        suspend fun updateDatabase(messages: List<Message>): Boolean
     }
 }
