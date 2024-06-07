@@ -16,13 +16,15 @@ import com.midterm.chitchatter.data.model.MessageStatus
 import com.midterm.chitchatter.databinding.ItemChatboxBinding
 
 class AccountAdapter(
-    private val listener: OnItemClickListener
+    private val listener: OnItemClickListener,
+    private val currentAccount: String
 ) : RecyclerView.Adapter<AccountAdapter.ViewHolder>() {
     private var messagesList = ArrayList<Message>();
 
     class ViewHolder(
         private val binding: ItemChatboxBinding,
-        private val listener: OnItemClickListener
+        private val listener: OnItemClickListener,
+        private val currentAccount: String
     ) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(lastMsg: Message?) {
@@ -31,8 +33,10 @@ class AccountAdapter(
 //            } else {
 //
 //            }
+            binding.cvReceiver.visibility = View.VISIBLE
             if (!lastMsg?.url.isNullOrEmpty()) {
                 val fileName = lastMsg?.url as String
+                Log.d("LASTMSG_URL", fileName)
 
                 val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
 
@@ -58,38 +62,75 @@ class AccountAdapter(
 
             binding.tvName.text = lastMsg?.name
             if (lastMsg != null) {
-                if (lastMsg.isIncoming) {
-                    binding.tvMessage.text = lastMsg.content
+//                val isIncoming = lastMsg.receiver.equals()
+                if (lastMsg.receiver == currentAccount) {
+                    if (lastMsg.content.isNotEmpty() && lastMsg.content.isNotBlank()) {
+                        binding.tvMessage.text = lastMsg.content
+                    }
+                    else {
+                        binding.tvMessage.text = "${lastMsg.name} đã gửi một hình ảnh"
+                    }
                     if (lastMsg.status == MessageStatus.SENT.toInt()) {
                         binding.ivReceiver.setImageResource(R.drawable.received_msg)
                         binding.tvMessage.setTypeface(null, Typeface.BOLD)
-                        binding.tvName.setTypeface(null, Typeface.BOLD)
-                        binding.cvReceiver.visibility = View.VISIBLE
                     }
                     else if (lastMsg.status == MessageStatus.SEEN.toInt()) {
                         binding.tvMessage.setTypeface(null, Typeface.NORMAL)
                         binding.cvReceiver.visibility = View.GONE
+//                        val fileName = lastMsg.url ?: ""
+//                        if (fileName.isEmpty()) {
+//                            Glide.with(binding.ivReceiver)
+//                                .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
+//                                .error(R.drawable.android)
+//                                .into(binding.ivReceiver)
+//                        }
+//                        else {
+//                            val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
+//
+//                            val storage: FirebaseStorage = FirebaseStorage.getInstance()
+//                            val storageRef: StorageReference =
+//                                storage.getReferenceFromUrl(bucketUrl)
+//                            val imageRef: StorageReference = storageRef.child(fileName)
+//                            imageRef.downloadUrl.addOnSuccessListener { uri ->
+//                                Glide.with(binding.ivReceiver)
+//                                    .load(uri)
+//                                    .error(R.drawable.android)
+//                                    .into(binding.ivReceiver)
+//                            }
+//                        }
                     }
                 } else {
-                    binding.tvMessage.text = "You: ${lastMsg.content}"
+                    if (lastMsg.content.isNotEmpty() && lastMsg.content.isNotBlank()) {
+                        binding.tvMessage.text = "Bạn: ${lastMsg.content}"
+                    }
+                    else {
+                        binding.tvMessage.text = "Bạn đã gửi một hình ảnh"
+                    }
                     binding.tvMessage.setTypeface(null, Typeface.NORMAL)
                     when (lastMsg.status) {
                         MessageStatus.SEEN.toInt() -> {
                             Log.d("STATUS_OF_MESSAGE", "SEEN")
 //                            binding.ivReceiver.visibility = View.GONE
-                            val fileName = lastMsg?.url ?: ""
-
-                            val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
-
-                            val storage: FirebaseStorage = FirebaseStorage.getInstance()
-                            val storageRef: StorageReference =
-                                storage.getReferenceFromUrl(bucketUrl)
-                            val imageRef: StorageReference = storageRef.child(fileName)
-                            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                            val fileName = lastMsg.url ?: ""
+                            if (fileName.isEmpty()) {
                                 Glide.with(binding.ivReceiver)
-                                    .load(uri)
+                                    .load("https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
                                     .error(R.drawable.android)
                                     .into(binding.ivReceiver)
+                            }
+                            else {
+                                val bucketUrl = "gs://chitchatter-b97bf.appspot.com/avatars/"
+
+                                val storage: FirebaseStorage = FirebaseStorage.getInstance()
+                                val storageRef: StorageReference =
+                                    storage.getReferenceFromUrl(bucketUrl)
+                                val imageRef: StorageReference = storageRef.child(fileName)
+                                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                                    Glide.with(binding.ivReceiver)
+                                        .load(uri)
+                                        .error(R.drawable.android)
+                                        .into(binding.ivReceiver)
+                                }
                             }
                         }
 
@@ -136,7 +177,7 @@ class AccountAdapter(
             parent,
             false
         )
-        return ViewHolder(binding, listener)
+        return ViewHolder(binding, listener, currentAccount)
     }
 
     override fun getItemCount(): Int {

@@ -154,24 +154,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val email = ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
-        if (email.isNotBlank()) {
-            viewModel.updateOnlineStatus(true, email, ChitChatterUtils.token ?: "")
-        } else {
-            Log.w("MainActivity", "Invalid email: $email")
-        }
-    }
+//    override fun onStart() {
+//        super.onStart()
+//        val email = ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
+//        if (email.isNotBlank()) {
+//            viewModel.updateOnlineStatus(true, email, ChitChatterUtils.token ?: "")
+//        } else {
+//            Log.w("MainActivity", "Invalid email: $email")
+//        }
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        val email = ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
+//        if (email.isNotBlank()) {
+//            viewModel.updateOnlineStatus(false, email, ChitChatterUtils.token ?: "")
+//        } else {
+//            Log.w("MainActivity", "Invalid email: $email")
+//        }
+//    }
 
     override fun onResume() {
         super.onResume()
-        val email = ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: ""
-        if (email.isNotBlank()) {
-            viewModel.updateOnlineStatus(false, email, ChitChatterUtils.token ?: "")
-        } else {
-            Log.w("MainActivity", "Invalid email: $email")
-        }
+        viewModel.updateOnlineStatus(true, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.updateOnlineStatus(false, ChitChatterUtils.getCurrentAccount(this@MainActivity) ?: "", ChitChatterUtils.token ?: "")
     }
 
     private fun setupNavigation() {

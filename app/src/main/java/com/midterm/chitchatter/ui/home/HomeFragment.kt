@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
                 )
 
             }
-        })
+        }, ChitChatterUtils.getCurrentAccount(requireContext()) ?: "")
 
         binding.rvHome.adapter = adapter
 
