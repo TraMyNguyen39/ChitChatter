@@ -185,8 +185,12 @@ class ChatFragment : Fragment() {
             showNavigationView()
         }
 
-        binding?.imageViewCall?.setOnClickListener {
-            voiceCall()
+        binding?.btnCall?.setOnClickListener {
+//            voiceCall()
+            val intent = Intent(context, VideoCallActivity::class.java)
+            intent.putExtra("senderEmail", senderEmail)
+            intent.putExtra("receiverEmail", receiverEmail)
+            startActivity(intent)
         }
         binding?.chatEditInput?.setOnImageAddedListener { contentUri, mimeType, label ->
             chatViewModel.setPhoto(contentUri, mimeType)
@@ -288,6 +292,24 @@ class ChatFragment : Fragment() {
         }
 
     }
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(context?.applicationContext ?: return, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(context?.applicationContext ?: return, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), 1)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                // Quyền đã được cấp
+            } else {
+                // Quyền bị từ chối
+            }
+        }
+    }
+
     private fun createImageUri(): Uri {
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.TITLE, "New Picture")

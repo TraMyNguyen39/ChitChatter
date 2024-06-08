@@ -52,6 +52,7 @@ android {
 
 dependencies {
     implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation("androidx.activity:activity:1.9.0")
 
 
     val nav_version = "2.7.7"
@@ -109,6 +110,14 @@ dependencies {
 
     // Android SVG
     implementation("com.caverock:androidsvg:1.4")
+
+    // Agora
+    implementation("io.agora.rtc:full-sdk:3.5.0")
+    implementation("io.agora.rtc:voice-sdk:4.3.2")
+    implementation("io.agora.rtc:agorartc:3.5.1")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

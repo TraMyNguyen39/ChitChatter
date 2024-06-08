@@ -66,7 +66,7 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageViewCall"
+            android:id="@+id/btnCall"
             android:layout_width="@dimen/icon_size_lg"
             android:layout_height="@dimen/icon_size_lg"
             android:layout_gravity="center_vertical"
