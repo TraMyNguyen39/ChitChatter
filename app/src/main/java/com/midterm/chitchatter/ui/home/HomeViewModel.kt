@@ -13,10 +13,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.midterm.chitchatter.data.model.Account
-import com.midterm.chitchatter.data.model.Data
+//import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
-import com.midterm.chitchatter.data.model.Notification
+//import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.data.source.Repository
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import kotlinx.coroutines.launch
@@ -62,6 +62,26 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val messages = (repository as Repository.RemoteRepository).getAllLastMessages(email)
+                val updatedMessages = ArrayList<Message>()
+                messages.forEach { message ->
+                    updatedMessages.add(message)
+                }
+                val result1 = (repository as Repository.LocalRepository).clearDatabase()
+                val result2 = (repository as Repository.LocalRepository).updateDatabase(ArrayList(updatedMessages))
+                Log.d("UPDATE_DATABASE", "$result1 $result2")
+                _messages.postValue(updatedMessages)
+            } catch (e: Exception) {
+                // Xử lý lỗi nếu có
+                Log.e("HomeViewModel", "Error fetching messages: ${e.message}")
+            }
+        }
+    }
+
+    fun fetchAllLastMessagesFromLocalDatabase() {
+        viewModelScope.launch {
+            try {
+                val messages = (repository as Repository.LocalRepository).loadData()
+                Log.d("DATABASE", messages.toString())
                 val updatedMessages = ArrayList<Message>()
                 messages.forEach { message ->
                     updatedMessages.add(message)
@@ -140,15 +160,15 @@ class HomeViewModel(
                                     id = updatedMessage.id,
                                     sender = updatedMessage.sender,
                                     receiver = updatedMessage.receiver,
-                                    data = Data(
-                                        text = updatedMessage.data.text,
-                                        photoUrl = updatedMessage.data.photoUrl,
-                                        photoMimeType = updatedMessage.data.photoMimeType
-                                    ),
-                                    notification = Notification(
-                                        title = updatedMessage.notification.title,
-                                        body = updatedMessage.notification.body
-                                    ),
+//                                    data = Data(
+//                                        text = updatedMessage.data.text,
+//                                        photoUrl = updatedMessage.data.photoUrl,
+//                                        photoMimeType = updatedMessage.data.photoMimeType
+//                                    ),
+//                                    notification = Notification(
+//                                        title = updatedMessage.notification.title,
+//                                        body = updatedMessage.notification.body
+//                                    ),
                                     timestamp = updatedMessage.timestamp,
                                     status = updatedMessage.status,
                                     token = updatedMessage.token,
@@ -199,15 +219,15 @@ class HomeViewModel(
                                     id = message.id,
                                     sender = message.sender,
                                     receiver = message.receiver,
-                                    data = Data(
-                                        text = if (message.data == null) "" else message.data.text,
-                                        photoUrl = if (message.data == null) "" else message.data.photoUrl,
-                                        photoMimeType = if (message.data == null) "" else message.data.photoMimeType
-                                    ),
-                                    notification = Notification(
-                                        title = if (message.notification == null) "" else message.notification.title,
-                                        body = if (message.notification == null) "" else message.notification.body
-                                    ),
+//                                    data = Data(
+//                                        text = if (message.data == null) "" else message.data.text,
+//                                        photoUrl = if (message.data == null) "" else message.data.photoUrl,
+//                                        photoMimeType = if (message.data == null) "" else message.data.photoMimeType
+//                                    ),
+//                                    notification = Notification(
+//                                        title = if (message.notification == null) "" else message.notification.title,
+//                                        body = if (message.notification == null) "" else message.notification.body
+//                                    ),
                                     timestamp = message.timestamp,
                                     status = statusUpdated.status,
                                     token = message.token,
@@ -290,15 +310,15 @@ class HomeViewModel(
                                     id = message.id,
                                     sender = message.sender,
                                     receiver = message.receiver,
-                                    data = Data(
-                                        text = message.data.text,
-                                        photoUrl = message.data.photoUrl,
-                                        photoMimeType = message.data.photoMimeType
-                                    ),
-                                    notification = Notification(
-                                        title = message.notification.title,
-                                        body = message.notification.body
-                                    ),
+//                                    data = Data(
+//                                        text = message.data.text,
+//                                        photoUrl = message.data.photoUrl,
+//                                        photoMimeType = message.data.photoMimeType
+//                                    ),
+//                                    notification = Notification(
+//                                        title = message.notification.title,
+//                                        body = message.notification.body
+//                                    ),
                                     timestamp = message.timestamp,
                                     status = data.status,
                                     token = message.token,

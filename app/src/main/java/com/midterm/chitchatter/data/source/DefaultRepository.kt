@@ -7,11 +7,12 @@ import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.source.local.DefaultLocalDataSource
 import com.midterm.chitchatter.data.source.remote.DefaultRemoteDataSource
+import com.midterm.chitchatter.data.source.remote.ResponseResult
 
 class DefaultRepository(
     private val remoteDataSource: DefaultRemoteDataSource,
     private val localDataSource: DefaultLocalDataSource
-) : Repository.RemoteRepository {
+) : Repository.RemoteRepository, Repository.LocalRepository {
     override suspend fun createAccount(account: Account): String {
         return remoteDataSource.createAccount(account)
     }
@@ -122,5 +123,25 @@ class DefaultRepository(
         data: DataUpdateStatus
     ): Boolean {
         return remoteDataSource.updateMessageStatus(data)
+    }
+
+    override suspend fun loadData(): ArrayList<Message> {
+        return localDataSource.loadData()
+    }
+
+    override suspend fun clearDatabase(): Boolean {
+        return localDataSource.clearDatabase()
+    }
+
+    override suspend fun updateDatabase(messages: List<Message>): Boolean {
+        return localDataSource.updateDatabase(messages)
+    }
+
+    suspend fun loadDataWithNetworkCheck(hasNetwork: Boolean, email: String): ArrayList<Message> {
+        return if (hasNetwork) {
+            remoteDataSource.getAllLastMessages(email)
+        } else {
+            localDataSource.loadData()
+        }
     }
 }

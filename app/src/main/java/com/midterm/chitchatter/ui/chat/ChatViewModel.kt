@@ -14,11 +14,9 @@ import com.google.firebase.database.database
 import com.google.firebase.database.getValue
 import com.google.firebase.storage.storage
 import com.midterm.chitchatter.data.model.Account
-import com.midterm.chitchatter.data.model.Data
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.data.model.MessageStatus
-import com.midterm.chitchatter.data.model.Notification
 import com.midterm.chitchatter.data.source.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -91,13 +89,11 @@ class ChatViewModel(
                     Log.d("ChatViewModel", "New message RTDB: $sender - $receiver - $content - $status - $formattedTime - $photoUrl - $photoMimeType")
                     val newMessage = Message(
                         "",
-                        data = Data("", "", ""),
                         content = content ?: "",
                         receiver = receiver ?: "",
                         sender = sender ?: "",
                         token = "",
                         status = status ?: MessageStatus.SENT.toInt(),
-                        notification = Notification(),
                         timestamp = System.currentTimeMillis(),
                         formattedTime = formattedTime ?: SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis()),
                         photoUrl = photoUrl,
@@ -151,13 +147,13 @@ class ChatViewModel(
 
                 val newMessage = Message(
                     "",
-                    data = Data(text, _photoUri.value.toString(), _photoMimeType ?: ""),
+//                    data = Data(text, _photoUri.value.toString(), _photoMimeType ?: ""),
                     content = text,
                     receiver = receiverEmail,
                     sender = senderEmail,
                     token = token,
                     status = MessageStatus.SENT.toInt(),
-                    notification = Notification(),
+//                    notification = Notification(),
                     timestamp = System.currentTimeMillis(),
                     formattedTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis())
                 )
@@ -196,13 +192,11 @@ class ChatViewModel(
 
                 val newMessage = Message(
                     "",
-                    data = Data(text, _photoUri.value.toString(), _photoMimeType ?: ""),
                     content = text,
                     receiver = receiverEmail,
                     sender = senderEmail,
                     token = token,
                     status = MessageStatus.SENT.toInt(),
-                    notification = Notification(),
                     timestamp = System.currentTimeMillis(),
                     formattedTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis())
                 )
@@ -281,18 +275,18 @@ class ChatViewModel(
         val receiver = data[KEY_RECEIVER] ?: ""
         val token = data[KEY_TOKEN] ?: ""
         val status = MessageStatus.valueOf(data[KEY_STATUS] ?: MessageStatus.SENT.name).toInt()
-        val messageData = Data(text, photoUrl, photoMimeType)
-        val notification = Notification()
+//        val messageData = Data(text, photoUrl, photoMimeType)
+//        val notification = Notification()
         val timestamp = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
         val message = Message(
             "",
-            data = messageData,
+//            data = messageData,
             receiver = receiver,
             sender = sender,
             token = token,
             status = status,
-            notification = notification,
+//            notification = notification,
             timestamp = timeStamp,
             formattedTime = dateFormat.format(timestamp),
         )
@@ -312,12 +306,12 @@ class ChatViewModel(
                 sendMessage("", downloadUri.toString(), photoMimeType, senderEmail, receiverEmail, token)
                 val message = Message(
                     "",
-                    data = Data("", downloadUri.toString(), photoMimeType),
+//                    data = Data("", downloadUri.toString(), photoMimeType),
                     receiver = receiverEmail,
                     sender = senderEmail,
                     token = token,
                     status = 1,
-                    notification = Notification(),
+//                    notification = Notification(),
                     timestamp = System.currentTimeMillis(),
                     formattedTime = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis()),
                 )

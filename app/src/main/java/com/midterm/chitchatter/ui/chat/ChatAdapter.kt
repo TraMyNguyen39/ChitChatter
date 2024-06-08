@@ -51,7 +51,7 @@ class ChatAdapter(
     inner class SentMessageViewHolder(private val binding: ItemContainerSentMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             // Bind data to the views in the SentMessage layout
-            binding.tvMessage.text = message.data.text
+//            binding.tvMessage.text = message.data.text
             binding.tvTime.text = message.formattedTime
 
             binding.tvMessage.setBackgroundResource(R.drawable.message_outgoing)
@@ -68,28 +68,28 @@ class ChatAdapter(
 //                    .into(CompoundBottomTarget(binding.tvMessage, photoSize, photoSize))
 //                binding.imageView.visibility = View.VISIBLE
 //                binding.tvMessage.visibility = View.GONE
-            Log.d("ChatAdapter", "photoUrl: ${message.data.photoUrl}")
-            if (message.data.photoUrl != null) {
-                binding.imageView.visibility = View.VISIBLE
-                binding.tvMessage.visibility = View.GONE
-                Glide.with(binding.imageView)
-                    .load(message.data.photoUrl)
-                    .error(R.drawable.missing)
-                    .into(binding.imageView)
-                binding.imageView.setOnClickListener {
-                    onPhotoClicked(Uri.parse(message.data.photoUrl))
-                }
-            } else {
-                binding.imageView.visibility = View.GONE
-                binding.tvMessage.visibility = View.VISIBLE
-            }
+//            Log.d("ChatAdapter", "photoUrl: ${message.data.photoUrl}")
+//            if (message.data.photoUrl != null) {
+//                binding.imageView.visibility = View.VISIBLE
+//                binding.tvMessage.visibility = View.GONE
+//                Glide.with(binding.imageView)
+//                    .load(message.data.photoUrl)
+//                    .error(R.drawable.missing)
+//                    .into(binding.imageView)
+//                binding.imageView.setOnClickListener {
+//                    onPhotoClicked(Uri.parse(message.data.photoUrl))
+//                }
+//            } else {
+//                binding.imageView.visibility = View.GONE
+//                binding.tvMessage.visibility = View.VISIBLE
+//            }
         }
     }
 
     inner class ReceivedMessageViewHolder(private val binding: ItemRecieveMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             // Bind data to the views in the ReceivedMessage layout
-            binding.tvMessage.text = message.data.text
+//            binding.tvMessage.text = message.data.text
             binding.tvTime.text = message.formattedTime
 
             // Set the background and padding for the message
@@ -134,21 +134,21 @@ class ChatAdapter(
             // Bind data for sent message
             (holder as SentMessageViewHolder).bind(message)
 //            val lastMessage = message.value?.last() // Lấy message cuối cùng từ danh sách
-            val photoUrl = message?.data?.photoUrl // Lấy photoUrl từ message
+//            val photoUrl = message?.data?.photoUrl // Lấy photoUrl từ message
 
-            if (photoUrl != null) {
-                val imageView = holder.itemView.findViewById<ImageView>(R.id.imageView)
-                imageView.visibility = View.VISIBLE
-
-                Glide.with(holder.itemView)
-                    .load(photoUrl)
-                    .into(imageView)
-                Log.d("ChatAdapter", "photoUrl load success: $photoUrl")
-            }
-            else {
-                val imageView = holder.itemView.findViewById<ImageView>(R.id.imageView)
-                imageView.visibility = View.GONE
-            }
+//            if (photoUrl != null) {
+//                val imageView = holder.itemView.findViewById<ImageView>(R.id.imageView)
+//                imageView.visibility = View.VISIBLE
+//
+//                Glide.with(holder.itemView)
+//                    .load(photoUrl)
+//                    .into(imageView)
+//                Log.d("ChatAdapter", "photoUrl load success: $photoUrl")
+//            }
+//            else {
+//                val imageView = holder.itemView.findViewById<ImageView>(R.id.imageView)
+//                imageView.visibility = View.GONE
+//            }
         }
     }
 

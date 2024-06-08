@@ -6,6 +6,7 @@ import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.data.model.DataSendMessage
 import com.midterm.chitchatter.data.model.DataUpdateStatus
 import com.midterm.chitchatter.data.model.Message
+import com.midterm.chitchatter.data.source.remote.ResponseResult
 import com.midterm.chitchatter.utils.ChitChatterUtils
 
 interface Repository {
@@ -41,6 +42,9 @@ interface Repository {
     }
 
     interface LocalRepository : Repository {
-        // ToDo
+        suspend fun loadData(): ArrayList<Message>
+        suspend fun clearDatabase(): Boolean
+
+        suspend fun updateDatabase(messages: List<Message>): Boolean
     }
 }

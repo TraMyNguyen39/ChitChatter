@@ -1,5 +1,8 @@
 package com.midterm.chitchatter.data.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.firebase.database.IgnoreExtraProperties
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import java.util.Date
@@ -37,34 +40,34 @@ data class ResponseUpdateStatus(
     val status: Int
 )
 
-@IgnoreExtraProperties
-data class Data(
-    val text: String = "",
-    val photoUrl: String? = null,
-    val photoMimeType: String? = null
-)
-
-data class Notification(
-    val title: String = "",
-    val body: String? = null
-)
-
+@Entity(tableName = "message")
 data class Message @JvmOverloads constructor(
+    @PrimaryKey
+    @ColumnInfo(name = "id")
     val id: String = "",
+    @ColumnInfo(name = "sender")
     val sender: String = "",
+    @ColumnInfo(name = "receiver")
     val receiver: String = "",
-    val data: Data = Data(),
-    val notification: Notification = Notification(),
+    @ColumnInfo(name = "timestamp")
     val timestamp: Long = Date().time,
+    @ColumnInfo(name = "status")
     val status: Int = 0,
+    @ColumnInfo(name = "token")
     val token: String? = null,
+    @ColumnInfo(name = "name")
     val name: String = "",
 //    val createdAt: String = Date().time.toString(),
+    @ColumnInfo(name = "content")
     val content: String = "",
 //    val isIncoming: Boolean = true,
+    @ColumnInfo(name = "url")
     val url: String? = "",
+    @ColumnInfo(name = "formattedTime")
     val formattedTime: String = "",
+    @ColumnInfo(name = "photoUrl")
     val photoUrl: String? = null,
+    @ColumnInfo(name = "photoMimeType")
     val photoMimeType: String? = null
 
 ) {
