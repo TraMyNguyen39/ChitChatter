@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/spacing_xs">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        app:civ_border_color="@color/primary_color"
+        app:civ_border_width="1dp"
+        android:id="@+id/iv_contact_avt"
+        android:layout_width="@dimen/avatar_w_md"
+        android:layout_height="@dimen/avatar_w_md"
+        android:layout_marginStart="@dimen/margin_4"
+        android:src="@drawable/chitchatter"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_contact_email"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_contact_name" />
+
+    <TextView
+        android:id="@+id/tv_contact_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_4"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:text="@string/sender_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textSize="@dimen/text_lg"
+        app:layout_constraintEnd_toStartOf="@+id/text_time"
+        app:layout_constraintStart_toEndOf="@+id/iv_contact_avt"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_contact_email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="marquee"
+        android:maxLines="1"
+        android:text="@string/example_email"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/text_black"
+        android:textSize="@dimen/text_normal"
+        app:layout_constraintEnd_toEndOf="@+id/text_time"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/tv_contact_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_contact_name" />
+
+    <Button
+        android:id="@+id/btn_accept"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginEnd="@dimen/margin_4"
+        android:layout_marginBottom="@dimen/margin_4"
+        android:backgroundTint="@color/primary_color"
+        android:text="@string/txt_accept"
+        android:drawableStart="@drawable/ic_user_accept"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_deny"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/iv_contact_avt"
+        app:layout_constraintTop_toBottomOf="@+id/tv_contact_email" />
+
+    <Button
+        android:id="@+id/btn_deny"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_4"
+        android:backgroundTint="@color/dark_gray"
+        android:text="@string/txt_deny"
+        android:drawableStart="@drawable/ic_user_deny"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_accept"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_accept"
+        app:layout_constraintTop_toTopOf="@+id/btn_accept" />
+
+    <TextView
+        android:id="@+id/text_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_4"
+        android:text="@string/text_birthdate_example"
+        android:textSize="@dimen/text_md"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_contact_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_contact_name" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

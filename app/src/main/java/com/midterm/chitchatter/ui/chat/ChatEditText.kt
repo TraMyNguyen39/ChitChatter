@@ -45,4 +45,8 @@ class ChatEditText @JvmOverloads constructor(
     fun setOnImageAddedListener(listener: OnImageAddedListener?) {
         onImageAddedListener = listener
     }
+    override fun performLongClick(): Boolean {
+        super.performLongClick()
+        return true
+    }
 }

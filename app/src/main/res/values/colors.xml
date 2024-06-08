@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#000E08</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary_color">#24786D</color>
     <color name="stroke">#C1C1C1</color>
     <color name="dark_black">#000E08</color>
+    <color name="text_black">#444645</color>
     <color name="dark_gray">#797C7B</color>
     <color name="green_50">#EEFAF8</color>
     <color name="green_900">#24786D</color>
+    <color name="red">#EA3736</color>
 </resources>

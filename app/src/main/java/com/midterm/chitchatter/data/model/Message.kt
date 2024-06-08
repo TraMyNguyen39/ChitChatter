@@ -1,8 +1,12 @@
 package com.midterm.chitchatter.data.model
 
-import com.midterm.chitchatter.ui.home.HomeViewModel
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.google.firebase.database.IgnoreExtraProperties
 import com.midterm.chitchatter.utils.ChitChatterUtils
 import java.util.Date
+
 
 enum class MessageStatus(val value: Int) {
     SENT(1),
@@ -24,33 +28,47 @@ data class DataSendMessage(
     val photoMimeType: String? = null
 )
 
-data class Data(
-    val text: String = "",
-    val photoUrl: String? = null,
-    val photoMimeType: String? = null
-)
-
-data class Notification(
-    val title: String = "",
-    val body: String? = null
-)
-
-data class Message(
+data class DataUpdateStatus(
     val id: String,
-    val sender: String = "",
-    val receiver: String = "",
-    val data: Data,
-    val notification: Notification,
-    val timestamp: Long = Date().time,
     val status: Int,
+    val email: String? = "",
+    val token: String? = ""
+)
+
+data class ResponseUpdateStatus(
+    val id: String,
+    val status: Int
+)
+
+@Entity(tableName = "message")
+data class Message @JvmOverloads constructor(
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    val id: String = "",
+    @ColumnInfo(name = "sender")
+    val sender: String = "",
+    @ColumnInfo(name = "receiver")
+    val receiver: String = "",
+    @ColumnInfo(name = "timestamp")
+    val timestamp: Long = Date().time,
+    @ColumnInfo(name = "status")
+    val status: Int = 0,
+    @ColumnInfo(name = "token")
     val token: String? = null,
+    @ColumnInfo(name = "name")
     val name: String = "",
 //    val createdAt: String = Date().time.toString(),
+    @ColumnInfo(name = "content")
     val content: String = "",
 //    val isIncoming: Boolean = true,
-    val url: String = "",
-    val formattedTime: String,
-//    val currentUserEmail: String
+    @ColumnInfo(name = "url")
+    val url: String? = "",
+    @ColumnInfo(name = "formattedTime")
+    val formattedTime: String = "",
+    @ColumnInfo(name = "photoUrl")
+    val photoUrl: String? = null,
+    @ColumnInfo(name = "photoMimeType")
+    val photoMimeType: String? = null
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -70,8 +88,8 @@ data class Message(
         result = 31 * result + timestamp.hashCode()
         return result
     }
-    val currentUserEmail: String
+    var currentUserEmail: String = ""
         get() = ChitChatterUtils.currentAccountEmail ?: ""
-    val isIncoming: Boolean
+    var isIncoming: Boolean = false
         get() = (currentUserEmail ?: "").compareTo(sender) != 0
 }

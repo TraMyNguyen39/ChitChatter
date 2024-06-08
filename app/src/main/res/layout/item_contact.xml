@@ -2,59 +2,58 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="@dimen/spacing_sm">
 
     <ImageView
         android:id="@+id/btn_chat"
-        android:layout_marginEnd="@dimen/margin_16"
         android:layout_width="@dimen/icon_size_sm"
         android:layout_height="@dimen/icon_size_sm"
+        android:layout_marginEnd="@dimen/margin_16"
+        android:contentDescription="@string/txt_detail"
         android:src="@drawable/ic_chat"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_contact_email"
         app:layout_constraintEnd_toStartOf="@id/btn_detail"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/txt_detail" />
+        app:layout_constraintTop_toTopOf="@+id/tv_contact_name" />
 
     <ImageView
-        android:clickable="true"
         android:id="@+id/btn_detail"
-        android:layout_marginEnd="@dimen/margin_4"
         android:layout_width="@dimen/icon_size_sm"
         android:layout_height="@dimen/icon_size_sm"
-        android:src="@drawable/ic_user"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="@dimen/margin_4"
+        android:clickable="true"
         android:contentDescription="@string/txt_detail"
-        android:focusable="true" />
+        android:focusable="true"
+        android:src="@drawable/ic_user"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_chat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_chat" />
 
     <de.hdodenhof.circleimageview.CircleImageView
+        app:civ_border_color="@color/primary_color"
+        app:civ_border_width="1dp"
         android:id="@+id/iv_contact_avt"
-        android:layout_width="@dimen/avatar_w_lg"
-        android:layout_height="@dimen/avatar_h_lg"
+        android:layout_width="@dimen/avatar_w_md"
+        android:layout_height="@dimen/avatar_w_md"
         android:layout_marginStart="@dimen/margin_4"
-        android:layout_marginTop="@dimen/spacing_sm"
-        android:layout_marginBottom="@dimen/spacing_sm"
         android:src="@drawable/chitchatter"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_contact_email"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/tv_contact_name" />
 
     <TextView
         android:id="@+id/tv_contact_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginStart="@dimen/spacing_sm"
+        android:layout_marginTop="@dimen/margin_4"
         android:layout_marginEnd="@dimen/margin_4"
-        android:layout_marginTop="@dimen/spacing_xs"
         android:layout_weight="1"
         android:maxLines="1"
         android:text="@string/sender_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textSize="@dimen/text_xl"
+        android:textSize="@dimen/text_lg"
         app:layout_constraintEnd_toStartOf="@+id/btn_chat"
         app:layout_constraintStart_toEndOf="@+id/iv_contact_avt"
         app:layout_constraintTop_toTopOf="parent" />
@@ -63,12 +62,13 @@
         android:id="@+id/tv_contact_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xs"
-        android:layout_marginBottom="@dimen/spacing_xs"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="@dimen/margin_4"
+        android:ellipsize="marquee"
+        android:maxLines="1"
         android:text="@string/example_email"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="@dimen/text_md"
-        android:maxLines="1"
+        android:textSize="@dimen/text_normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/tv_contact_name"
         app:layout_constraintHorizontal_bias="1.0"

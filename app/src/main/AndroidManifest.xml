@@ -6,9 +6,18 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".ChitChatterApplication"
@@ -53,7 +62,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
+        <receiver android:name=".NotificationReceiver" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_message" />
@@ -62,7 +71,10 @@
             android:resource="@color/green_50" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
+            android:value="com.midterm.chitchatter.chat-notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.request_notification_channel_id"
+            android:value="com.midterm.chitchatter.contact-request-notification" />
     </application>
 
 </manifest>

@@ -109,7 +109,7 @@ class LoginFragment : Fragment() {
                     Snackbar.make(binding.root, "Welcome ${account.name}", Snackbar.LENGTH_LONG)
                         .show()
                     // Lưu account vào preference
-                    saveToCurrentAccountPreference(account.email, account.name)
+                    saveToCurrentAccountPreference(account.email, account.name, account.imageUrl)
                     // Lưu vào preference rồi thì reset lại loggedInAccount thôi
                     viewModel.resetAccount()
 
@@ -143,7 +143,7 @@ class LoginFragment : Fragment() {
         with (sharedPref.edit()) {
             putString(getString(R.string.preference_email_key), email)
             putString(getString(R.string.preference_display_name_key), displayName)
-//            putString(getString(R.string.preference_dislay_name_key), imageUrl)
+            putString(getString(R.string.preference_avt_url_key), imageUrl)
             apply()
         }
     }
