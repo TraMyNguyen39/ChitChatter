@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.Message
 import com.midterm.chitchatter.databinding.ItemContainerSentMessageBinding
 import com.midterm.chitchatter.databinding.ItemRecieveMessageBinding
@@ -19,8 +20,9 @@ import com.midterm.chitchatter.databinding.ItemRecieveMessageBinding
 class MessageAdapter(
     private val avtUrl: String?,
     private val longListener: OnItemLongClickListener,
-    private val listener: OnItemClickListener
-) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+    private val listener: OnItemClickListener,
+    private val list: MutableList<Message> = ArrayList(),
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var currentAccountEmail: String? = null
 
@@ -32,7 +34,11 @@ class MessageAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position).sender == currentAccountEmail) VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
+        return if (list[position].sender == currentAccountEmail) VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
+    }
+
+    override fun getItemCount(): Int {
+        return list.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -54,7 +60,7 @@ class MessageAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val message = getItem(position)
+        val message = list[position]
         if (getItemViewType(position) == VIEW_TYPE_SENT) {
             (holder as SentMessageViewHolder).bind(message)
         } else {
@@ -64,10 +70,18 @@ class MessageAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun clear() {
-        this.currentList.clear()
+//        this.currentList.clear()
+        list.clear()
         notifyDataSetChanged()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateList(list: List<Message>) {
+        val tmpList = list.toList()
+        this.list.clear()
+        this.list.addAll(tmpList)
+        notifyDataSetChanged()
+    }
     class SentMessageViewHolder(
         private val binding: ItemContainerSentMessageBinding,
         private val longListener: OnItemLongClickListener,

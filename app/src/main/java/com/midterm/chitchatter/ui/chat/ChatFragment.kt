@@ -45,7 +45,8 @@ class ChatFragment : Fragment() {
     private lateinit var binding: FragmentChatBinding
     private lateinit var progressBar: ProgressBar
     private lateinit var chatViewModel: ChatViewModel
-//    private lateinit var chatAdapter: ChatAdapter
+
+    //    private lateinit var chatAdapter: ChatAdapter
     private var email: String? = null
     private var senderEmail: String? = null
     private var receiverEmail: String? = null
@@ -90,7 +91,7 @@ class ChatFragment : Fragment() {
             gson.fromJson(messageJson, Message::class.java)
         } catch (e: Exception) {
             val message = Message()
-            message.isIncoming = false
+//            message.isIncoming = false
             message
         }
         token = arguments?.getString(ARG_TOKEN)
@@ -119,8 +120,9 @@ class ChatFragment : Fragment() {
 //            chatViewModel = ViewModelProvider(this, ChatViewModelFactory(repository, email)).get(ChatViewModel::class.java)
         }
 
-        val interactingAccountEmail = if (message?.isIncoming == true) receiverEmail else senderEmail
-        Log.d("ChatFragment", "interactingAccountEmail: $interactingAccountEmail")
+        val interactingAccountEmail =
+            if (message?.isIncoming == true) receiverEmail else senderEmail
+        Log.d("ChatFragment", " message?.isIncoming: ${message?.isIncoming} ,interactingAccountEmail: $interactingAccountEmail")
         chatViewModel.updateInteractingAccount(Account(email = interactingAccountEmail ?: ""))
         chatViewModel.updateInteractingAccountToken(
             Account(
@@ -187,9 +189,12 @@ class ChatFragment : Fragment() {
         binding.recyclerMessage.adapter = adapter
 
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
-            adapter.submitList(messages)
-            adapter.notifyDataSetChanged()
-            binding.recyclerMessage.smoothScrollToPosition(messages.size - 1)
+//            adapter.submitList(messages)
+//            adapter.notifyDataSetChanged()
+            adapter.updateList(messages)
+            if (messages.isNotEmpty()) {
+                binding.recyclerMessage.smoothScrollToPosition(messages.size - 1)
+            }
             progressBar.visibility = View.GONE
         }
     }

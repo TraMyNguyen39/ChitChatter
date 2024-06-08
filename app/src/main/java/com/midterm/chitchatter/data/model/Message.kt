@@ -90,6 +90,6 @@ data class Message @JvmOverloads constructor(
     }
     var currentUserEmail: String = ""
         get() = ChitChatterUtils.currentAccountEmail ?: ""
-    var isIncoming: Boolean = false
+    val isIncoming: Boolean
         get() = (currentUserEmail ?: "").compareTo(sender) != 0
 }

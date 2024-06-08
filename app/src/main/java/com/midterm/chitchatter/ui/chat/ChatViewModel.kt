@@ -50,6 +50,8 @@ class ChatViewModel(
     val sanitizedSenderEmail = senderEmail?.substringBefore('@')
     val sanitizedReceiverEmail = receiverEmail?.substringBefore('@')
     val myRef = database.getReference("messages/$sanitizedSenderEmail/$sanitizedReceiverEmail")
+//    val myRef = database.getReference("messages/$sanitizedReceiverEmail/$sanitizedSenderEmail")
+
 
     init {
         Log.d("ChatViewModel", "Instance created with hashcode: ${this.hashCode()}")

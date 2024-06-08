@@ -67,7 +67,7 @@
                 android:layout_height="@dimen/icon_size_normal"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="@dimen/spacing_lg"
+                android:layout_marginEnd="@dimen/spacing_md"
                 android:src="@drawable/ic_back" />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -207,8 +207,8 @@
 
             <ImageButton
                 android:id="@+id/btn_send"
-                android:layout_width="@dimen/icon_size_normal"
-                android:layout_height="@dimen/icon_size_normal"
+                android:layout_width="@dimen/icon_size_lg"
+                android:layout_height="@dimen/icon_size_lg"
                 android:layout_marginStart="@dimen/margin_8"
                 android:background="@drawable/ic_send" />
         </LinearLayout>

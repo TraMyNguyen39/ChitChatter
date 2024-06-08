@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.midterm.chitchatter.R
+import com.midterm.chitchatter.data.model.Account
 import com.midterm.chitchatter.data.model.ContactRequestSender
 import com.midterm.chitchatter.databinding.ItemRequestContactBinding
 
