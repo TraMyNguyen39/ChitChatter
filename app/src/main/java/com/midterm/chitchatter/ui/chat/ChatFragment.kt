@@ -45,7 +45,7 @@ class ChatFragment : Fragment() {
     private lateinit var binding: FragmentChatBinding
     private lateinit var progressBar: ProgressBar
     private lateinit var chatViewModel: ChatViewModel
-    private lateinit var chatAdapter: ChatAdapter
+//    private lateinit var chatAdapter: ChatAdapter
     private var email: String? = null
     private var senderEmail: String? = null
     private var receiverEmail: String? = null
@@ -150,6 +150,7 @@ class ChatFragment : Fragment() {
         setupAdapter()
 
     }
+
     override fun onDetach() {
         super.onDetach()
         binding.containerZoomLayout.visibility = View.GONE
@@ -157,10 +158,10 @@ class ChatFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setupAdapter() {
-        val imageUrl = chatViewModel.interactingAccount.value?.imageUrl
-        Log.d("ChatFragment", "imageUrl: $imageUrl")
-        chatAdapter = ChatAdapter(requireContext(), imageUrl) {}
-        binding.recyclerMessage.adapter = chatAdapter
+//        val imageUrl = chatViewModel.interactingAccount.value?.imageUrl
+//        Log.d("ChatFragment", "imageUrl: $imageUrl")
+//        chatAdapter = ChatAdapter(requireContext(), imageUrl) {}
+//        binding.recyclerMessage.adapter = chatAdapter
 
         val longListener = object : MessageAdapter.OnItemLongClickListener {
             override fun onDeleteMessage(account: Message) {
@@ -188,7 +189,8 @@ class ChatFragment : Fragment() {
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.submitList(messages)
             adapter.notifyDataSetChanged()
-            binding.recyclerMessage.scrollToPosition(messages.size - 1)
+            binding.recyclerMessage.smoothScrollToPosition(messages.size - 1)
+            progressBar.visibility = View.GONE
         }
     }
 
@@ -210,12 +212,12 @@ class ChatFragment : Fragment() {
             binding.textViewName.text = account?.name
             Log.d("ChatFragment", "Displayname: ${account?.name}")
         }
-        chatViewModel.messages.observe(viewLifecycleOwner) {
-            Log.d("ChatFragment", "Received ${it.size} messages from API")
-            chatAdapter.submitList(it)
-            binding.recyclerMessage.scrollToPosition(it.size - 1)
-            progressBar.visibility = View.GONE
-        }
+//        chatViewModel.messages.observe(viewLifecycleOwner) {
+//            Log.d("ChatFragment", "Received ${it.size} messages from API")
+////            chatAdapter.submitList(it)
+//            binding.recyclerMessage.scrollToPosition(it.size - 1)
+//            progressBar.visibility = View.GONE
+//        }
 
         chatViewModel.photo.observe(viewLifecycleOwner) {
             if (it == null) {
@@ -447,6 +449,16 @@ class ChatFragment : Fragment() {
         ChatViewModel.isActive = true
     }
 
+    override fun onResume() {
+        super.onResume()
+        progressBar.visibility = View.VISIBLE
+    }
+
+    override fun onPause() {
+        super.onPause()
+        progressBar.visibility = View.GONE
+    }
+
     override fun onStop() {
         super.onStop()
         // inactive => ko update tin nhan
@@ -534,7 +546,7 @@ class ChatFragment : Fragment() {
         // Kiểm tra quyền truy cập
         when {
             ContextCompat.checkSelfPermission(
-                requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
+                requireActivity(), permission
             ) == PackageManager.PERMISSION_GRANTED -> {
                 if (permission == Manifest.permission.READ_EXTERNAL_STORAGE) {
                     pickImageFromGallery()
@@ -544,7 +556,7 @@ class ChatFragment : Fragment() {
             }
 
             ActivityCompat.shouldShowRequestPermissionRationale(
-                requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
+                requireActivity(), permission
             ) -> {
                 if (permission == Manifest.permission.READ_EXTERNAL_STORAGE) {
                     showMessage(R.string.gallery_permission_prompt, Snackbar.LENGTH_LONG, true)

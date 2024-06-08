@@ -52,8 +52,8 @@ class ContactRequestFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener 
         setupAdapter()
         setUpActions()
 
+//        viewModel.loadAllRequests(userEmail)
         viewModel.markAllAsRead(userEmail!!)
-        viewModel.loadAllRequests(userEmail)
         setupRealTimeNotification()
     }
 
